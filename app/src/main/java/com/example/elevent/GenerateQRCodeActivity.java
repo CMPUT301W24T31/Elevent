@@ -19,6 +19,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
 // All of this is from chatgpt lol
 // OpenAI, 2024, ChatGPT, How to use QR code
 
+/**
+ * generates a QR code
+ */
 public class GenerateQRCodeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
