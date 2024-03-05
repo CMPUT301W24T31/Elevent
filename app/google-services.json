@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "240201678844",
+    "firebase_url": "https://elevent-fb693-default-rtdb.firebaseio.com",
+    "project_id": "elevent-fb693",
+    "storage_bucket": "elevent-fb693.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:240201678844:android:9ec02c1dc5851fa01afc79",
+        "android_client_info": {
+          "package_name": "com.example.elevent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFdcwTi-BYEKjix-A7F0BUFf0djmDRFFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
