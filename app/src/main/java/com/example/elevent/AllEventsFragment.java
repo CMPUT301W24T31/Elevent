@@ -52,7 +52,6 @@ public class AllEventsFragment extends Fragment {
         return fragment;
     }
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -67,13 +66,12 @@ public class AllEventsFragment extends Fragment {
 
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
-                R.array.event_filter_array,
+                R.array.event_filter_spinner_array,
                 android.R.layout.simple_spinner_item
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
     }
-}
 
     /*@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,4 +88,4 @@ public class AllEventsFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_allevents, container, false);
     }*/
-
+}
