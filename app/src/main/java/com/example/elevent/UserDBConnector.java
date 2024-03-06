@@ -10,25 +10,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.FileInputStream;
 
 public class UserDBConnector {
+    private DatabaseReference rootDB;
 
-    // initialization of the Firebase App will be done here
-    static {
-        try {
-            // Initialize Firebase App with options
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setDatabaseUrl("https://elevent-fb693-default-rtdb.firebaseio.com/")
-                    .build();
-
-            // initialize FirebaseApp Here:
-            //
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public UserDBConnector() {
+        // Initialize the rootDB variable to point to the "Users" child node in your Firebase database
+        rootDB = FirebaseDatabase.getInstance().getReference().child("Users");
     }
 
-    public static DatabaseReference DBConnector() {
-        return FirebaseDatabase.getInstance().getReference();
+    public DatabaseReference getRootDB() {
+        return rootDB;
     }
 }
