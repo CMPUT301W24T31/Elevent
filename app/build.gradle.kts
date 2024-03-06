@@ -40,7 +40,7 @@ dependencies {
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation("com.google.firebase:firebase-database")
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-firestore:24.10.3")
 
 
     implementation("androidx.appcompat:appcompat:1.6.1")
