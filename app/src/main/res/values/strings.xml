@@ -19,7 +19,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string-array name="event_filter_array">
+    <!-- options for event filter spinner -->
+    <string-array name="event_filter_spinner_array">
         <item>all</item>
         <item>signed-up</item>
     </string-array>
