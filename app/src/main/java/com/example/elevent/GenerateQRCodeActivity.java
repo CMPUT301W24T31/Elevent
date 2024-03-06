@@ -28,9 +28,9 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.generate_qr_layout);
 
-        String text = "You have checked in";  // this is a placeholder; TODO: change this to what we want to QR code to actually encode
+        String eventID = getIntent().getStringExtra("eventID");  // this is a placeholder; TODO: change this to what we want to QR code to actually encode
         try{
-            Bitmap qrCode = generateQRCode(text);
+            Bitmap qrCode = generateQRCode(eventID);
             ImageView qrImage = findViewById(R.id.qr_image);
             qrImage.setImageBitmap(qrCode);
         } catch (WriterException e){
@@ -38,9 +38,9 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap generateQRCode(String text) throws WriterException {
+    private Bitmap generateQRCode(String eventID) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 512, 512);
+        BitMatrix bitMatrix = qrCodeWriter.encode(eventID, BarcodeFormat.QR_CODE, 512, 512);
         int width = bitMatrix.getWidth();
         int height = bitMatrix.getHeight();
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
