@@ -7,6 +7,7 @@ import android.media.Image;
 import java.io.Serializable;
 
 public class Event implements Serializable {
+    private static final String eventID = "placeholder";
     private String eventName;
     private Bitmap promotionalQR;
     private Bitmap checkinQR;
