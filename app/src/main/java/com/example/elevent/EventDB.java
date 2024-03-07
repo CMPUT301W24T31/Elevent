@@ -80,6 +80,16 @@ public class EventDB {
         return CompletableFuture.runAsync(() -> eventRef.update(updates));
     }
 
+
+    // delete an event by taking in the eventName, and thus its
+    // document name in firestore and deleting it asynchronously (
+    // returning the delete and then firestore removes it in the back
+    // end)
+    public CompletableFuture<Void> deleteEvent(String eventName) {
+        DocumentReference eventRef = db.collection("events").document(eventName); // find event in firestore
+        return CompletableFuture.runAsync(eventRef::delete); // delete that event
+    }
+
     // remaining methods for events to be implemented
     // -----------
     // -----------
