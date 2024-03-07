@@ -1,5 +1,6 @@
 package com.example.elevent;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -26,13 +27,13 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.generate_qr_layout);
-
         String eventID = getIntent().getStringExtra("eventID");  // this is a placeholder; TODO: change this to what we want to QR code to actually encode
         try{
             Bitmap qrCode = generateQRCode(eventID);
-            ImageView qrImage = findViewById(R.id.qr_image);
-            qrImage.setImageBitmap(qrCode);
+            Intent intent = new Intent();
+            intent.putExtra("qrCode", qrCode);
+            setResult(RESULT_OK, intent);
+            finish();
         } catch (WriterException e){
             Toast.makeText(this, "Cannot generate QR code", Toast.LENGTH_SHORT).show();  // TODO: maybe change this idk what we want to do to handle this
         }

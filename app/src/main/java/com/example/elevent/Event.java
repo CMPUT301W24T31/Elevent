@@ -2,37 +2,30 @@ package com.example.elevent;
 
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.media.Image;
+import android.net.Uri;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.lang.String;
 
 public class Event implements Serializable {
-    private static final String eventID = "test";
     private String eventName;
     private Bitmap promotionalQR;
     private Bitmap checkinQR;
     private int attendeesCount;
-    private Image eventPoster;
-    private Location location;
-    private Date eventDate;
+    private Uri eventPoster;
+    private Location geolocation;
+    private String address;
+    private String description;
+    private String date;
+    private String time;
 
-    public Event(String eventName, Bitmap promotionalQR, Bitmap checkinQR, int attendeesCount, Image eventPoster, Location location) {
+    public Event(String eventName, Uri eventPoster, String address, String description, String date, String time) {
         this.eventName = eventName;
-        this.promotionalQR = promotionalQR;
-        this.checkinQR = checkinQR;
-        this.attendeesCount = attendeesCount;
         this.eventPoster = eventPoster;
-        this.location = location;
-        this.eventDate = eventDate;
-    }
-
-    public Date getEventDate() {
-        return eventDate;
-    }
-
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate;
+        this.address = address;
+        this.description = description;
+        this.date = date;
+        this.time = time;
     }
 
     public String getEventName() {
@@ -51,12 +44,22 @@ public class Event implements Serializable {
         return attendeesCount;
     }
 
-    public Image getEventPoster() {
+    public Uri getEventPoster() {
         return eventPoster;
     }
 
-    public Location getLocation() {
-        return location;
+    public Location getGeolocation() {
+        return geolocation;
+    }
+    public String getDescription(){return description;}
+    public String getAddress(){return address;}
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
     }
 
     public void setEventName(String eventName) {
@@ -75,11 +78,24 @@ public class Event implements Serializable {
         this.attendeesCount = attendeesCount;
     }
 
-    public void setEventPoster(Image eventPoster) {
+    public void setEventPoster(Uri eventPoster) {
         this.eventPoster = eventPoster;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setGeolocation(Location geolocation) {
+        this.geolocation = geolocation;
+    }
+    public void setDescription(String description){this.description = description;}
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
