@@ -7,7 +7,7 @@
     android:background="#001F3F">
 
     <!-- TODO: Update blank fragment layout -->
-<!--    <!--<TextView-->
+<!--  <TextView-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
 <!--        android:text="All Events" />-->
@@ -16,11 +16,15 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_margin="30dp"
-        android:background="@drawable/rounded_corner"/>
+        android:background="@drawable/rounded_corner"
+        android:padding="30dp"/>
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="#B59D9D"
+        android:layout_marginTop=""
         />
+
+
 </FrameLayout>
