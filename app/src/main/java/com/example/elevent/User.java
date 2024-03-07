@@ -53,7 +53,7 @@ public class User {
     }
 
     public void setUserID(String userID) {
-        this.userID = userID;
+        userID = userID;
     }
 
     public Map<String, Object> toMap() {

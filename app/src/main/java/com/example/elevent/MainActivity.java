@@ -3,6 +3,7 @@ package com.example.elevent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -72,6 +73,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // use this method to get the UUID give to a user at
+    // first launch in the UserDB to be used as the document
+    // name in the firestore database collection 'User'
+    public String getUserIDForUserDB() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
 
 
