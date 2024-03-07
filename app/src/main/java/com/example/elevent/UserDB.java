@@ -58,7 +58,8 @@ public class UserDB {
             return;
         }
 
-        // SetOptions.merge() recommended by ChatGPT
+        // SetOptions.merge() recommended by Openai, ChatGPT, March 6th, 2024, "how to update data in
+        // firestore in an existing document
         db.collection("User").document(user.getUserID()).set(user.toMap(), SetOptions.merge())
                 .addOnSuccessListener(aVoid -> System.out.println("User updated successfully"))
                 .addOnFailureListener(e -> System.out.println("Error updating user: " + e.getMessage()));
@@ -71,8 +72,27 @@ public class UserDB {
          */
     }
 
-    // TODO: UPDATE READUSER AND DELETE USER TO MAKE USE OF CUSTOM USERIDs
-    public void readUser(String userName, final OnUserReadListener listener) {
+
+    public void readUser(String userID, final OnUserReadListener listener) {
+
+        db.collection("User").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Convert the documentSnapshot to a User object
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            user.setUserID(documentSnapshot.getId()); // Ensure the documentId is set in the User object
+                            listener.onSuccess(user);
+                        } else {
+                            listener.onFailure(new Exception("Failed to parse user data."));
+                        }
+                    } else {
+                        listener.onFailure(new Exception("User not found."));
+                    }
+                })
+                .addOnFailureListener(listener::onFailure);
+
+        /* Before using userIDs to parse through database and return user info that way
         db.collection("User").document(userName).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -83,19 +103,30 @@ public class UserDB {
                     }
                 })
                 .addOnFailureListener(e -> listener.onFailure(e));
+         */
     }
 
-    public void deleteUser(User user) {
+    public void deleteUser(String userID) {
 
+        db.collection("User").document(userID).delete()
+                .addOnSuccessListener(aVoid -> System.out.println("User successfully deleted."))
+                .addOnFailureListener(e -> System.out.println("Error deleting user: " + e.getMessage()));
+        /*
         db.collection("User").document(user.getName()).delete()
                 .addOnSuccessListener(aVoid -> System.out.println("User deleted successfully"))
                 .addOnFailureListener(e -> System.out.println("Error deleting user: " + e.getMessage()));
+
+         */
     }
 
     // interface for callbacks when reading user data
     public interface OnUserReadListener {
         void onSuccess(User user);
+        // handles the successfully fetched user
+        // System.out.println("User Name: " + user.getName()); is what we would implement
         void onFailure(Exception e);
+        // handle the error of user not being parsed
+        // System.err.println("Error fetching user: " + e.getMessage()); is what we would implement
     }
 
 }
