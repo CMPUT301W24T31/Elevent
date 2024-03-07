@@ -27,7 +27,7 @@
             android:backgroundTint="@color/item_grey"
             android:padding="30dp"/>
 
-        <!--
+
         <ListView
             android:id="@+id/list_view"
             android:layout_width="match_parent"
@@ -39,22 +39,23 @@
             android:divider="@android:color/transparent"
             android:dividerHeight="10dp"
             />
-            -->
-        <ExpandableListView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+        <!--
+   <ExpandableListView
+       android:layout_width="match_parent"
+       android:layout_height="0dp"
+       android:layout_weight="1"
 
-            android:cacheColorHint="#B59D9D"
-            android:background="@drawable/rounded_corner"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="10dp"/>
+       android:cacheColorHint="#B59D9D"
+       android:background="@drawable/rounded_corner"
+       android:divider="@android:color/transparent"
+       android:dividerHeight="10dp"/>
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Button" />
+            -->
     </LinearLayout>
 <!--    TEMPORARY BUTTON TO TEST FRAGMENT NAVIGATION
         REPLACE WITH EVENT ITEM CLICK FROM LIST VIEW    -->
