@@ -26,5 +26,9 @@
     </string-array>
 
     <string name="appbar_fragment_name" />
+    <string name="notification_centre">notification centre</string>
+    <string name="attendees">attendees</string>
+    <string name="notification_centree">\nnotification centre</string>
+    <string name="post_new_notification">post new notification</string>
 
 </resources>
