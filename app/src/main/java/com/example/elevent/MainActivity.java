@@ -106,7 +106,4 @@ public class MainActivity extends AppCompatActivity {
         appBarTitle.setText(title);
     }
 
-
-
-
 }
