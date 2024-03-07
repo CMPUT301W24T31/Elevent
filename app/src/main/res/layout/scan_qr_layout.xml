@@ -9,6 +9,6 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
     <!--
-TODO: create a button that allows the user to go back; as well, we should handle the case where the user clicks on their device's back button?
+THIS IS A USELESS FILE!!! WE CAN DELETE THIS!!!!
 -->
 </RelativeLayout>

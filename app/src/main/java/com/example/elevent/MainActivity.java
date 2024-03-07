@@ -1,10 +1,14 @@
 package com.example.elevent;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import android.annotation.SuppressLint;
+
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,7 +18,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventDialogListener {
 
     BottomNavigationView navigationView;
 
@@ -22,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     MyEventsFragment myEventsFragment = new MyEventsFragment();
     ScannerFragment scannerFragment = new ScannerFragment();
     ProfileFragment profileFragment = new ProfileFragment();
+
+    private ActivityResultLauncher<Intent> generateQRLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +96,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
+    public void onPositiveClick(Event event){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String eventID = UUID.randomUUID().toString();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("eventID", eventID);
+        editor.apply();
+        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result ->{
+            if (result.getResultCode() == RESULT_OK){
+                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
+                    Bitmap qrCode = result.getData().getParcelableExtra("qrCode");
+                    event.setCheckinQR(qrCode);  // TODO: figure out how to create two QR codes; one for check in and the other to display event info
+                }
+            }
+        });
+        Bundle args = new Bundle();
+        args.putSerializable("event", event);
+        MyEventsFragment fragment = new MyEventsFragment();
+        fragment.setArguments(args);
+    }
 
 }
