@@ -23,8 +23,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="#B59D9D"
-        android:layout_marginTop=""
         />
 
 
 </FrameLayout>
+
+
