@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_blue">
+
+    <TextView
+        android:id="@+id/notif_centre_textview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_grey"
+        android:gravity="start"
+        android:text="@string/notification_centree"
+        android:textColor="@color/background_blue"
+        android:theme="@style/FontTheme"
+
+        />
+
+    <Button
+        android:id="@+id/add_notif_button"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/primary_blue"
+        android:text="@string/post_new_notification"
+        android:textSize="20sp"
+        android:theme="@style/FontTheme"
+        />
+
+    <ListView
+        android:id="@+id/list_of_notifs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_notif_button"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_blue"
+        android:fontFamily="monospace"
+        android:text="@string/attendees"
+        android:textSize="25sp" />
+    />
+
+</RelativeLayout>
