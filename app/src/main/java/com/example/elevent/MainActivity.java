@@ -1,14 +1,18 @@
 package com.example.elevent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +27,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
+        if (isFirstLaunch){
+            String userID = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirstLaunch", false);
+            editor.putString("userID", userID);
+            editor.apply();
+        }
 
         initNavView();
         Log.d("DEBUG", "test");
