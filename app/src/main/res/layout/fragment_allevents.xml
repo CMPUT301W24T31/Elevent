@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AllEventsFragment"
-    android:background="#001F3F">
+    android:background="@color/background_blue">
 
     <!-- TODO: Update blank fragment layout -->
 <!--    <TextView-->
@@ -16,7 +16,10 @@
         android:layout_width="match_parent"
         android:layout_margin="30dp"
         android:layout_height="30dp"
-        android:background="@drawable/rounded_corner" />
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_grey"
+        android:textColor="@color/background_blue"
+        />
 
 
 </FrameLayout>
