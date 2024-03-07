@@ -5,6 +5,7 @@ import android.location.Location;
 import android.media.Image;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Event implements Serializable {
     private static final String eventID = "test";
@@ -14,6 +15,7 @@ public class Event implements Serializable {
     private int attendeesCount;
     private Image eventPoster;
     private Location location;
+    private Date eventDate;
 
     public Event(String eventName, Bitmap promotionalQR, Bitmap checkinQR, int attendeesCount, Image eventPoster, Location location) {
         this.eventName = eventName;
@@ -22,6 +24,15 @@ public class Event implements Serializable {
         this.attendeesCount = attendeesCount;
         this.eventPoster = eventPoster;
         this.location = location;
+        this.eventDate = eventDate;
+    }
+
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(Date eventDate) {
+        this.eventDate = eventDate;
     }
 
     public String getEventName() {
