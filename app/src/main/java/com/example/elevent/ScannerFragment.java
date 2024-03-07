@@ -1,12 +1,31 @@
 package com.example.elevent;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.zxing.client.android.Intents;
+import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,6 +38,27 @@ public class ScannerFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
+    private final ActivityResultLauncher<ScanOptions> qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() == null) {
+            Intent originalIntent = result.getOriginalIntent();
+            if (originalIntent == null) {
+                Log.d("ScanQRCodeActivity", "Cancelled scan");
+            } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
+                Log.d("ScanQRCodeActivity", "Cancelled scan due to missing camera permission");
+                Toast.makeText(getContext(), "Camera permission required", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.d("ScanQRCodeActivity", "Scanned");
+            Toast.makeText(getContext(), "Scanned", Toast.LENGTH_SHORT).show();  // placeholder; TODO: replace this with the actual content of the QR code
+        }
+    });
+    // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted){
+            scanQR();
+        }
+    });
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -59,6 +99,27 @@ public class ScannerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        requestPermissionLauncher.launch(Manifest.permission.CAMERA);  // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
         return inflater.inflate(R.layout.fragment_scanner, container, false);
     }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        checkCameraPermission();
+    }
+
+    private void checkCameraPermission(){
+        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            scanQR();
+        }
+    }
+    // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
+    private void scanQR(){
+        ScanOptions options = new ScanOptions();
+        options.setOrientationLocked(true);
+        options.setPrompt("");
+        qrScannerLauncher.launch(options);
+    }
+
 }
