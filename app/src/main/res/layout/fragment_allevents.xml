@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AllEventsFragment"
-    android:background="#001F3F">
+    android:background="@color/background_blue">
 
     <!-- TODO: Update blank fragment layout -->
 <!--  <TextView-->
@@ -15,15 +15,24 @@
         android:id="@+id/event_filter_spinner"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_margin="30dp"
         android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_grey"
+        android:textColor="@color/background_blue"
         android:padding="30dp"/>
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:cacheColorHint="#B59D9D"
+        android:layout_marginTop="70dp"
         />
+<!--    TEMPORARY BUTTON TO TEST FRAGMENT NAVIGATION
+        REPLACE WITH EVENT ITEM CLICK FROM LIST VIEW    -->
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button" />
 
 
 </FrameLayout>

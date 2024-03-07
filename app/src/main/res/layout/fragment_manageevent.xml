@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_blue">
+
+    <Button
+        android:id="@+id/notif_centre_button"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_grey"
+        android:textColor="@color/text_white"
+        android:text="@string/notification_centre"
+        android:theme="@style/FontTheme"
+
+        />
+
+    <TextView
+        android:id="@+id/attendee_list_textview"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_below="@id/notif_centre_button"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/primary_blue"
+        android:text="@string/attendees"
+        android:textColor="@color/text_white"
+        android:theme="@style/FontTheme"
+        />
+
+    <ListView
+        android:id="@+id/list_of_attendees"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/attendee_list_textview"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_grey"
+        android:fontFamily="monospace"
+        android:text="@string/attendees"
+        android:textSize="25sp" />
+    />
+
+</RelativeLayout>

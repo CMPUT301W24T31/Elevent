@@ -7,10 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -78,6 +80,20 @@ public class AllEventsFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+
+        /*
+        TEMPORARY BUTTON TO TEST THE FRAGMENT MANAGER REPLACE THE BUTTON WITH
+        EVENT ITEM CLICK AND USE THE FRAGMENT MANAGER <3
+         */
+        // Find the button by its id
+        View button = view.findViewById(R.id.button2);
+        button.setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                helper.replaceFragment(new EventViewAttendee()); // Replace with any fragment
+            }
+        });
     }
 
     /*@Override
