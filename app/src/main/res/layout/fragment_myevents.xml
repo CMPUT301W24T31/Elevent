@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyEventsFragment">
+    tools:context=".MyEventsFragment"
+    android:background="@color/background_blue">
     <!-- TODO: Update blank fragment layout -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_my_event_button"
