@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Elevent" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:navigationBarColor">#00346A</item>
+        <item name="android:statusBarColor">#00346A</item>
+    </style>
+
+    <style name="Theme.Elevent" parent="Base.Theme.Elevent" />
+</resources>
