@@ -1,6 +1,8 @@
 package com.example.elevent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
@@ -18,6 +20,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
+    private FragmentManagerHelper fragmentManagerHelper;
 
     BottomNavigationView navigationView;
 
@@ -30,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+
         // Find the Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         // Set the Toolbar to act as the ActionBar
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
         initNavView();
         Log.d("DEBUG", "test");
+
 
 
 //        Button scanTest = findViewById(R.id.scan_test);
@@ -68,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
     }
-
+    public FragmentManagerHelper getFragmentManagerHelper() {
+        return fragmentManagerHelper;
+    }
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
 
@@ -104,6 +112,14 @@ public class MainActivity extends AppCompatActivity {
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
+    }
+
+    // use this method to get the UUID give to a user at
+    // first launch in the UserDB to be used as the document
+    // name in the firestore database collection 'User'
+    public String getUserIDForUserDB() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
 
 }
