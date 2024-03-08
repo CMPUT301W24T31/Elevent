@@ -20,6 +20,9 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,6 +102,13 @@ public class AllEventsFragment extends Fragment {
         // Detach the listener to avoid memory leaks
         eventClickListener = null;
     }
+    public void onResume() {
+        super.onResume();
+        // Update the app bar title when navigating back to the AllEventsFragment
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).updateAppBarTitle(getString(R.string.all_events_title));
+        }
+    }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -115,35 +125,59 @@ public class AllEventsFragment extends Fragment {
 
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
-        // Create a default event - adjust constructor parameters as per your Event class definition
-        Event defaultEvent = new Event("default",null,null,3,null);
+
+    /*
+        Event defaultEvent = new Event("default",null,null,3,
+                "yyyy-MM-dd","HH:mm","This is a default event description.","Default location",null);
         events.add(defaultEvent);
         EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
         listView.setAdapter(eventAdapter);
+    */
 
 
-        // Make sure the ID matches your ListView's ID in the XML
         listView.setOnItemClickListener((parent, view1, position, id) -> {
-            // Handle the list item click event here
-            // Example action: Show a Toast message
-            //Toast.makeText(getActivity(), "Clicked on item: " + position, Toast.LENGTH_SHORT).show();
             if (getActivity() instanceof MainActivity) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                helper.replaceFragment(new EventViewAttendee()); // Replace with any fragment
-            }
 
-            Event clickedEvent = events.get(position);
-            if (eventClickListener != null) {
-                eventClickListener.onEventClicked(clickedEvent);
+                // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
+                Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+                Bundle args = new Bundle();
+                args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
+                eventViewAttendeeFragment.setArguments(args);
+
+                helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
             }
-            // If you want to switch fragments or perform other actions, you can do that here
         });
 
-        //EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
         listView.setAdapter(eventAdapter);
+        fetchEvents();
+    }
+    public void fetchEvents() {
+        EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
+        FirebaseFirestore db = connector.getDb();
+
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> eventsList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    eventsList.add(event);
+                }
+                updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
+            } else {
+                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+            }
+        });
     }
 
+    public void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(requireActivity(), events); // Use requireActivity() to ensure non-null Context
+        ListView listView = getView().findViewById(R.id.list_view);
+        listView.setAdapter(eventAdapter);
+    }
     /*@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

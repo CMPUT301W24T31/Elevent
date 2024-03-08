@@ -97,11 +97,37 @@ public class CreateEventFragment extends Fragment {
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (eventName.getText().toString().isEmpty()) {
+
+                String name = eventName.getText().toString();
+                if (name.isEmpty()) {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     //return null;
                 }
-                listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
+
+
+                // arguments for event constructor to be passes into
+                // addEvent
+                byte[] promotionalQR = null;
+                byte[] checkinQR = null;
+                String event_date = eventDate.getText().toString();
+                String event_time = eventTime.getText().toString();
+                String event_desc = eventDescription.getText().toString();
+                String event_location = eventAddress.getText().toString();
+
+                Event event = new Event(name, null, null, 0,
+                        event_date, event_time, event_desc, event_location,eventPoster);
+
+                //listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
+
+
+                EventDB eventDB = new EventDB(new EventDBConnector()); // Adjust based on actual EventDBConnector usage
+                eventDB.addEvent(event).thenRun(() -> {
+                    Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
+                }).exceptionally(e -> {
+                    Toast.makeText(getActivity(), "Failed to add event", Toast.LENGTH_SHORT).show();
+                    return null;
+                });
+
                 //listener.onCloseCreateEventFragment();
                 //return null;
             }

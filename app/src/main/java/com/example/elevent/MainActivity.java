@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     ProfileFragment profileFragment = new ProfileFragment();
 
     private ActivityResultLauncher<Intent> generateQRLauncher;
-    private Bitmap checkinQR;
-    private Bitmap promotionQR;
+    private byte[] checkinQR;
+    private byte[] promotionQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
                 if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getParcelableExtra("qrCode");
+                    checkinQR = result.getData().getByteArrayExtra("qrCode");
                 }
             }
         });
@@ -158,7 +158,13 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     @Override
     public void onEventClicked(Event event) {
-        updateAppBarTitle(event.getEventName());
+        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+        Bundle args = new Bundle();
+        args.putSerializable("event", event); // Ensure Event class implements Serializable
+        eventViewAttendeeFragment.setArguments(args);
+
+        fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
+        updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
     }
 
 

@@ -3,5 +3,7 @@
     <style name="Base.Theme.Elevent" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:navigationBarColor">#00346A</item>
+        <item name="android:statusBarColor">#00346A</item>
     </style>
 </resources>

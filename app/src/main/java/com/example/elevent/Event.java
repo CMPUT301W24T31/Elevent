@@ -13,26 +13,41 @@ public class Event implements Serializable {
     private byte[] checkinQR; // byte array
     private int attendeesCount;
     private byte[] eventPoster; //byte array
-    //private Map<String, Object> location; // Assuming conversion to a Map or GeoPoint
+    private String date;
+    private String time;
+    private String description;
+    private String location;
 
+    // No-argument constructor
+    public Event() {
+    }
     // event class constructor
-    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount, byte[] eventPoster) {
+    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount,
+                 String date, String time, String description, String location, byte[] eventPoster) {
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
         this.attendeesCount = attendeesCount;
+        this.date = date;
+        this.time = time;
+        this.description = description;
         this.eventPoster = eventPoster;
-        //this.location = location;
+        this.location = location;
+
     }
 
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("eventName", eventName);
+        eventMap.put("location", location);
+        eventMap.put("date", date);
+        eventMap.put("time", time);
+        eventMap.put("description", description);
         eventMap.put("promotionalQR", promotionalQR); // store as byte array
         eventMap.put("checkinQR", checkinQR); // store as byte array
         eventMap.put("attendeesCount", attendeesCount);
         eventMap.put("eventPoster", eventPoster); // store as byte array
-        //eventMap.put("location", location);
+
 
         return eventMap;
     }
@@ -40,6 +55,23 @@ public class Event implements Serializable {
     public String getEventName() {
         return eventName;
     }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
 
     public byte[] getPromotionalQR() {
         return promotionalQR;
@@ -56,10 +88,6 @@ public class Event implements Serializable {
     public byte[] getEventPoster() {
         return eventPoster;
     }
-
-    /*public Map<String, Object> getLocation() {
-        return location;
-    }*/
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
@@ -82,7 +110,19 @@ public class Event implements Serializable {
         this.eventPoster = eventPoster;
     }
 
-    /*public void setLocation(Map<String, Object> location) {
+    public void setLocation(String location) {
         this.location = location;
-    }*/
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
