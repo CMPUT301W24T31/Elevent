@@ -2,11 +2,13 @@ package com.example.elevent;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,6 +17,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -38,6 +42,14 @@ public class MyEventsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         myEvents = new ArrayList<>(); // Initialize ArrayList
 
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check if the activity is an instance of MainActivity and update the app bar title
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).updateAppBarTitle("My Events");
+        }
     }
 
     /**
@@ -125,6 +137,7 @@ public class MyEventsFragment extends Fragment {
                 }
             }
         });
+        fetchEvents();
     }
 
     /**
@@ -134,5 +147,22 @@ public class MyEventsFragment extends Fragment {
     public void addEvent(Event event){
         myEventsArrayAdapter.add(event);
         myEventsArrayAdapter.notifyDataSetChanged();
+    }
+    private void fetchEvents() {
+        EventDBConnector eventDBConnector = new EventDBConnector();
+        FirebaseFirestore db = eventDBConnector.getDb(); //
+
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                myEvents.clear(); // Clear existing events before adding new ones
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    myEvents.add(event); // Add the fetched event to the list
+                }
+                myEventsArrayAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
+            } else {
+                Toast.makeText(getContext(), "Failed to fetch events.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -25,10 +25,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+<<<<<<< HEAD
 /**
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
+=======
+
+>>>>>>> b2fb96a7f18d829ce3f923b08eee4a05a633d6c5
 public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
 
 
