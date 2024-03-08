@@ -23,13 +23,13 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventDialogListener {
 
     private FragmentManagerHelper fragmentManagerHelper;
-
-
     BottomNavigationView navigationView;
 
     AllEventsFragment allEventsFragment = new AllEventsFragment();
@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     ProfileFragment profileFragment = new ProfileFragment();
 
     private ActivityResultLauncher<Intent> generateQRLauncher;
+    private Bitmap checkinQR;
+    private Bitmap promotionQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,28 +62,17 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
             editor.putString("userID", userID);
             editor.apply();
         }
+        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
+                    checkinQR = result.getData().getParcelableExtra("qrCode");
+                }
+            }
+        });
 
         initNavView();
         Log.d("DEBUG", "test");
 
-//        Button scanTest = findViewById(R.id.scan_test);
-//        scanTest.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, ScanQRCodeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        // these buttons are just for testing if the scanner and generator work
-////        Button genTest = findViewById(R.id.gen_test);
-//        genTest.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
     }
 
     public FragmentManagerHelper getFragmentManagerHelper() {
@@ -102,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
                     updateAppBarTitle(getString(R.string.all_events_title));
                     return true;
                 } else if (item.getItemId() == R.id.nav_bar_myevents) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_framelayout, myEventsFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_framelayout, myEventsFragment, "MY_EVENTS_FRAGMENT_TAG").commit();
                     updateAppBarTitle(getString(R.string.my_events_title));
                     return true;
                 } else if (item.getItemId() == R.id.nav_bar_scanner) {
@@ -127,18 +118,10 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("eventID", eventID);
         editor.apply();
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    Bitmap qrCode = result.getData().getParcelableExtra("qrCode");
-                    event.setCheckinQR(qrCode);  // TODO: figure out how to create two QR codes; one for check in and the other to display event info
-                }
-            }
-        });
-        Bundle args = new Bundle();
-        args.putSerializable("event", event);
-        MyEventsFragment fragment = new MyEventsFragment();
-        fragment.setArguments(args);
+        MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
+        if (fragment != null){
+            fragment.addEvent(event);
+        }
     }
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
@@ -151,5 +134,13 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     public String getUserIDForUserDB() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
+    }
+    public void getQRCode(String eventID, Event event){
+        Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
+        intent.putExtra("eventID", eventID);
+        generateQRLauncher.launch(intent);
+        if (checkinQR != null){
+            event.setCheckinQR(checkinQR);
+        }
     }
 }

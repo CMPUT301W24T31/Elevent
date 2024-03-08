@@ -19,9 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import java.sql.Date;
-import java.sql.Time;
-
 
 public class CreateEventFragment extends DialogFragment {
 
@@ -64,10 +61,11 @@ public class CreateEventFragment extends DialogFragment {
         EditText eventDate = view.findViewById(R.id.event_date_edit_text);
         EditText eventDescription = view.findViewById(R.id.event_description_edit_text);
         Button addEventImage = view.findViewById(R.id.add_event_image_button);
+        // getting event image is buggy; gonna bypass for now
         addEventImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+                requestPermission();
             }
         });
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -88,4 +86,5 @@ public class CreateEventFragment extends DialogFragment {
     private void getEventPosterImage(){
         getContentLauncher.launch("image/*");
     }
+    private void requestPermission(){requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);}
 }
