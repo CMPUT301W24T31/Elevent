@@ -2,6 +2,7 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -43,6 +45,7 @@ public class CreatedEventFragment extends Fragment {
     }
     //comment random. 
 
+    private Event event;
     private CreatedEventListener listener;
 
     @Override
@@ -52,6 +55,14 @@ public class CreatedEventFragment extends Fragment {
             listener = (CreatedEventListener) context;
         } else {
             throw new RuntimeException(context + " must implement CreatedEventListener (tapped on event in myEvents)");
+        }
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null){
+            event = (Event) getArguments().getSerializable("selected_event");
         }
     }
 
@@ -65,6 +76,8 @@ public class CreatedEventFragment extends Fragment {
         EditText eventDate = view.findViewById(R.id.event_date_text);
         EditText eventDescription = view.findViewById(R.id.event_description_text);
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
+        ImageView checkInQR = view.findViewById(R.id.checkinQR_image);
+        checkInQR.setImageBitmap(BitmapFactory.decodeByteArray(event.getCheckinQR(),0, event.getCheckinQR().length));
 
 
 

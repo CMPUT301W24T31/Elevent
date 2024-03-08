@@ -23,6 +23,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * This fragment allows the user to input event information which is used to create an event object
+ */
 public class CreateEventFragment extends Fragment {
 
 
@@ -66,6 +69,10 @@ public class CreateEventFragment extends Fragment {
 
     private CreateEventListener listener;
 
+    /**
+     * Attach the listener for creating an event to a host activity
+     * @param context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -76,6 +83,19 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Inflate the view of the fragment
+     * Initialize all features to be displayed for the user to interact with to input event information
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View of the fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -101,7 +121,7 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     //return null;
                 }
-                listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
+                listener.onPositiveClick(new Event(eventName.getText().toString(), eventPoster));
                 //listener.onCloseCreateEventFragment();
                 //return null;
             }

@@ -27,6 +27,7 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  * Use the {@link AllEventsFragment#newInstance} factory method to
  * create an instance of this fragment.
+ * Displays all events created on the app
  */
 public class AllEventsFragment extends Fragment {
 
@@ -38,7 +39,9 @@ public class AllEventsFragment extends Fragment {
     ArrayList<Event> AllEvents;
     //defaultEvent.add("Sample Event"); // Add your default event details here
 
-    // Define the interface
+    /**
+     * Interface for implementing the listener for clicking on an event
+     */
     public interface OnEventClickListener {
         void onEventClicked(Event event);
     }
@@ -73,12 +76,29 @@ public class AllEventsFragment extends Fragment {
         return fragment;
     }
 
+    /**
+     * Inflates the view of the fragment
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View that has been inflated
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_allevents, container, false);
     }
+
+    /**
+     * Attaches the listener to a host activity
+     * @param context The hose activity to be attached to
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -93,12 +113,23 @@ public class AllEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Detach the listener from the host activity
+     */
     @Override
     public void onDetach() {
         super.onDetach();
         // Detach the listener to avoid memory leaks
         eventClickListener = null;
     }
+
+    /**
+     * Called after the view has been created
+     * Initialize the events filter
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -116,7 +147,7 @@ public class AllEventsFragment extends Fragment {
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
         // Create a default event - adjust constructor parameters as per your Event class definition
-        Event defaultEvent = new Event("default",null,null,3,null);
+        Event defaultEvent = new Event("default",null);
         events.add(defaultEvent);
         EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
         listView.setAdapter(eventAdapter);

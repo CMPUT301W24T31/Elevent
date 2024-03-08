@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     ProfileFragment profileFragment = new ProfileFragment();
 
     private ActivityResultLauncher<Intent> generateQRLauncher;
-    private Bitmap checkinQR;
+    private byte[] checkinQR;
     private Bitmap promotionQR;
 
     @Override
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
                 if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getParcelableExtra("qrCode");
+                    checkinQR = result.getData().getByteArrayExtra("qrCode");
                 }
             }
         });
@@ -127,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("eventID", eventID);
         editor.apply();
+        Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
+        intent.putExtra("eventID", eventID);
+        generateQRLauncher.launch(intent);
+        event.setCheckinQR(checkinQR);
         MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
         if (fragment != null){
             fragment.addEvent(event);

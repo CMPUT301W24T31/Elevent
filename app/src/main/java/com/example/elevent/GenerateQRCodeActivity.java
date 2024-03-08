@@ -24,7 +24,7 @@ import java.io.InputStream;
 // OpenAI, 2024, ChatGPT, How to use QR code
 
 /**
- * generates a QR code
+ * Encodes information into a Bitmap that is converted to byte[]
  */
 public class GenerateQRCodeActivity extends AppCompatActivity {
     @Override
@@ -56,7 +56,6 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         }
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        byte[] qrCodeByteArray = outputStream.toByteArray();
-        return qrCodeByteArray;
+        return outputStream.toByteArray();
     }
 }
