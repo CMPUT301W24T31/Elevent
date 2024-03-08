@@ -44,7 +44,7 @@ public class CreateEventFragment extends Fragment {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     byte[] buffer = new byte[1024];
                     int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != 1){
+                    while ((bytesRead = inputStream.read(buffer)) != -1){ //changed logic to -1(end of array)
                         outputStream.write(buffer, 0, bytesRead);
                     }
                     eventPoster = outputStream.toByteArray();
@@ -113,9 +113,10 @@ public class CreateEventFragment extends Fragment {
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
+                String[] notifications = null;
 
                 Event event = new Event(name, null, null, 0,
-                        event_date, event_time, event_desc, event_location,eventPoster);
+                        event_date, event_time, event_desc, event_location,eventPoster, notifications);
 
                 //listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
 
