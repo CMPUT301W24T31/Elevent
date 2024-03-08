@@ -58,7 +58,7 @@ public class CreateEventFragment extends Fragment {
             }
         }
     });
-//create event listener to be implemented by main activity
+    //create event listener to be implemented by main activity
     interface CreateEventListener {
         void onPositiveClick(Event event);
         //void onCloseCreateEventFragment();
@@ -141,7 +141,7 @@ public class CreateEventFragment extends Fragment {
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
 
-                Event event = new Event(name, promotionalQR, checkinQR, 0, event_date, event_time, event_desc, event_location, eventPoster);
+                Event event = new Event(name, promotionalQR, checkinQR, 0, event_date, event_time, event_desc, event_location, eventPoster,null);
 
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
