@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 /**
- * A dialog fragment for adding notifications.
+ * A dialog fragment for creating and sending notifications.
  */
 public class AddNotificationDialogFragment extends DialogFragment {
 
@@ -32,7 +32,13 @@ public class AddNotificationDialogFragment extends DialogFragment {
 
     private AddNotificationDialogListener listener;
 
-    @Override
+
+/**
+ * Called when a fragment is first attached to its context. 
+ * @param context The context to which the fragment is attached.
+ * @throws RuntimeException if the context does not implement {@link AddNotificationDialogListener}.
+ */  
+  @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof AddNotificationDialogListener) {
@@ -41,6 +47,15 @@ public class AddNotificationDialogFragment extends DialogFragment {
             throw new RuntimeException(context.toString() + " must implement AddNotificationDialogListener");
         }
     }
+
+
+    /**
+     * Builds the notification AlertDialog
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Built notification AlertDialog
+     */
 
     @NonNull
     @Override

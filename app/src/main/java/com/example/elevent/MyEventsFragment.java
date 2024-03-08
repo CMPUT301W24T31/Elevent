@@ -18,6 +18,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
+/**
+ * This fragment displays the events that an organizer has created
+ */
 public class MyEventsFragment extends Fragment {
 
     CreateEventFragment createEventFragment;
@@ -25,6 +28,11 @@ public class MyEventsFragment extends Fragment {
     private ListView myEventList;
     private EventArrayAdapter myEventsArrayAdapter;
 
+    /**
+     * Called upon initial creation of the fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +48,19 @@ public class MyEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * Initialize the event array adapter
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the fragment's UI, or null
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +85,14 @@ public class MyEventsFragment extends Fragment {
         });
     }*/
 
+    /**
+     * Called after the view has been created
+     * Initialize UI to allow organizer to finialize creation
+     * Handle fragment switching
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -121,6 +150,10 @@ public class MyEventsFragment extends Fragment {
         fetchEvents();
     }
 
+    /**
+     * Add an event to the array adapter and notify
+     * @param event Created event
+     */
     public void addEvent(Event event){
         myEventsArrayAdapter.add(event);
         myEventsArrayAdapter.notifyDataSetChanged();

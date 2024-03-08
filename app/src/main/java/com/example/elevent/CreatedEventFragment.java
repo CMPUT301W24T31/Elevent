@@ -2,6 +2,7 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,22 +22,16 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+/**
+ * This fragment displays the organizer's view of an event they created
+ * Allows organizer to edit event details
+ */
 public class CreatedEventFragment extends Fragment {
 
-    /*private Uri eventPosterURI = null;
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted) {
-            getEventPosterImage();
-        }
-    });
-    // OpenAI, 2024, ChatGPT, Allow user to upload image file
-    private final ActivityResultLauncher<String> getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-        if (uri != null) {
-            eventPosterURI = uri;
-        }
-    });*/
-
-    //create event listener to be implemented by main activity
+    /**
+     * Listener that handles event creation
+     * Implemented by MainActivity
+     */
     interface CreatedEventListener {
         //void onCreateEvent(Event event);
 
@@ -43,8 +39,13 @@ public class CreatedEventFragment extends Fragment {
     }
     //comment random. 
 
+    private Event event;
     private CreatedEventListener listener;
 
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -55,6 +56,33 @@ public class CreatedEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Called to do initial creation of a fragment.
+     * Gets the selected event in the array adapter
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null){
+            event = (Event) getArguments().getSerializable("selected_event");
+        }
+    }
+
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * Initializes the UI for editing the event information
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the fragment's UI, or null
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,39 +93,17 @@ public class CreatedEventFragment extends Fragment {
         EditText eventDate = view.findViewById(R.id.event_date_text);
         EditText eventDescription = view.findViewById(R.id.event_description_text);
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
-
-
-
-
-        /*addEventImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-            }
-        });*/
-
-
-       /* changed the button to edit event button to enable editing the event info or whatever,
-            but the implementation is not there (its the same as CREATE for now)
-        Button createdEventButton = view.findViewById(R.id.edit_the_event);
-        createdEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (eventName.getText().toString().isEmpty()) {
-                    Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                listener.onPositiveClick(new Event(eventName.getText().toString(), eventPosterURI, eventAddress.getText().toString(), eventDescription.getText().toString(), eventDate.getText().toString(), eventTime.getText().toString()));
-            }
-        });
-        */
+        ImageView checkInQR = view.findViewById(R.id.checkinQR_image);
         return view;
     }
 
-    /*private void getEventPosterImage() {
-        getContentLauncher.launch("image/*");
-    }*/
-
+    /**
+     * Called immediately after onCreateView has returned
+     * Initializes option to confirm changes and return to previous fragment
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

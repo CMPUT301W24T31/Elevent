@@ -28,54 +28,31 @@ import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link ScannerFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This fragment request permission to open the camera and scans the QR code
  */
 public class ScannerFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
     private ActivityResultLauncher<String> requestPermissionLauncher;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    /**
+     * Required empty public constructor
+     */
+    public ScannerFragment(){
 
-    public ScannerFragment() {
-        // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ScannerFragment.
+     * Called to do initial creation of a fragment
+     * Initializes the scanner launcher and the request permission launcher
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
      */
-    // TODO: Rename and change types and number of parameters
-    public static ScannerFragment newInstance(String param1, String param2) {
-        ScannerFragment fragment = new ScannerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
             if (result.getContents() == null) {
                 Intent originalIntent = result.getOriginalIntent();
@@ -98,6 +75,19 @@ public class ScannerFragment extends Fragment {
         requestPermissionLauncher.launch(Manifest.permission.CAMERA);  // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * Instantiate view for the scanner
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View of the scanner
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -105,17 +95,32 @@ public class ScannerFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_scanner, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * Calls the checkCameraPermission function to check if permission is granted
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         checkCameraPermission();
     }
 
+    /**
+     * Check that the user has given permission to use the camera
+     * If so, open the scanner
+     */
     private void checkCameraPermission(){
         if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             scanQR();
         }
     }
+
+    /**
+     * Launches the scanner
+     */
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private void scanQR(){
         ScanOptions options = new ScanOptions();
