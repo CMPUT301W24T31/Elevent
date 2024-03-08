@@ -14,12 +14,12 @@
             android:padding="20dp">
 
             <FrameLayout
-                android:id="@+id/create_event_container"
+                android:id="@+id/created_event_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
             <EditText
-                android:id="@+id/event_name_input"
+                android:id="@+id/event_name_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -33,8 +33,8 @@
                 android:theme="@style/FontTheme" />
 
             <EditText
-                android:id="@+id/event_location_input"
-                android:layout_below="@id/event_name_input"
+                android:id="@+id/event_location_text"
+                android:layout_below="@id/event_name_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -48,10 +48,10 @@
                 android:theme="@style/FontTheme" />
 
             <EditText
-                android:id="@+id/event_date_input"
+                android:id="@+id/event_date_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_location_input"
+                android:layout_below="@id/event_location_text"
                 android:layout_alignParentLeft="true"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="17dp"
@@ -63,10 +63,10 @@
                 android:theme="@style/FontTheme" />
 
             <EditText
-                android:id="@+id/event_time_input"
+                android:id="@+id/event_time_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_date_input"
+                android:layout_below="@id/event_date_text"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="20dp"
@@ -78,10 +78,10 @@
                 android:theme="@style/FontTheme" />
 
             <EditText
-                android:id="@+id/event_description_input"
+                android:id="@+id/event_description_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_time_input"
+                android:layout_below="@id/event_time_text"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="20dp"
@@ -95,10 +95,10 @@
 
 
             <Button
-                android:id="@+id/eventPoster_create"
+                android:id="@+id/eventPoster_image"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@id/event_description_input"
+                android:layout_below="@id/event_description_text"
                 android:text="@string/add_image"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
@@ -108,19 +108,19 @@
                 android:layout_marginTop="35dp" />
 
             <ImageView
-                android:id="@+id/promotionalQR"
+                android:id="@+id/promotionalQR_image"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@id/eventPoster_create"
+                android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="1dp"
                 android:layout_marginTop="26dp" />
 
             <ImageView
-                android:id="@+id/checkinQR"
+                android:id="@+id/checkinQR_image"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@id/eventPoster_create"
+                android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="26dp"
                 android:layout_marginRight="1dp" />
@@ -129,7 +129,7 @@
                 android:id="@+id/manage_the_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/promotionalQR"
+                android:layout_below="@id/promotionalQR_image"
                 android:layout_marginStart="39dp"
                 android:layout_marginTop="17dp"
                 android:layout_toEndOf="@id/share_the_event"
@@ -142,7 +142,7 @@
                 android:id="@+id/share_the_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/promotionalQR"
+                android:layout_below="@id/promotionalQR_image"
                 android:layout_marginTop="17dp"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
@@ -153,7 +153,7 @@
                 android:id="@+id/edit_the_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/promotionalQR"
+                android:layout_below="@id/promotionalQR_image"
                 android:layout_marginStart="38dp"
                 android:layout_marginTop="17dp"
                 android:layout_toEndOf="@+id/manage_the_event"
@@ -163,5 +163,4 @@
                 android:textSize="15sp" />
         </RelativeLayout>
     </ScrollView>
-
 </RelativeLayout>

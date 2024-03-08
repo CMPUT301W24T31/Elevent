@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -68,6 +69,27 @@ public class MyEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreateEventFragment());
+                }
+            }
+        });
+
+        myEventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected event
+                Event selectedEvent = myEvents.get(position);
+
+                // Pass the selected event to CreatedEventFragment should still parse the data on here
+                CreatedEventFragment createdEventFragment = new CreatedEventFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selected_event", selectedEvent);
+                createdEventFragment.setArguments(bundle);
+
+                //switch fragments
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                    helper.replaceFragment(new CreatedEventFragment());
                 }
             }
         });
