@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener {
+public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener{
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
+
+    // Implement the interface method
+
 
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
@@ -140,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
+    /*
     public void getQRCode(String eventID, Event event){
         Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
         intent.putExtra("eventID", eventID);
@@ -148,4 +152,11 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
             event.setCheckinQR(checkinQR);
         }
     }
+    */
+    
+    @Override
+    public void onEventClicked(Event event) {
+        updateAppBarTitle(event.getEventName());
+    }
+
 }
