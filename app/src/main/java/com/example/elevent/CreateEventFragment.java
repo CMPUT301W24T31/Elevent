@@ -25,6 +25,8 @@ import java.io.InputStream;
 
 public class CreateEventFragment extends Fragment {
 
+
+
     private byte[] eventPoster = null;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
