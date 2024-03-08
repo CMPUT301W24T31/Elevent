@@ -25,8 +25,12 @@ public class Event implements Serializable {
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
         this.attendeesCount = attendeesCount;
+        this.date = date;
+        this.time = time;
+        this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
+
     }
 
     public Map<String, Object> toMap() {
