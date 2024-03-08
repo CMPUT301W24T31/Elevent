@@ -62,15 +62,12 @@ public class CreateEventFragment extends Fragment {
             }
         }
     });
-<<<<<<< HEAD
 
     /**
      * Interface for listener that handles event creation
      * Implemented by MainActivity
      */
-=======
     //create event listener to be implemented by main activity
->>>>>>> b2fb96a7f18d829ce3f923b08eee4a05a633d6c5
     interface CreateEventListener {
         void onPositiveClick(Event event);
         //void onCloseCreateEventFragment();
@@ -108,7 +105,6 @@ public class CreateEventFragment extends Fragment {
 
 
 
->>>>>>> b2fb96a7f18d829ce3f923b08eee4a05a633d6c5
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -170,20 +166,8 @@ public class CreateEventFragment extends Fragment {
 
                 Event event = new Event(name, null, null, 0,
                         event_date, event_time, event_desc, event_location,eventPoster, notifications);
-
-
-<<<<<<< HEAD
-                EventDB eventDB = new EventDB(new EventDBConnector()); // Adjust based on actual EventDBConnector usage
-                eventDB.addEvent(event).thenRun(() -> {
-                    Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
-                }).exceptionally(e -> {
-                    Toast.makeText(getActivity(), "Failed to add event", Toast.LENGTH_SHORT).show();
-                    return null;
-                });
-=======
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
->>>>>>> b2fb96a7f18d829ce3f923b08eee4a05a633d6c5
             }
         });
 
