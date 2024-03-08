@@ -41,7 +41,8 @@ public class MyEventsFragment extends Fragment {
     }
 
     /**
-     * Inflates the view in the fragment
+     * Called to have the fragment instantiate its user interface view
+     * Initialize the event array adapter
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's
@@ -50,7 +51,7 @@ public class MyEventsFragment extends Fragment {
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
      *
-     * @return the inflated view
+     * @return View for the fragment's UI, or null
      */
     @Nullable
     @Override
@@ -78,6 +79,8 @@ public class MyEventsFragment extends Fragment {
 
     /**
      * Called after the view has been created
+     * Initialize UI to allow organizer to finialize creation
+     * Handle fragment switching
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
@@ -124,6 +127,10 @@ public class MyEventsFragment extends Fragment {
         });
     }
 
+    /**
+     * Add an event to the array adapter and notify
+     * @param event Created event
+     */
     public void addEvent(Event event){
         myEventsArrayAdapter.add(event);
         myEventsArrayAdapter.notifyDataSetChanged();

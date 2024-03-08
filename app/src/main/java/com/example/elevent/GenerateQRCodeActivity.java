@@ -24,7 +24,7 @@ import java.io.InputStream;
 // OpenAI, 2024, ChatGPT, How to use QR code
 
 /**
- * Encodes information into a Bitmap that is converted to byte[]
+ * This activity encodes information into a Bitmap that is converted to byte[]
  */
 public class GenerateQRCodeActivity extends AppCompatActivity {
     @Override

@@ -25,6 +25,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+/**
+ * This is the main activity that all fragments and listeners attach to
+ * Contains the navigation bar
+ */
 public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
 
 
@@ -41,6 +45,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private byte[] checkinQR;
     private byte[] promotionQR;
 
+    /**
+     * Called when the activity is starting
+     * Initializes the tool bar
+     * Gives user a unique user ID when they open the app for the first time
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,13 +88,19 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     }
 
+    /**
+     * Gets a fragment manager helper
+     * @return FragmentManagerHelper object
+     */
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
 
     // Implement the interface method
 
-
+    /**
+     * Initializes the navigation bar
+     */
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
 
@@ -121,6 +140,10 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     }*/
 
+    /**
+     * Implementation of the CreateEventListener
+     * @param event The created event
+     */
     public void onPositiveClick(Event event) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String eventID = UUID.randomUUID().toString();
@@ -134,6 +157,11 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             updateAppBarTitle("My Events");
         }
     }
+
+    /**
+     * Updates the title of the app bar at the top of the screen
+     * @param title Title to be updated to
+     */
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
@@ -143,18 +171,29 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     // use this method to get the UUID give to a user at
     // first launch in the UserDB to be used as the document
     // name in the firestore database collection 'User'
+
+    /**
+     * Gets the user ID to store into the user database
+     * @return
+     */
     public String getUserIDForUserDB() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
 
-
+    /**
+     * Handles when a notification is created
+     * @param notification The notification text.
+     */
     @Override
     public void onNotificationAdded(String notification) {
 
     }
 
-
+    /**
+     * Implements onEventClickListener
+     * @param event the event that has been clicked on
+     */
     @Override
     public void onEventClicked(Event event) {
         EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();

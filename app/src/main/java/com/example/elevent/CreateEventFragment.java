@@ -23,6 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * This fragment displays the UI for allowing a user to input event information
+ * Creates an event object
+ */
 public class CreateEventFragment extends Fragment {
 
 
@@ -58,7 +62,11 @@ public class CreateEventFragment extends Fragment {
             }
         }
     });
-//create event listener to be implemented by main activity
+
+    /**
+     * Interface for listener that handles event creation
+     * Implemented by MainActivity
+     */
     interface CreateEventListener {
         void onPositiveClick(Event event);
         //void onCloseCreateEventFragment();
@@ -66,6 +74,10 @@ public class CreateEventFragment extends Fragment {
 
     private CreateEventListener listener;
 
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -76,6 +88,20 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * Instantiates the UI features that accept user input for event details
+     * Creates the event object
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the user interface
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,7 +116,6 @@ public class CreateEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-                //return null;
             }
         });
         Button createEventButton = view.findViewById(R.id.create_the_event);
@@ -118,8 +143,6 @@ public class CreateEventFragment extends Fragment {
                 Event event = new Event(name, null, null, 0,
                         event_date, event_time, event_desc, event_location,eventPoster, notifications);
 
-                //listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
-
 
                 EventDB eventDB = new EventDB(new EventDBConnector()); // Adjust based on actual EventDBConnector usage
                 eventDB.addEvent(event).thenRun(() -> {
@@ -128,14 +151,14 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getActivity(), "Failed to add event", Toast.LENGTH_SHORT).show();
                     return null;
                 });
-
-                //listener.onCloseCreateEventFragment();
-                //return null;
             }
         });
         return view;
     }
 
+    /**
+     * Launches the content launcher that allows the user to upload an event poster
+     */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
     }
