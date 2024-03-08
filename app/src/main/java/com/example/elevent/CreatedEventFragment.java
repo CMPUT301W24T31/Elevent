@@ -22,6 +22,10 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+/**
+ * This fragment displays the organizer's view of an event they created
+ * Allows organizer to edit event details
+ */
 public class CreatedEventFragment extends Fragment {
 
     /*private Uri eventPosterURI = null;
@@ -37,7 +41,9 @@ public class CreatedEventFragment extends Fragment {
         }
     });*/
 
-    //create event listener to be implemented by main activity
+    /**
+     * Listener that checks for when the user clicks a button to crea
+     */
     interface CreatedEventListener {
         //void onCreateEvent(Event event);
 
@@ -77,7 +83,7 @@ public class CreatedEventFragment extends Fragment {
         EditText eventDescription = view.findViewById(R.id.event_description_text);
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
         ImageView checkInQR = view.findViewById(R.id.checkinQR_image);
-        checkInQR.setImageBitmap(BitmapFactory.decodeByteArray(event.getCheckinQR(),0, event.getCheckinQR().length));
+        //checkInQR.setImageBitmap(BitmapFactory.decodeByteArray(event.getCheckinQR(),0, event.getCheckinQR().length));
 
 
 

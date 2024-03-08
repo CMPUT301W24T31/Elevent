@@ -23,9 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * This fragment allows the user to input event information which is used to create an event object
- */
 public class CreateEventFragment extends Fragment {
 
 
@@ -47,7 +44,7 @@ public class CreateEventFragment extends Fragment {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     byte[] buffer = new byte[1024];
                     int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != 1){
+                    while ((bytesRead = inputStream.read(buffer)) != -1){ //changed logic to -1(end of array)
                         outputStream.write(buffer, 0, bytesRead);
                     }
                     eventPoster = outputStream.toByteArray();
@@ -69,10 +66,6 @@ public class CreateEventFragment extends Fragment {
 
     private CreateEventListener listener;
 
-    /**
-     * Attach the listener for creating an event to a host activity
-     * @param context
-     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -83,19 +76,6 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
-    /**
-     * Inflate the view of the fragment
-     * Initialize all features to be displayed for the user to interact with to input event information
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
-     *
-     * @return View of the fragment
-     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -117,11 +97,38 @@ public class CreateEventFragment extends Fragment {
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (eventName.getText().toString().isEmpty()) {
+
+                String name = eventName.getText().toString();
+                if (name.isEmpty()) {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     //return null;
                 }
-                listener.onPositiveClick(new Event(eventName.getText().toString(), eventPoster));
+
+
+                // arguments for event constructor to be passes into
+                // addEvent
+                byte[] promotionalQR = null;
+                byte[] checkinQR = null;
+                String event_date = eventDate.getText().toString();
+                String event_time = eventTime.getText().toString();
+                String event_desc = eventDescription.getText().toString();
+                String event_location = eventAddress.getText().toString();
+                String[] notifications = null;
+
+                Event event = new Event(name, null, null, 0,
+                        event_date, event_time, event_desc, event_location,eventPoster, notifications);
+
+                //listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
+
+
+                EventDB eventDB = new EventDB(new EventDBConnector()); // Adjust based on actual EventDBConnector usage
+                eventDB.addEvent(event).thenRun(() -> {
+                    Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
+                }).exceptionally(e -> {
+                    Toast.makeText(getActivity(), "Failed to add event", Toast.LENGTH_SHORT).show();
+                    return null;
+                });
+
                 //listener.onCloseCreateEventFragment();
                 //return null;
             }
