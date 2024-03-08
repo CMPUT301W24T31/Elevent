@@ -1,15 +1,12 @@
 package com.example.elevent;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
@@ -28,7 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener{
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
@@ -40,10 +37,8 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     ProfileFragment profileFragment = new ProfileFragment();
 
     private ActivityResultLauncher<Intent> generateQRLauncher;
-    private static final String PREF_NAME = "MyPrefs";
-    private static final String PREF_USER_ID = "userID";
-
-    private byte[] qrCode;
+    private Bitmap checkinQR;
+    private Bitmap promotionQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,31 +52,34 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         setSupportActionBar(toolbar);
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String userID = sharedPreferences.getString(PREF_USER_ID, null);
-        if (userID == null){
-            userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
+        if (isFirstLaunch){
+            String userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(PREF_USER_ID, userID);
+            editor.putBoolean("isFirstLaunch", false);
+            editor.putString("userID", userID);
             editor.apply();
         }
-
+        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
+                    checkinQR = result.getData().getParcelableExtra("qrCode");
+                }
+            }
+        });
 
         initNavView();
         Log.d("DEBUG", "test");
 
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result ->{
-            if (result.getResultCode() == RESULT_OK){
-                if(result.getData() != null){
-                    qrCode = result.getData().getByteArrayExtra("qrBitmap");
-                }
-            }
-        });
     }
 
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
+
+    // Implement the interface method
+
 
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
@@ -116,24 +114,23 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
 
     }
 
+    //to implement the fragment to create event fragment
+    /*@Override
+    public void onCreateEvent(Event event) {
+
+    }*/
+
     public void onPositiveClick(Event event) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String eventID = UUID.randomUUID().toString();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("eventID", eventID);
         editor.apply();
-        Intent intent = new Intent(this, GenerateQRCodeActivity.class);
-        intent.putExtra("eventID", eventID);
-        generateQRLauncher.launch(intent);
         MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
-        if (fragment != null) {
+        if (fragment != null){
             fragment.addEvent(event);
         }
     }
-
-    /*public void onCloseCreateEventFragment(){
-        getSupportFragmentManager().popBackStack();
-    }*/
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
@@ -144,6 +141,13 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     // name in the firestore database collection 'User'
     public String getUserIDForUserDB() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getString(PREF_USER_ID, null); // Return null or a default value if not found
+        return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
+
+
+    @Override
+    public void onEventClicked(Event event) {
+        updateAppBarTitle(event.getEventName());
+    }
+
 }
