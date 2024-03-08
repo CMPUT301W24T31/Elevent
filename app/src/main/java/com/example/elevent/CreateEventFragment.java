@@ -18,9 +18,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class CreateEventFragment extends Fragment {
 
-    private Uri eventPosterURI = null;
+
+
+    private byte[] eventPoster = null;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
@@ -29,14 +36,32 @@ public class CreateEventFragment extends Fragment {
     // OpenAI, 2024, ChatGPT, Allow user to upload image file
     private final ActivityResultLauncher<String> getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
         if (uri != null) {
-            eventPosterURI = uri;
+            Uri eventPosterURI = uri;
+            // OpenAI, 2024, ChatGPT, Convert to byte array
+            try {
+                InputStream inputStream = requireActivity().getContentResolver().openInputStream(eventPosterURI);
+                if (inputStream != null){
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != 1){
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                    eventPoster = outputStream.toByteArray();
+                    inputStream.close();
+                    outputStream.close();
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     });
 //create event listener to be implemented by main activity
     interface CreateEventListener {
-        //void onCreateEvent(Event event);
-
         void onPositiveClick(Event event);
+        //void onCloseCreateEventFragment();
     }
 
     private CreateEventListener listener;
@@ -65,6 +90,7 @@ public class CreateEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+                //return null;
             }
         });
         Button createEventButton = view.findViewById(R.id.create_the_event);
@@ -73,9 +99,11 @@ public class CreateEventFragment extends Fragment {
             public void onClick(View v) {
                 if (eventName.getText().toString().isEmpty()) {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
-                    return;
+                    //return null;
                 }
-                listener.onPositiveClick(new Event(eventName.getText().toString(), eventPosterURI, eventAddress.getText().toString(), eventDescription.getText().toString(), eventDate.getText().toString(), eventTime.getText().toString()));
+                listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
+                //listener.onCloseCreateEventFragment();
+                //return null;
             }
         });
         return view;

@@ -13,16 +13,16 @@ public class Event implements Serializable {
     private byte[] checkinQR; // byte array
     private int attendeesCount;
     private byte[] eventPoster; //byte array
-    private Map<String, Object> location; // Assuming conversion to a Map or GeoPoint
+    //private Map<String, Object> location; // Assuming conversion to a Map or GeoPoint
 
     // event class constructor
-    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, Integer attendeesCount, byte[] eventPoster, Map<String, Object> location) {
+    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount, byte[] eventPoster) {
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
         this.attendeesCount = attendeesCount;
         this.eventPoster = eventPoster;
-        this.location = location;
+        //this.location = location;
     }
 
     public Map<String, Object> toMap() {
@@ -32,7 +32,7 @@ public class Event implements Serializable {
         eventMap.put("checkinQR", checkinQR); // store as byte array
         eventMap.put("attendeesCount", attendeesCount);
         eventMap.put("eventPoster", eventPoster); // store as byte array
-        eventMap.put("location", location);
+        //eventMap.put("location", location);
 
         return eventMap;
     }
@@ -57,9 +57,9 @@ public class Event implements Serializable {
         return eventPoster;
     }
 
-    public Map<String, Object> getLocation() {
+    /*public Map<String, Object> getLocation() {
         return location;
-    }
+    }*/
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
@@ -82,7 +82,7 @@ public class Event implements Serializable {
         this.eventPoster = eventPoster;
     }
 
-    public void setLocation(Map<String, Object> location) {
+    /*public void setLocation(Map<String, Object> location) {
         this.location = location;
-    }
+    }*/
 }

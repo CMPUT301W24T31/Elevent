@@ -17,6 +17,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+
 // All of this is from chatgpt lol
 // OpenAI, 2024, ChatGPT, How to use QR code
 
@@ -29,9 +32,9 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         String eventID = getIntent().getStringExtra("eventID");  // this is a placeholder; TODO: change this to what we want to QR code to actually encode
         try{
-            Bitmap qrCode = generateQRCode(eventID);
+            byte[] qrCodeByteArray = generateQRCode(eventID);
             Intent intent = new Intent();
-            intent.putExtra("qrCode", qrCode);
+            intent.putExtra("qrCode", qrCodeByteArray);
             setResult(RESULT_OK, intent);
             finish();
         } catch (WriterException e){
@@ -39,7 +42,7 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         }
     }
 
-    private Bitmap generateQRCode(String eventID) throws WriterException {
+    private byte[] generateQRCode(String eventID) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(eventID, BarcodeFormat.QR_CODE, 512, 512);
         int width = bitMatrix.getWidth();
@@ -51,6 +54,9 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
                 bitmap.setPixel(x, y, bitMatrix.get(x,y) ? ContextCompat.getColor(this, R.color.black) : ContextCompat.getColor(this, R.color.white));
             }
         }
-        return bitmap;
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] qrCodeByteArray = outputStream.toByteArray();
+        return qrCodeByteArray;
     }
 }

@@ -25,7 +25,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
+
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
@@ -78,6 +79,9 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         return fragmentManagerHelper;
     }
 
+    // Implement the interface method
+
+
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
 
@@ -126,12 +130,15 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
         if (fragment != null){
             fragment.addEvent(event);
+            fragmentManagerHelper.replaceFragment(fragment);
+            updateAppBarTitle("My Events");
         }
     }
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
     }
+
 
     // use this method to get the UUID give to a user at
     // first launch in the UserDB to be used as the document
@@ -140,12 +147,18 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
-    public void getQRCode(String eventID, Event event){
-        Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
-        intent.putExtra("eventID", eventID);
-        generateQRLauncher.launch(intent);
-        if (checkinQR != null){
-            event.setCheckinQR(checkinQR);
-        }
+
+
+    @Override
+    public void onNotificationAdded(String notification) {
+
     }
+
+
+    @Override
+    public void onEventClicked(Event event) {
+        updateAppBarTitle(event.getEventName());
+    }
+
+
 }
