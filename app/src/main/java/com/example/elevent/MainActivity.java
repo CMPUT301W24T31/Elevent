@@ -1,8 +1,12 @@
 package com.example.elevent;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+
+
+import android.content.Intent;
+import android.graphics.Bitmap;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
@@ -17,17 +21,24 @@ import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
-    private FragmentManagerHelper fragmentManagerHelper;
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
 
+    private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
+
 
     AllEventsFragment allEventsFragment = new AllEventsFragment();
     MyEventsFragment myEventsFragment = new MyEventsFragment();
     ScannerFragment scannerFragment = new ScannerFragment();
     ProfileFragment profileFragment = new ProfileFragment();
+
+    private ActivityResultLauncher<Intent> generateQRLauncher;
+    private Bitmap checkinQR;
+    private Bitmap promotionQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         // Set the Toolbar to act as the ActionBar
         setSupportActionBar(toolbar);
+
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
@@ -49,34 +61,23 @@ public class MainActivity extends AppCompatActivity {
             editor.putString("userID", userID);
             editor.apply();
         }
+        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
+                    checkinQR = result.getData().getParcelableExtra("qrCode");
+                }
+            }
+        });
 
         initNavView();
         Log.d("DEBUG", "test");
 
-
-
-//        Button scanTest = findViewById(R.id.scan_test);
-//        scanTest.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, ScanQRCodeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        // these buttons are just for testing if the scanner and generator work
-////        Button genTest = findViewById(R.id.gen_test);
-//        genTest.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
     }
+
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
+
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
 
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                     updateAppBarTitle(getString(R.string.all_events_title));
                     return true;
                 } else if (item.getItemId() == R.id.nav_bar_myevents) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_framelayout, myEventsFragment).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_framelayout, myEventsFragment, "MY_EVENTS_FRAGMENT_TAG").commit();
                     updateAppBarTitle(getString(R.string.my_events_title));
                     return true;
                 } else if (item.getItemId() == R.id.nav_bar_scanner) {
@@ -109,6 +110,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    //to implement the fragment to create event fragment
+    /*@Override
+    public void onCreateEvent(Event event) {
+
+    }*/
+
+    public void onPositiveClick(Event event) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String eventID = UUID.randomUUID().toString();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("eventID", eventID);
+        editor.apply();
+        MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
+        if (fragment != null){
+            fragment.addEvent(event);
+        }
+    }
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
@@ -121,5 +140,12 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
-
+    public void getQRCode(String eventID, Event event){
+        Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
+        intent.putExtra("eventID", eventID);
+        generateQRLauncher.launch(intent);
+        if (checkinQR != null){
+            event.setCheckinQR(checkinQR);
+        }
+    }
 }

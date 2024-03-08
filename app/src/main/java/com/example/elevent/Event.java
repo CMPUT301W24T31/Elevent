@@ -1,21 +1,22 @@
 package com.example.elevent;
 
-import android.graphics.Bitmap;
-import android.location.Location;
-import android.media.Image;
-
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Event implements Serializable {
+public abstract class Event implements Serializable {
+
+    // attributes for the information of an event
     private static final String eventID = "test";
     private String eventName;
-    private Bitmap promotionalQR;
-    private Bitmap checkinQR;
+    private byte[] promotionalQR; //byte array
+    private byte[] checkinQR; // byte array
     private int attendeesCount;
-    private Image eventPoster;
-    private Location location;
+    private byte[] eventPoster; //byte array
+    private Map<String, Object> location; // Assuming conversion to a Map or GeoPoint
 
-    public Event(String eventName, Bitmap promotionalQR, Bitmap checkinQR, int attendeesCount, Image eventPoster, Location location) {
+    // event class constructor
+    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount, byte[] eventPoster, Map<String, Object> location) {
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
@@ -24,15 +25,27 @@ public class Event implements Serializable {
         this.location = location;
     }
 
+    public Map<String, Object> toMap() {
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("eventName", eventName);
+        eventMap.put("promotionalQR", promotionalQR); // store as byte array
+        eventMap.put("checkinQR", checkinQR); // store as byte array
+        eventMap.put("attendeesCount", attendeesCount);
+        eventMap.put("eventPoster", eventPoster); // store as byte array
+        eventMap.put("location", location);
+
+        return eventMap;
+    }
+
     public String getEventName() {
         return eventName;
     }
 
-    public Bitmap getPromotionalQR() {
+    public byte[] getPromotionalQR() {
         return promotionalQR;
     }
 
-    public Bitmap getCheckinQR() {
+    public byte[] getCheckinQR() {
         return checkinQR;
     }
 
@@ -40,11 +53,11 @@ public class Event implements Serializable {
         return attendeesCount;
     }
 
-    public Image getEventPoster() {
+    public byte[] getEventPoster() {
         return eventPoster;
     }
 
-    public Location getLocation() {
+    public Map<String, Object> getLocation() {
         return location;
     }
 
@@ -52,11 +65,12 @@ public class Event implements Serializable {
         this.eventName = eventName;
     }
 
-    public void setPromotionalQR(Bitmap promotionalQR) {
+    public void setPromotionalQR(byte[] promotionalQR) {
         this.promotionalQR = promotionalQR;
     }
 
-    public void setCheckinQR(Bitmap checkinQR) {
+
+    public void setCheckinQR(byte[] checkinQR) {
         this.checkinQR = checkinQR;
     }
 
@@ -64,11 +78,11 @@ public class Event implements Serializable {
         this.attendeesCount = attendeesCount;
     }
 
-    public void setEventPoster(Image eventPoster) {
+    public void setEventPoster(byte[] eventPoster) {
         this.eventPoster = eventPoster;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(Map<String, Object> location) {
         this.location = location;
     }
 }
