@@ -130,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
         if (fragment != null){
             fragment.addEvent(event);
+            fragmentManagerHelper.replaceFragment(fragment);
+            updateAppBarTitle("My Events");
         }
     }
     public void updateAppBarTitle(String title) {
