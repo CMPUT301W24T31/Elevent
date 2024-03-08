@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,8 +38,10 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     ProfileFragment profileFragment = new ProfileFragment();
 
     private ActivityResultLauncher<Intent> generateQRLauncher;
-    private Bitmap checkinQR;
-    private Bitmap promotionQR;
+    private static final String PREF_NAME = "MyPrefs";
+    private static final String PREF_USER_ID = "userID";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,22 +55,15 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         setSupportActionBar(toolbar);
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
-        if (isFirstLaunch){
-            String userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString(PREF_USER_ID, null);
+        if (userID == null){
+            userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirstLaunch", false);
-            editor.putString("userID", userID);
+            editor.putString(PREF_USER_ID, userID);
             editor.apply();
         }
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getParcelableExtra("qrCode");
-                }
-            }
-        });
+
 
         initNavView();
         Log.d("DEBUG", "test");
@@ -138,14 +134,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     // name in the firestore database collection 'User'
     public String getUserIDForUserDB() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getString("userID", null); // Return null or a default value if not found
+        return sharedPreferences.getString(PREF_USER_ID, null); // Return null or a default value if not found
     }
-    public void getQRCode(String eventID, Event event){
-        Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
-        intent.putExtra("eventID", eventID);
-        generateQRLauncher.launch(intent);
-        if (checkinQR != null){
-            event.setCheckinQR(checkinQR);
-        }
-    }
+
 }
