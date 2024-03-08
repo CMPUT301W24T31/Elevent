@@ -16,8 +16,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+/**
+ * This fragment contains UI for the organizer to handle and push notifications
+ */
 public class NotificationCentreFragment extends Fragment implements AddNotificationDialogFragment.AddNotificationDialogListener {
 
+    /**
+     * Interface for dialog listener that handles notification creation
+     */
     interface NotificationCentreDialogListener {
         //void onCreateEvent(Event event);
 
@@ -26,6 +32,10 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
 
     private NotificationCentreFragment.NotificationCentreDialogListener listener;
 
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -40,6 +50,19 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
     private TextView notificationListTextView;
     private ListView listOfNotifications;
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * Initialize display for notifications
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the fragment's UI, or null
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -51,6 +74,13 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
         return view;
     }
 
+    /**
+     * Called after the view has been created
+     * Initialize UI that allow organizer to create an dpush new notification
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -68,7 +98,10 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
         }
     }
 
-
+    /**
+     * Add the notification to the display
+     * @param notification The notification text.
+     */
     @Override
     public void onNotificationAdded(String notification) {
         String currentText = notificationListTextView.getText().toString();

@@ -27,21 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link AllEventsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * This fragment displays all events posted to the app
  */
 public class AllEventsFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     ArrayList<Event> AllEvents;
     //defaultEvent.add("Sample Event"); // Add your default event details here
 
-    // Define the interface
+    /**
+     * Listener for when user clicks on an event on their screen
+     */
     public interface OnEventClickListener {
         void onEventClicked(Event event);
     }
@@ -49,39 +44,37 @@ public class AllEventsFragment extends Fragment {
     // Define a listener member variable
     private OnEventClickListener eventClickListener;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    /**
+     * Required empty constructor
+     */
     public AllEventsFragment() {
         // Required empty public constructor
     }
 
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AllEventsFragment.
+     * @return View for the fragment's UI, or null
      */
-    // TODO: Rename and change types and number of parameters
-    public static AllEventsFragment newInstance(String param1, String param2) {
-        AllEventsFragment fragment = new AllEventsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_allevents, container, false);
     }
+
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity of the fragment
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -96,12 +89,20 @@ public class AllEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Called when the fragment is no longer attached to its activity.
+     */
     @Override
     public void onDetach() {
         super.onDetach();
         // Detach the listener to avoid memory leaks
         eventClickListener = null;
     }
+
+    /**
+     * Called when the fragment is visible to the user and actively running
+     * Updates the app bar
+     */
     public void onResume() {
         super.onResume();
         // Update the app bar title when navigating back to the AllEventsFragment
@@ -109,6 +110,14 @@ public class AllEventsFragment extends Fragment {
             ((MainActivity) getActivity()).updateAppBarTitle(getString(R.string.all_events_title));
         }
     }
+
+    /**
+     * Called immediately after has returned, but before any saved state has been restored in to the view.
+     * Initializes the event filter and the event array adapter for displaying the events
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -155,6 +164,10 @@ public class AllEventsFragment extends Fragment {
         listView.setAdapter(eventAdapter);
         fetchEvents();
     }
+
+    /**
+     * Get the event from the database
+     */
     public void fetchEvents() {
         EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
         FirebaseFirestore db = connector.getDb();
@@ -173,24 +186,13 @@ public class AllEventsFragment extends Fragment {
         });
     }
 
+    /**
+     * Update the display of the events
+     * @param events List of events
+     */
     public void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
         EventArrayAdapter eventAdapter = new EventArrayAdapter(requireActivity(), events); // Use requireActivity() to ensure non-null Context
         ListView listView = getView().findViewById(R.id.list_view);
         listView.setAdapter(eventAdapter);
     }
-    /*@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_allevents, container, false);
-    }*/
 }

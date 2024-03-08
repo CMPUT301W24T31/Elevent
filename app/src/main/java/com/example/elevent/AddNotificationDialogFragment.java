@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 /**
- * A dialog fragment for adding notifications.
+ * A dialog fragment for creating and sending notifications.
  */
 public class AddNotificationDialogFragment extends DialogFragment {
 
@@ -31,6 +31,13 @@ public class AddNotificationDialogFragment extends DialogFragment {
 
     private AddNotificationDialogListener listener;
 
+    /**
+     * Builds the notification AlertDialog
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Built notification AlertDialog
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
