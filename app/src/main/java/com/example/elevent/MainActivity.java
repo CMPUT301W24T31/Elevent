@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
@@ -145,5 +145,10 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     public String getUserIDForUserDB() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString(PREF_USER_ID, null); // Return null or a default value if not found
+    }
+
+    @Override
+    public void onNotificationAdded(String notification) {
+
     }
 }
