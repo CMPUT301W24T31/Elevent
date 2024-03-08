@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/event_array_adapter_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Name"
+        android:textSize="30sp"
+        android:fontFamily="@font/jetbrainsmono_bold"/>
+
+    <TextView
+        android:id="@+id/pevent_array_adapter_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Date"
+        android:textSize="20sp"
+        android:fontFamily="@font/jetbrainsmono_bold"/>
+    <TextView
+        android:id="@+id/event_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Description"
+        android:textSize="20sp"
+        android:fontFamily="@font/jetbrainsmono_bold"/>
+
+</LinearLayout>

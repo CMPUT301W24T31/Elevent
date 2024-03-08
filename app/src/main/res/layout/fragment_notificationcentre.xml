@@ -16,7 +16,6 @@
         android:text="@string/notification_centree"
         android:textColor="@color/background_blue"
         android:theme="@style/FontTheme"
-
         />
 
     <Button
@@ -47,6 +46,5 @@
         android:fontFamily="monospace"
         android:text="@string/attendees"
         android:textSize="25sp" />
-    />
 
 </RelativeLayout>

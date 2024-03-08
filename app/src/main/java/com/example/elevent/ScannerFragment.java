@@ -39,26 +39,9 @@ public class ScannerFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
-    private final ActivityResultLauncher<ScanOptions> qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
-        if (result.getContents() == null) {
-            Intent originalIntent = result.getOriginalIntent();
-            if (originalIntent == null) {
-                Log.d("ScanQRCodeActivity", "Cancelled scan");
-            } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
-                Log.d("ScanQRCodeActivity", "Cancelled scan due to missing camera permission");
-                Toast.makeText(getContext(), "Camera permission required", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Log.d("ScanQRCodeActivity", "Scanned");
-            Toast.makeText(getContext(), "Scanned", Toast.LENGTH_SHORT).show();  // placeholder; TODO: replace this with the actual content of the QR code
-        }
-    });
+    private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
-    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-        if (isGranted){
-            scanQR();
-        }
-    });
+    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -93,13 +76,32 @@ public class ScannerFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+            if (result.getContents() == null) {
+                Intent originalIntent = result.getOriginalIntent();
+                if (originalIntent == null) {
+                    Log.d("ScanQRCodeActivity", "Cancelled scan");
+                } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
+                    Log.d("ScanQRCodeActivity", "Cancelled scan due to missing camera permission");
+                    Toast.makeText(getContext(), "Camera permission required", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.d("ScanQRCodeActivity", "Scanned");
+                Toast.makeText(getContext(), "Scanned", Toast.LENGTH_SHORT).show();  // placeholder; TODO: replace this with the actual content of the QR code
+            }
+        });
+         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (isGranted){
+                scanQR();
+            }
+        });
+        requestPermissionLauncher.launch(Manifest.permission.CAMERA);  // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        requestPermissionLauncher.launch(Manifest.permission.CAMERA);  // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
         return inflater.inflate(R.layout.fragment_scanner, container, false);
     }
 
