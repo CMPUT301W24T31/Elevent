@@ -41,7 +41,7 @@ public class EventViewAttendee extends Fragment {
 
         if (event != null) {
             eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
-            //eventDescriptionTextView.setText(event.getDescription()); //after description is implemented
+            eventDescriptionTextView.setText(event.getDescription()); //after description is implemented
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
             }

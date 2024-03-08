@@ -18,6 +18,9 @@ public class Event implements Serializable {
     private String description;
     private String location;
 
+    // No-argument constructor
+    public Event() {
+    }
     // event class constructor
     public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount,
                  String date, String time, String description, String location, byte[] eventPoster) {
