@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener {
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
