@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         appBarTitle.setText(title);
     }
 
+
     // use this method to get the UUID give to a user at
     // first launch in the UserDB to be used as the document
     // name in the firestore database collection 'User'

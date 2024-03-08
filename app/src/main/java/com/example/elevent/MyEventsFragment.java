@@ -69,6 +69,7 @@ public class MyEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreateEventFragment());
+                    mainActivity.updateAppBarTitle("Creating Event...");
                 }
             }
         });
@@ -88,6 +89,7 @@ public class MyEventsFragment extends Fragment {
                 //switch fragments
                 if (getActivity() instanceof MainActivity) {
                     MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.updateAppBarTitle(selectedEvent.getEventName());
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreatedEventFragment());
                 }
