@@ -7,8 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
@@ -114,10 +112,10 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     }
 
     //to implement the fragment to create event fragment
-    @Override
+    /*@Override
     public void onCreateEvent(Event event) {
 
-    }
+    }*/
 
     public void onPositiveClick(Event event) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);

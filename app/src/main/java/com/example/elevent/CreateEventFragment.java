@@ -34,7 +34,7 @@ public class CreateEventFragment extends Fragment {
     });
 //create event listener to be implemented by main activity
     interface CreateEventListener {
-        void onCreateEvent(Event event);
+        //void onCreateEvent(Event event);
 
         void onPositiveClick(Event event);
     }
@@ -84,6 +84,4 @@ public class CreateEventFragment extends Fragment {
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
     }
-
-//
 }
