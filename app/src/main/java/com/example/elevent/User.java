@@ -1,7 +1,5 @@
 package com.example.elevent;
 
-import android.media.Image;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,7 +9,7 @@ public class User {
     // (what information a user has)
     private String name;
     private String[] contact;
-    private Image profilePic;
+    private byte[] profilePic;
     private String homePage;
 
     private String userID;
@@ -32,11 +30,11 @@ public class User {
         this.contact = contact;
     }
 
-    public Image getProfilePic() {
+    public byte[] getProfilePic() {
         return profilePic;
     }
 
-    public void setProfilePic(Image profilePic) {
+    public void setProfilePic(byte[] profilePic) {
         this.profilePic = profilePic;
     }
 
