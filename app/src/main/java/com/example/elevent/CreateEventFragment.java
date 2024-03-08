@@ -104,10 +104,18 @@ public class CreateEventFragment extends Fragment {
                     //return null;
                 }
 
+
+                // arguments for event constructor to be passes into
+                // addEvent
                 byte[] promotionalQR = null;
                 byte[] checkinQR = null;
+                String event_date = eventDate.getText().toString();
+                String event_time = eventTime.getText().toString();
+                String event_desc = eventDescription.getText().toString();
+                String event_location = eventAddress.getText().toString();
 
-                Event event = new Event(name, null, null, 0, eventPoster);
+                Event event = new Event(name, null, null, 0,
+                        event_date, event_time, event_desc, event_location,eventPoster);
 
                 //listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
 
