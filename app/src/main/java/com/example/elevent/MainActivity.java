@@ -143,11 +143,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
-
-    @Override
-    public void onEventClicked(Event event) {
-        updateAppBarTitle(event.getEventName());
-    }
+    /*
     public void getQRCode(String eventID, Event event){
         Intent intent = new Intent(MainActivity.this, GenerateQRCodeActivity.class);
         intent.putExtra("eventID", eventID);
@@ -156,4 +152,11 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             event.setCheckinQR(checkinQR);
         }
     }
+    */
+    
+    @Override
+    public void onEventClicked(Event event) {
+        updateAppBarTitle(event.getEventName());
+    }
+
 }

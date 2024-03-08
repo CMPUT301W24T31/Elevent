@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Event implements Serializable {
+public class Event implements Serializable {
 
     // attributes for the information of an event
     private static final String eventID = "test";

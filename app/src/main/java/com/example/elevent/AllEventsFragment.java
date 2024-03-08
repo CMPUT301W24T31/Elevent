@@ -116,7 +116,7 @@ public class AllEventsFragment extends Fragment {
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
         // Create a default event - adjust constructor parameters as per your Event class definition
-        Event defaultEvent = new Event("Default Event Name", null,null, null,null,null);
+        Event defaultEvent = new Event("Default Event Name", null,null, 3,null,null);
         events.add(defaultEvent);
         EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
         listView.setAdapter(eventAdapter);
