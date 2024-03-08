@@ -1,7 +1,6 @@
 package com.example.elevent;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,13 +36,7 @@ public class AllEventsFragment extends Fragment {
     ArrayList<Event> AllEvents;
     //defaultEvent.add("Sample Event"); // Add your default event details here
 
-    // Define the interface
-    public interface OnEventClickListener {
-        void onEventClicked(Event event);
-    }
 
-    // Define a listener member variable
-    private OnEventClickListener eventClickListener;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -53,7 +45,6 @@ public class AllEventsFragment extends Fragment {
     public AllEventsFragment() {
         // Required empty public constructor
     }
-
 
     /**
      * Use this factory method to create a new instance of
@@ -79,26 +70,13 @@ public class AllEventsFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_allevents, container, false);
     }
+    /*
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        // Attach your listener interface
-        if (context instanceof OnEventClickListener) {
-            eventClickListener = (OnEventClickListener) context;
-        } else {
-            // If you want to enforce the implementation of the interface, you can throw an exception
-            // However, make sure your MainActivity implements OnEventClickListener interface
-            // Otherwise, just log a warning
-            Log.w("AllEventsFragment", "Parent context does not implement OnEventClickListener");
-        }
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_allevents, container, false);
     }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        // Detach the listener to avoid memory leaks
-        eventClickListener = null;
-    }
+    */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -113,34 +91,55 @@ public class AllEventsFragment extends Fragment {
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
 
-        ListView listView = view.findViewById(R.id.list_view);
-        ArrayList<Event> events = new ArrayList<>();
-        // Create a default event - adjust constructor parameters as per your Event class definition
-        Event defaultEvent = new Event("Default Event Name", null,null, 3,null,null);
-        events.add(defaultEvent);
-        EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
-        listView.setAdapter(eventAdapter);
+        /*
+        TEMPORARY BUTTON TO TEST THE FRAGMENT MANAGER REPLACE THE BUTTON WITH
+        EVENT ITEM CLICK AND USE THE FRAGMENT MANAGER <3
 
-
-        // Make sure the ID matches your ListView's ID in the XML
-        listView.setOnItemClickListener((parent, view1, position, id) -> {
-            // Handle the list item click event here
-            // Example action: Show a Toast message
-            //Toast.makeText(getActivity(), "Clicked on item: " + position, Toast.LENGTH_SHORT).show();
+        // Find the button by its id
+        View button = view.findViewById(R.id.button2);
+        button.setOnClickListener(v -> {
             if (getActivity() instanceof MainActivity) {
                 MainActivity mainActivity = (MainActivity) getActivity();
                 FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                 helper.replaceFragment(new EventViewAttendee()); // Replace with any fragment
             }
+        });
+        */
 
-            Event clickedEvent = events.get(position);
-            if (eventClickListener != null) {
-                eventClickListener.onEventClicked(clickedEvent);
+
+        ListView listView = view.findViewById(R.id.list_view); // Make sure the ID matches your ListView's ID in the XML
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            // Handle the list item click event here
+            // Example action: Show a Toast message
+            Toast.makeText(getActivity(), "Clicked on item: " + position, Toast.LENGTH_SHORT).show();
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                helper.replaceFragment(new EventViewAttendee()); // Replace with any fragment
             }
             // If you want to switch fragments or perform other actions, you can do that here
         });
 
-        //EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
+        // Optional: Set the adapter for the ListView here
+        // Example: Setting a simple adapter to display some strings
+        // This is just an example, you'll replace it with your actual data adapter
+        ArrayList<Event> events = new ArrayList<>();
+        // Create a default event - adjust constructor parameters as per your Event class definition
+        //Event defaultEvent = new Event("Default Event Name", null,null, null,null,null);
+        //events.add(defaultEvent);
+
+        // Now use your custom adapter with the events list including the default event
+        /*
+        EventArrayAdapter adapter = new EventArrayAdapter(getActivity(), events);
+        listView.setAdapter(adapter);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_list_item_1,
+                getResources().getStringArray(R.array.event_filter_spinner_array)); // Make sure you have this array or change it to your data source
+        listView.setAdapter(adapter);
+*/
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
         listView.setAdapter(eventAdapter);
     }
 
