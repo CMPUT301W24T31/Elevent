@@ -157,7 +157,13 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     @Override
     public void onEventClicked(Event event) {
-        updateAppBarTitle(event.getEventName());
+        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+        Bundle args = new Bundle();
+        args.putSerializable("event", event); // Ensure Event class implements Serializable
+        eventViewAttendeeFragment.setArguments(args);
+
+        fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
+        updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
     }
 
 
