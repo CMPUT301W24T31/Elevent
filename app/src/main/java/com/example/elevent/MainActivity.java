@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 
@@ -8,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     private static final String PREF_NAME = "MyPrefs";
     private static final String PREF_USER_ID = "userID";
 
-
+    private byte[] qrCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,13 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         initNavView();
         Log.d("DEBUG", "test");
 
+        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result ->{
+            if (result.getResultCode() == RESULT_OK){
+                if(result.getData() != null){
+                    qrCode = result.getData().getByteArrayExtra("qrBitmap");
+                }
+            }
+        });
     }
 
     public FragmentManagerHelper getFragmentManagerHelper() {
@@ -107,23 +116,24 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
 
     }
 
-    //to implement the fragment to create event fragment
-    /*@Override
-    public void onCreateEvent(Event event) {
-
-    }*/
-
     public void onPositiveClick(Event event) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String eventID = UUID.randomUUID().toString();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("eventID", eventID);
         editor.apply();
+        Intent intent = new Intent(this, GenerateQRCodeActivity.class);
+        intent.putExtra("eventID", eventID);
+        generateQRLauncher.launch(intent);
         MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
-        if (fragment != null){
+        if (fragment != null) {
             fragment.addEvent(event);
         }
     }
+
+    /*public void onCloseCreateEventFragment(){
+        getSupportFragmentManager().popBackStack();
+    }*/
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
@@ -136,5 +146,4 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString(PREF_USER_ID, null); // Return null or a default value if not found
     }
-
 }

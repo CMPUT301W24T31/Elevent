@@ -125,8 +125,8 @@ public class AllEventsFragment extends Fragment {
         // This is just an example, you'll replace it with your actual data adapter
         ArrayList<Event> events = new ArrayList<>();
         // Create a default event - adjust constructor parameters as per your Event class definition
-        Event defaultEvent = new Event("Default Event Name", null,null, null,null,null);
-        events.add(defaultEvent);
+        //Event defaultEvent = new Event("Default Event Name", null,null, null,null,null);
+        //events.add(defaultEvent);
 
         // Now use your custom adapter with the events list including the default event
         /*
