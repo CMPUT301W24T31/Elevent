@@ -66,6 +66,36 @@ public class CreateEventFragment extends Fragment {
 
     private CreateEventListener listener;
 
+    private void createEvent(Event event) {
+        EventDB eventDB = new EventDB(new EventDBConnector());
+
+        eventDB.addEvent(event).thenRun(() -> {
+            // Ensure operations that update the UI are run on the main thread
+            getActivity().runOnUiThread(() -> {
+                Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
+                navigateToMyEventsFragment(); // Navigate back to MyEventsFragment after event creation
+            });
+        }).exceptionally(e -> {
+            getActivity().runOnUiThread(() -> {
+                Toast.makeText(getActivity(), "Failed to add event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            });
+            return null;
+        });
+    }
+
+    private void navigateToMyEventsFragment() {
+        // Ensure this operation is also considered to be executed on the main thread
+        if (isAdded() && getActivity() != null && getFragmentManager() != null) {
+            MyEventsFragment myEventsFragment = new MyEventsFragment();
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.activity_main_framelayout, myEventsFragment)
+                    .commit();
+        }
+    }
+
+
+
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -97,16 +127,13 @@ public class CreateEventFragment extends Fragment {
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String name = eventName.getText().toString();
                 if (name.isEmpty()) {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
-                    //return null;
+                    return; // Add return to exit early if validation fails
                 }
 
-
-                // arguments for event constructor to be passes into
-                // addEvent
+                // Arguments for event constructor to be passed into addEvent
                 byte[] promotionalQR = null;
                 byte[] checkinQR = null;
                 String event_date = eventDate.getText().toString();
@@ -114,24 +141,13 @@ public class CreateEventFragment extends Fragment {
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
 
-                Event event = new Event(name, null, null, 0,
-                        event_date, event_time, event_desc, event_location,eventPoster);
+                Event event = new Event(name, promotionalQR, checkinQR, 0, event_date, event_time, event_desc, event_location, eventPoster);
 
-                //listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
-
-
-                EventDB eventDB = new EventDB(new EventDBConnector()); // Adjust based on actual EventDBConnector usage
-                eventDB.addEvent(event).thenRun(() -> {
-                    Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
-                }).exceptionally(e -> {
-                    Toast.makeText(getActivity(), "Failed to add event", Toast.LENGTH_SHORT).show();
-                    return null;
-                });
-
-                //listener.onCloseCreateEventFragment();
-                //return null;
+                // Call createEvent method to add the event and handle navigation
+                createEvent(event);
             }
         });
+
         return view;
     }
 
