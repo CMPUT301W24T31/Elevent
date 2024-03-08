@@ -17,13 +17,15 @@ public class Event implements Serializable {
     private String time;
     private String description;
     private String location;
+    private String[] notifications;
 
     // No-argument constructor
     public Event() {
     }
     // event class constructor
     public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, byte[] eventPoster) {
+                 String date, String time, String description, String location, byte[] eventPoster,
+                 String[] notifications) {
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
@@ -33,7 +35,7 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
-
+        this.notifications = notifications;
     }
 
     public Map<String, Object> toMap() {
@@ -47,7 +49,7 @@ public class Event implements Serializable {
         eventMap.put("checkinQR", checkinQR); // store as byte array
         eventMap.put("attendeesCount", attendeesCount);
         eventMap.put("eventPoster", eventPoster); // store as byte array
-
+        eventMap.put("notifications", notifications);
 
         return eventMap;
     }
@@ -124,5 +126,13 @@ public class Event implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String[] getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(String[] notifications) {
+        this.notifications = notifications;
     }
 }
