@@ -19,6 +19,8 @@ public class Event implements Serializable {
     private String date;
     private String time;
 
+
+
     public Event(String eventName, Uri eventPoster, String address, String description, String date, String time) {
         this.eventName = eventName;
         this.eventPoster = eventPoster;

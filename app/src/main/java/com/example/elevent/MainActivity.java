@@ -23,7 +23,7 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
+public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener ,CreateEventFragment.CreateEventListener {
 
     private FragmentManagerHelper fragmentManagerHelper;
 
@@ -86,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
+
+    // Implement the interface method
+
 
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
@@ -156,5 +159,10 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     public String getUserIDForUserDB() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
+    }
+
+    @Override
+    public void onEventClicked(Event event) {
+        updateAppBarTitle(event.getEventName());
     }
 }
