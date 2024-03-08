@@ -27,10 +27,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventDialogListener {
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener {
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
+
 
     AllEventsFragment allEventsFragment = new AllEventsFragment();
     MyEventsFragment myEventsFragment = new MyEventsFragment();
@@ -109,6 +110,12 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
                 return false;
             }
         });
+
+    }
+
+    //to implement the fragment to create event fragment
+    @Override
+    public void onCreateEvent(Event event) {
 
     }
 
