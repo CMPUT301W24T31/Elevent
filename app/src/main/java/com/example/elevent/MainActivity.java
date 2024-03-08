@@ -17,7 +17,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.UUID;
-
+/*
+    This file is responsible for being the host activity of all fragments in the app
+    Outstanding issues: some listeners that are implemented through MainActivity must be refined
+ */
 
 /**
  * This is the main activity that all fragments and listeners attach to

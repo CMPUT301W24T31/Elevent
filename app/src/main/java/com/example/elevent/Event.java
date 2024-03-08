@@ -3,7 +3,10 @@ package com.example.elevent;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-
+/*
+    This file contains the implementation of an Event object
+    Outstanding Issues: figure out QR codes, location, notifications
+ */
 /**
  * Represents an event
  */
@@ -54,6 +57,10 @@ public class Event implements Serializable {
         this.notifications = notifications;
     }
 
+    /**
+     * Create the map to be put into the event database
+     * @return Map that contains the event information
+     */
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("eventName", eventName);

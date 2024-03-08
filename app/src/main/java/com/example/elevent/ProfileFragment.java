@@ -7,14 +7,19 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+/*
+    This file contains the implementation for the ProfileFragment that is responsible for displaying the UI
+    that allows a user to view and edit their personal profile
+    Outstanding issues: needs to be implemented
+ */
 /**
  * This fragment provides UI for the user to customize their profile
  */
 public class ProfileFragment extends Fragment {
-
+    /**
+     * Required empty public constructor
+     */
     public ProfileFragment() {
-        // Required empty public constructor
     }
 
     /**

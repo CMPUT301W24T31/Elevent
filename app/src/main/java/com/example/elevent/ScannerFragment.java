@@ -26,7 +26,11 @@ import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-
+/*
+    This file contains the implementation of the ScannerFragment that is responsible for
+    requesting for camera permission and opening the camera to scan QR codes.
+    Outstanding issues: need to finish implementing the decoding
+ */
 /**
  * This fragment request permission to open the camera and scans the QR code
  */

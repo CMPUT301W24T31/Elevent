@@ -2,7 +2,10 @@ package com.example.elevent;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/*
+    This file contains the implementation of a User object
+    Outstanding issues: n/a
+ */
 /**
  * This class represents a user of the app
  */
@@ -97,6 +100,10 @@ public class User {
         userID = userID;
     }
 
+    /**
+     * Create the map to be put into the user database
+     * @return Map that contains the user information
+     */
     public Map<String, Object> toMap() {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("name", name);

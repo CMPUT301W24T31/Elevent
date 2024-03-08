@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+/*
+    This file is responsible for displaying the UI for an attendee's view of an event
+    Outstanding issues: figure out attributes of event, such as QR code and notifications
+ */
 /**
  * This fragment displays the UI for the attendee's view of an event
  */

@@ -25,7 +25,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+    This file is responsible for providing the UI to display the list o all events that have been created in the app.
+    Outstanding issues: n/a
+ */
 /**
  * This fragment displays all events posted to the app
  */
