@@ -15,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+/*
+    This file contains the implementation
+ */
 /**
  * This fragment contains UI for the organizer to handle and push notifications
  */

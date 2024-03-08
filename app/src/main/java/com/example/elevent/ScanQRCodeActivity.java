@@ -19,9 +19,11 @@ import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.CaptureActivity;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+/*
+    THIS FILE IS REDUNDANT! JUST HERE FOR REFERENCE
+ */
 
-
- public class ScanQRCodeActivity extends AppCompatActivity{
+ /*public class ScanQRCodeActivity extends AppCompatActivity{
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 100;
     //  https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private final ActivityResultLauncher<ScanOptions> qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
@@ -73,4 +75,4 @@ import com.journeyapps.barcodescanner.ScanOptions;
             }
         }
     }
-}
+}*/

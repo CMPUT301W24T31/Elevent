@@ -11,7 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-
+/*
+    This file contains the implementation of the EventArrayAdapter that is responsible for displaying events
+    Outstanding issues: n/a
+ */
 /**
  * Displays the list of events
  */

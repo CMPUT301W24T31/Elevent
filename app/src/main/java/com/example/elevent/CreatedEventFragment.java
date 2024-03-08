@@ -21,7 +21,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
+/*
+    This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
+    of a created event. The organizer can manage and edit the event in this fragment.
+    Outstanding issues: Need to display the QR codes,
+ */
 /**
  * This fragment displays the organizer's view of an event they created
  * Allows organizer to edit event details

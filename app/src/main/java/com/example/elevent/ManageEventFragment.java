@@ -13,7 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
+/*
+    This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
+    and handle notifications
+    Outstanding issues: notifications are buggy
+ */
 /**
  * This fragment provides the organizer to manage their event
  * Allows the organizer to view the list of attendees and push notifications to attendees

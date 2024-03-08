@@ -2,7 +2,10 @@ package com.example.elevent;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
+/*
+    This file is responsible for taking care of fragment transactions and switching fragments
+    Outstanding issues: n/a
+ */
 /**
  * This class is used for fragment management and transactions
  */

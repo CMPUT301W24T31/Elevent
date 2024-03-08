@@ -11,7 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-
+/* This file is responsible for providing the UI to allow the organizer to post a notification for their event
+    Outstanding issues: pushing notifications causes crashing
+ */
 /**
  * A dialog fragment for creating and sending notifications.
  */

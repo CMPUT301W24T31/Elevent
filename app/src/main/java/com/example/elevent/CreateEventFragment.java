@@ -22,7 +22,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
+/*
+    This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
+    to allow an organizer to input event information and create the event.
+    Outstanding issues: encoding and creating QR code for activities needs work
+ */
 /**
  * This fragment displays the UI for allowing a user to input event information
  * Creates an event object

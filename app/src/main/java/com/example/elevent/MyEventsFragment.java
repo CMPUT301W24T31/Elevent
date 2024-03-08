@@ -21,7 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-
+/*
+    This file implements the MyEventsFragment that is responsible for displaying the list of events that the organizer
+    has created. As well, is responsible for displaying the UI to allow a user to create an event.
+    Outstanding issues: n/a
+ */
 /**
  * This fragment displays the events that an organizer has created
  */
@@ -43,6 +47,11 @@ public class MyEventsFragment extends Fragment {
         myEvents = new ArrayList<>(); // Initialize ArrayList
 
     }
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Updates the app bar with the title of the fragment
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -148,6 +157,10 @@ public class MyEventsFragment extends Fragment {
         myEventsArrayAdapter.add(event);
         myEventsArrayAdapter.notifyDataSetChanged();
     }
+
+    /**
+     * Get the organizer's events from the events database
+     */
     private void fetchEvents() {
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb(); //

@@ -8,17 +8,29 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
-
-
+/*
+    This file is responsible for handling all user database functionalities required for the app
+    Outstanding issues: n/a
+ */
+/**
+ * This class handles all user database functionalities
+ */
 public class UserDB extends MainActivity {
 
     private FirebaseFirestore db;
 
-    // initialize an instance of the firestore database
+    /**
+     * Class constructor
+     * @param connector The connector to the database
+     */
     public UserDB(UserDBConnector connector) {
         this.db = connector.getDb();
     }
 
+    /**
+     * Add a new user to the database
+     * @param user User to be added
+     */
     public void addNewUser(User user) {
 
         // retrieve the userID from MainActivity
@@ -37,6 +49,10 @@ public class UserDB extends MainActivity {
          */
     }
 
+    /**
+     * Update a user's information in the database
+     * @param user User whose information must be updated
+     */
     public void updateUser(User user) {
 
         // if the userID does not exist(there is no user document in
@@ -67,6 +83,12 @@ public class UserDB extends MainActivity {
     // the userID used as an argument for this method can be retrieved using the getter
     // methods getUserID which should work once we have set the UserID when a user is added
     // in addUser (since we use the setter setUserID once a user is added)
+
+    /**
+     * Read a user's information in the database
+     * @param userID UserID of the user whose information is to be read
+     * @param listener Listener that checks if the user's information has been read
+     */
     public void readUser(String userID, final OnUserReadListener listener) {
 
         db.collection("User").document(userID).get()
@@ -116,6 +138,11 @@ public class UserDB extends MainActivity {
 
     // get the userID using the getter method in MainActivity
     // getUserIDForUserDB
+
+    /**
+     * Deletes a user from the database
+     * @param userID User ID of the user to be deleted
+     */
     public void deleteUser(String userID) {
 
         db.collection("User").document(userID).delete()
@@ -145,6 +172,10 @@ public class UserDB extends MainActivity {
      */
 
     // interface for callbacks when reading user data
+
+    /**
+     * Interface for listener for callbacks when reading user data
+     */
     public interface OnUserReadListener {
         void onSuccess(User user);
         // handles the successfully fetched user
