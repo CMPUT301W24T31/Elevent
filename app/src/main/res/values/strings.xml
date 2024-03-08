@@ -51,5 +51,9 @@
     <string name="name">name</string>
     <string name="time">time</string>
     <string name="description">description</string>
+    <string name="share">share</string>
+    <string name="manage">manage</string>
+    <string name="create">create</string>
+    <string name="edit">edit</string>
 
 </resources>

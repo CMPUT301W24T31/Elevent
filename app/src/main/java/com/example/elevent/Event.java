@@ -1,44 +1,51 @@
 package com.example.elevent;
 
-import android.graphics.Bitmap;
-import android.location.Location;
-import android.net.Uri;
-
 import java.io.Serializable;
-import java.lang.String;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Event implements Serializable {
+public abstract class Event implements Serializable {
+
+    // attributes for the information of an event
+    private static final String eventID = "test";
     private String eventName;
-    private Bitmap promotionalQR;
-    private Bitmap checkinQR;
+    private byte[] promotionalQR; //byte array
+    private byte[] checkinQR; // byte array
     private int attendeesCount;
-    private Uri eventPoster;
-    private Location geolocation;
-    private String address;
-    private String description;
-    private String date;
-    private String time;
+    private byte[] eventPoster; //byte array
+    private Map<String, Object> location; // Assuming conversion to a Map or GeoPoint
 
-
-
-    public Event(String eventName, Uri eventPoster, String address, String description, String date, String time) {
+    // event class constructor
+    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount, byte[] eventPoster, Map<String, Object> location) {
         this.eventName = eventName;
+        this.promotionalQR = promotionalQR;
+        this.checkinQR = checkinQR;
+        this.attendeesCount = attendeesCount;
         this.eventPoster = eventPoster;
-        this.address = address;
-        this.description = description;
-        this.date = date;
-        this.time = time;
+        this.location = location;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("eventName", eventName);
+        eventMap.put("promotionalQR", promotionalQR); // store as byte array
+        eventMap.put("checkinQR", checkinQR); // store as byte array
+        eventMap.put("attendeesCount", attendeesCount);
+        eventMap.put("eventPoster", eventPoster); // store as byte array
+        eventMap.put("location", location);
+
+        return eventMap;
     }
 
     public String getEventName() {
         return eventName;
     }
 
-    public Bitmap getPromotionalQR() {
+    public byte[] getPromotionalQR() {
         return promotionalQR;
     }
 
-    public Bitmap getCheckinQR() {
+    public byte[] getCheckinQR() {
         return checkinQR;
     }
 
@@ -46,33 +53,24 @@ public class Event implements Serializable {
         return attendeesCount;
     }
 
-    public Uri getEventPoster() {
+    public byte[] getEventPoster() {
         return eventPoster;
     }
 
-    public Location getGeolocation() {
-        return geolocation;
-    }
-    public String getDescription(){return description;}
-    public String getAddress(){return address;}
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTime() {
-        return time;
+    public Map<String, Object> getLocation() {
+        return location;
     }
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
 
-    public void setPromotionalQR(Bitmap promotionalQR) {
+    public void setPromotionalQR(byte[] promotionalQR) {
         this.promotionalQR = promotionalQR;
     }
 
-    public void setCheckinQR(Bitmap checkinQR) {
+
+    public void setCheckinQR(byte[] checkinQR) {
         this.checkinQR = checkinQR;
     }
 
@@ -80,24 +78,11 @@ public class Event implements Serializable {
         this.attendeesCount = attendeesCount;
     }
 
-    public void setEventPoster(Uri eventPoster) {
+    public void setEventPoster(byte[] eventPoster) {
         this.eventPoster = eventPoster;
     }
 
-    public void setGeolocation(Location geolocation) {
-        this.geolocation = geolocation;
-    }
-    public void setDescription(String description){this.description = description;}
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
+    public void setLocation(Map<String, Object> location) {
+        this.location = location;
     }
 }
