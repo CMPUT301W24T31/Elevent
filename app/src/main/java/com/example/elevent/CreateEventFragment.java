@@ -90,6 +90,7 @@ public class CreateEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+                //return null;
             }
         });
         Button createEventButton = view.findViewById(R.id.create_the_event);
@@ -98,10 +99,11 @@ public class CreateEventFragment extends Fragment {
             public void onClick(View v) {
                 if (eventName.getText().toString().isEmpty()) {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
-                    return;
+                    //return null;
                 }
                 listener.onPositiveClick(new Event(eventName.getText().toString(), null, null, 0, eventPoster));
                 //listener.onCloseCreateEventFragment();
+                //return null;
             }
         });
         return view;

@@ -25,7 +25,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener{
+public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
+
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
@@ -147,8 +148,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
 
     @Override
+    public void onNotificationAdded(String notification) {
+
+    }
+
+
+    @Override
     public void onEventClicked(Event event) {
         updateAppBarTitle(event.getEventName());
     }
+
 
 }
