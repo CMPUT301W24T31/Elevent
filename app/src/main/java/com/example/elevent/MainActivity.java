@@ -7,8 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
