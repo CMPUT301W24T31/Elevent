@@ -45,8 +45,8 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
 
         // Set the text for the event name and date TextViews
         eventName.setText(event.getEventName());
-        // TODO: 2024-03-06 uncomment when getEventDate()
-//        eventDate.setText(event.getEventDate()); // Assuming Event has getEventDate() method
+
+        eventDate.setText(event.getEventTimeUserZoneString());
 
         return view;
     }

@@ -1,8 +1,6 @@
 package com.example.elevent;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
