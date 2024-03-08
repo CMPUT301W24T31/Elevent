@@ -116,9 +116,8 @@ public class AllEventsFragment extends Fragment {
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
 
-        String[] defaultNotifications = {"Default notification message"};
         Event defaultEvent = new Event("default",null,null,3,
-                "yyyy-MM-dd","HH:mm","This is a default event description.","Default location",null,defaultNotifications);
+                "yyyy-MM-dd","HH:mm","This is a default event description.","Default location",null, null);
         events.add(defaultEvent);
         EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
         listView.setAdapter(eventAdapter);
