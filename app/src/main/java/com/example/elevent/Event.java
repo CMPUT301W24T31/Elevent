@@ -236,4 +236,8 @@ public class Event implements Serializable {
     public void setNotifications(String[] notifications) {
         this.notifications = notifications;
     }
+
+    public void addNotification(String newNotificationMessage) {
+
+    }
 }

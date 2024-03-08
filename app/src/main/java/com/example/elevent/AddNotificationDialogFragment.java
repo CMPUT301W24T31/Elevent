@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,23 @@ public class AddNotificationDialogFragment extends DialogFragment {
 
     private AddNotificationDialogListener listener;
 
+
+/**
+ * Called when a fragment is first attached to its context. 
+ * @param context The context to which the fragment is attached.
+ * @throws RuntimeException if the context does not implement {@link AddNotificationDialogListener}.
+ */  
+  @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof AddNotificationDialogListener) {
+            listener = (AddNotificationDialogListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement AddNotificationDialogListener");
+        }
+    }
+
+
     /**
      * Builds the notification AlertDialog
      * @param savedInstanceState The last saved instance state of the Fragment,
@@ -40,6 +58,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
      *
      * @return Built notification AlertDialog
      */
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -48,18 +67,17 @@ public class AddNotificationDialogFragment extends DialogFragment {
         EditText writeNotif = view.findViewById(R.id.notification_text);
 
         // Build the dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         return builder
                 .setView(view)
-                .setTitle("Post")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Post", (dialog, which) -> {
-                    // Handle the "Post" button click
+                .setTitle("post")
+                .setNegativeButton("cancel", null)
+                .setPositiveButton("add", (dialog, which) -> {
                     String notificationText = writeNotif.getText().toString();
-                    if (notificationText.isEmpty()) {
-                        Toast.makeText(getContext(), "Notification cannot be empty", Toast.LENGTH_SHORT).show();
-                    } else {
+                    if (!notificationText.isEmpty()) {
                         listener.onNotificationAdded(notificationText);
+                    } else {
+                        Toast.makeText(getContext(), "Notification cannot be empty", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .create();

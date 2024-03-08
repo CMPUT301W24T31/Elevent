@@ -1,28 +1,21 @@
 package com.example.elevent;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-
-
 import android.content.Intent;
-import android.graphics.Bitmap;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-
-import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
-import androidx.appcompat.widget.Toolbar;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.UUID;
 /*
     This file is responsible for being the host activity of all fragments in the app
@@ -38,8 +31,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     private FragmentManagerHelper fragmentManagerHelper;
     BottomNavigationView navigationView;
-
-
     AllEventsFragment allEventsFragment = new AllEventsFragment();
     MyEventsFragment myEventsFragment = new MyEventsFragment();
     ScannerFragment scannerFragment = new ScannerFragment();
@@ -191,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
      */
     @Override
     public void onNotificationAdded(String notification) {
-
     }
 
     /**
@@ -208,6 +198,4 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
         updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
     }
-
-
 }
