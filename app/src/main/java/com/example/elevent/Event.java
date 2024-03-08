@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Event implements Serializable {
+public class Event implements Serializable {
 
     // attributes for the information of an event
     private static final String eventID = "test";
@@ -16,7 +16,7 @@ public abstract class Event implements Serializable {
     private Map<String, Object> location; // Assuming conversion to a Map or GeoPoint
 
     // event class constructor
-    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount, byte[] eventPoster, Map<String, Object> location) {
+    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, Integer attendeesCount, byte[] eventPoster, Map<String, Object> location) {
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;

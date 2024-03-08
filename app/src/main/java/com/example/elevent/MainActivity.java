@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     ProfileFragment profileFragment = new ProfileFragment();
 
     private ActivityResultLauncher<Intent> generateQRLauncher;
-    private Bitmap checkinQR;
-    private Bitmap promotionQR;
+    private byte[] checkinQR;
+    private byte[] promotionQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
                 if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getParcelableExtra("qrCode");
+                    checkinQR = result.getData().getByteArrayExtra("qrCode");
                 }
             }
         });
