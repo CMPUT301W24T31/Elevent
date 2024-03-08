@@ -70,6 +70,7 @@ public class MyEventsFragment extends Fragment {
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreateEventFragment());
                 }
+                //return null;
             }
         });
 
