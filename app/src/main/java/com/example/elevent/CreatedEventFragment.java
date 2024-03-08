@@ -112,6 +112,7 @@ public class CreatedEventFragment extends Fragment {
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new ManageEventFragment());
                 }
+                //return null;
             }
         });
     }

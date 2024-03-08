@@ -71,6 +71,7 @@ public class MyEventsFragment extends Fragment {
                     helper.replaceFragment(new CreateEventFragment());
                     mainActivity.updateAppBarTitle("Creating Event...");
                 }
+                //return null;
             }
         });
 
