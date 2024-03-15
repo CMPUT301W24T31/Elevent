@@ -3,17 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MyEventsFragment"
     android:id="@+id/my_events_frame_layout">
+
     <ListView
+        android:id="@+id/my_events_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/my_events_list" />
+        android:cacheColorHint="#B59D9D"
+        android:background="@drawable/rounded_corner"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="10dp"
+        />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/create_my_event_button"
-        android:layout_width="wrap_content"
+        android:layout_width="85dp"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_input_add"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:backgroundTint="@color/background_blue"
+        app:tint="@color/item_grey"
         android:layout_gravity="bottom"
-        android:clickable="true"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@android:drawable/ic_input_add" />
 </RelativeLayout>

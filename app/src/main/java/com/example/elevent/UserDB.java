@@ -13,11 +13,21 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 
+/*
+    This file is responsible for handling all user database functionalities required for the app
+    Outstanding issues: n/a
+ */
+/**
+ * This class handles all user database functionalities
+ */
 public class UserDB extends MainActivity {
 
     private FirebaseFirestore db;
 
-    // initialize an instance of the firestore database
+    /**
+     * Class constructor
+     * @param connector The connector to the database
+     */
     public UserDB(UserDBConnector connector) {
         this.db = connector.getDb();
     }
@@ -56,6 +66,12 @@ public class UserDB extends MainActivity {
     // the userID used as an argument for this method can be retrieved using the getter
     // methods getUserID which should work once we have set the UserID when a user is added
     // in addUser (since we use the setter setUserID once a user is added)
+
+    /**
+     * Read a user's information in the database
+     * @param userID UserID of the user whose information is to be read
+     * @param listener Listener that checks if the user's information has been read
+     */
     public void readUser(String userID, final OnUserReadListener listener) {
 
         db.collection("User").document(userID).get()
@@ -113,6 +129,10 @@ public class UserDB extends MainActivity {
     }
 
     // interface for callbacks when reading user data
+
+    /**
+     * Interface for listener for callbacks when reading user data
+     */
     public interface OnUserReadListener {
         void onSuccess(User user);
         // handles the successfully fetched user
