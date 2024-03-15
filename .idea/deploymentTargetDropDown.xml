@@ -2,16 +2,22 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ExampleInstrumentedTest">
+      <entry key="AllEventsSpinnerDropdownTest">
+        <State />
+      </entry>
+      <entry key="CreateButtonExistsTest">
+        <State />
+      </entry>
+      <entry key="CreatedEventManageTest">
+        <State />
+      </entry>
+      <entry key="InEventNavBarShowingTest">
         <State />
       </entry>
       <entry key="app">
         <State />
       </entry>
-      <entry key="createEventPermissionsTest()">
-        <State />
-      </entry>
-      <entry key="testNavBarShowing()">
+      <entry key="createButtonExistsTest()">
         <State />
       </entry>
     </value>
