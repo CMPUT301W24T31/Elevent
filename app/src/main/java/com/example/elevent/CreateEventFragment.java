@@ -2,6 +2,8 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,13 +17,25 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
     to allow an organizer to input event information and create the event.
@@ -44,10 +58,9 @@ public class CreateEventFragment extends Fragment {
     // OpenAI, 2024, ChatGPT, Allow user to upload image file
     private final ActivityResultLauncher<String> getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
         if (uri != null) {
-            Uri eventPosterURI = uri;
             // OpenAI, 2024, ChatGPT, Convert to byte array
             try {
-                InputStream inputStream = requireActivity().getContentResolver().openInputStream(eventPosterURI);
+                InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
                 if (inputStream != null){
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     byte[] buffer = new byte[1024];
@@ -59,8 +72,6 @@ public class CreateEventFragment extends Fragment {
                     inputStream.close();
                     outputStream.close();
                 }
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -161,7 +172,7 @@ public class CreateEventFragment extends Fragment {
 
                 // Arguments for event constructor to be passed into addEvent
                 byte[] promotionalQR = null;
-                byte[] checkinQR = null;
+                byte[] checkInData = null;
                 String event_date = eventDate.getText().toString();
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();
@@ -169,7 +180,7 @@ public class CreateEventFragment extends Fragment {
                 String[] notifications = null;
 
                 Event event = new Event(name, null, null, 0,
-                        event_date, event_time, event_desc, event_location,eventPoster, notifications);
+                        event_date, event_time, event_desc, event_location, eventPoster, notifications);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
             }
@@ -183,5 +194,34 @@ public class CreateEventFragment extends Fragment {
      */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
+    }
+
+    private byte[] getCheckInQRCode(String data){
+        byte[] qrCodeByteArray = null;
+        try{
+             qrCodeByteArray = generateQRCode(data);
+        } catch (WriterException e){
+            Toast.makeText(getActivity(), "Cannot generate QR code", Toast.LENGTH_SHORT).show();  // TODO: maybe change this idk what we want to do to handle this
+        }
+        return qrCodeByteArray;
+    }
+
+    private byte[] generateQRCode(String data) throws WriterException {
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 512, 512, hints);
+        int width = bitMatrix.getWidth();
+        int height = bitMatrix.getHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                bitmap.setPixel(x, y, bitMatrix.get(x,y) ? ContextCompat.getColor(requireActivity(), R.color.black) : ContextCompat.getColor(requireActivity(), R.color.white));
+            }
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        return outputStream.toByteArray();
     }
 }

@@ -115,12 +115,16 @@ public class CreatedEventFragment extends Fragment {
         manageEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ManageEventFragment manageEventFragment = new ManageEventFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                manageEventFragment.setArguments(args);
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))
                 if (getActivity() instanceof MainActivity) {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(new ManageEventFragment());
+                    helper.replaceFragment(manageEventFragment);
                 }
                 //return null;
             }

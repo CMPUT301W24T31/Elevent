@@ -1,5 +1,6 @@
 package com.example.elevent;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private ActivityResultLauncher<Intent> generateQRLauncher;
     private byte[] checkinQR;
     private byte[] promotionQR;
+    private static final String PREF_NAME = "MyPrefs";
+    private static final String KEY_USER_ID = "userID";
 
     /**
      * Called when the activity is starting
@@ -61,13 +64,12 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         setSupportActionBar(toolbar);
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
-        if (isFirstLaunch){
-            String userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        if (userID == null){
+            userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirstLaunch", false);
-            editor.putString("userID", userID);
+            editor.putString(PREF_NAME, userID);
             editor.apply();
         }
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -172,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
      * @return User ID
      */
     public String getUserIDForUserDB() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
 

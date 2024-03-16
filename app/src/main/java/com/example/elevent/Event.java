@@ -1,6 +1,9 @@
 package com.example.elevent;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 /*
@@ -24,6 +27,7 @@ public class Event implements Serializable {
     private String description;
     private String location;
     private String[] notifications;
+    private String[] signedUpAttendees = new String[0];
 
     // No-argument constructor
     public Event() {
@@ -73,6 +77,7 @@ public class Event implements Serializable {
         eventMap.put("attendeesCount", attendeesCount);
         eventMap.put("eventPoster", eventPoster); // store as byte array
         eventMap.put("notifications", notifications);
+        eventMap.put("signedUpAttendees", signedUpAttendees);
 
         return eventMap;
     }
@@ -147,6 +152,10 @@ public class Event implements Serializable {
      */
     public byte[] getEventPoster() {
         return eventPoster;
+    }
+
+    public String[] getSignedUpAttendees() {
+        return signedUpAttendees;
     }
 
     /**
@@ -235,6 +244,10 @@ public class Event implements Serializable {
      */
     public void setNotifications(String[] notifications) {
         this.notifications = notifications;
+    }
+
+    public void setSignedUpAttendees(String[] signedUpAttendees) {
+        this.signedUpAttendees = signedUpAttendees;
     }
 
     public void addNotification(String newNotificationMessage) {

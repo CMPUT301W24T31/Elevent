@@ -26,6 +26,8 @@ import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+
+import java.util.Objects;
 /*
     This file contains the implementation of the ScannerFragment that is responsible for
     requesting for camera permission and opening the camera to scan QR codes.
@@ -68,7 +70,13 @@ public class ScannerFragment extends Fragment {
                 }
             } else {
                 Log.d("ScanQRCodeActivity", "Scanned");
-                Toast.makeText(getContext(), "Scanned", Toast.LENGTH_SHORT).show();  // placeholder; TODO: replace this with the actual content of the QR code
+                String resultContents = result.getContents();
+                String[] data = resultContents.split(",");
+                /*if (Objects.equals(data[0], "Check In")){
+                    onAttendeeCheckIn(data[1]);
+                } else if (Objects.equals(data[0], "Promotion")){
+                    onPromotionScan(data[1]);
+                }*/
             }
         });
          requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
