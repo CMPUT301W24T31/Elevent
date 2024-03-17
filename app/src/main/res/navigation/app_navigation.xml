@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_navigation.xml"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/createdEventFragment"
+        android:name="com.example.elevent.CreatedEventFragment"
+        android:label="CreatedEventFragment" >
+        <action
+            android:id="@+id/action_createdEventFragment_to_manageEventFragment"
+            app:destination="@id/manageEventFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/manageEventFragment"
+        android:name="com.example.elevent.ManageEventFragment"
+        android:label="ManageEventFragment" >
+        <action
+            android:id="@+id/action_manageEventFragment_to_notificationCentreFragment"
+            app:destination="@id/notificationCentreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notificationCentreFragment"
+        android:name="com.example.elevent.NotificationCentreFragment"
+        android:label="NotificationCentreFragment" >
+        <action
+            android:id="@+id/action_notificationCentreFragment_to_manageEventFragment"
+            app:destination="@id/manageEventFragment" />
+        <action
+            android:id="@+id/action_notificationCentreFragment_to_addNotificationDialogFragment"
+            app:destination="@id/addNotificationDialogFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNotificationDialogFragment"
+        android:name="com.example.elevent.AddNotificationDialogFragment"
+        android:label="AddNotificationDialogFragment" >
+        <action
+            android:id="@+id/action_addNotificationDialogFragment_to_notificationCentreFragment"
+            app:destination="@id/notificationCentreFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/myEventsFragment"
+        android:name="com.example.elevent.MyEventsFragment"
+        android:label="fragment_myevents"
+        tools:layout="@layout/fragment_myevents" >
+        <action
+            android:id="@+id/action_myEventsFragment_to_createEventFragment2"
+            app:destination="@id/createEventFragment2" />
+        <action
+            android:id="@+id/action_myEventsFragment_to_createdEventFragment"
+            app:destination="@id/createdEventFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createEventFragment2"
+        android:name="com.example.elevent.CreateEventFragment"
+        android:label="CreateEventFragment" >
+        <action
+            android:id="@+id/action_createEventFragment2_to_myEventsFragment"
+            app:destination="@id/myEventsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/allEventsFragment"
+        android:name="com.example.elevent.AllEventsFragment"
+        android:label="fragment_allevents"
+        tools:layout="@layout/fragment_allevents" >
+        <action
+            android:id="@+id/action_allEventsFragment_to_eventViewAttendee2"
+            app:destination="@id/eventViewAttendee2" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventViewAttendee2"
+        android:name="com.example.elevent.EventViewAttendee"
+        android:label="fragment_event_attendee"
+        tools:layout="@layout/fragment_event_attendee" >
+        <action
+            android:id="@+id/action_eventViewAttendee2_to_notificationFragmentAttendee"
+            app:destination="@id/notificationFragmentAttendee" />
+        <action
+            android:id="@+id/action_eventViewAttendee2_to_allEventsFragment"
+            app:destination="@id/allEventsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/notificationFragmentAttendee"
+        android:name="com.example.elevent.NotificationFragmentAttendee"
+        android:label="NotificationFragmentAttendee" >
+        <action
+            android:id="@+id/action_notificationFragmentAttendee_to_eventViewAttendee2"
+            app:destination="@id/eventViewAttendee2" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.elevent.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" />
+</navigation>
