@@ -9,25 +9,40 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+
+/*
+    This file is responsible for handling all user database functionalities required for the app
+    Outstanding issues: n/a
+ */
+/**
+ * This class handles all user database functionalities
+ */
 public class UserDB extends MainActivity {
 
     private FirebaseFirestore db;
 
-    // initialize an instance of the firestore database
+    /**
+     * Class constructor
+     * @param connector The connector to the database
+     */
     public UserDB(UserDBConnector connector) {
         this.db = connector.getDb();
     }
 
-    public void addNewUser(User user) {
+    public CompletableFuture<Void> addUser (User user) {
 
-        // retrieve the userID from MainActivity
-        String userId = getUserIDForUserDB();
-        user.setUserID(userId); // set the randomly generated userID from MainActivity as the userID in User class
+        // a map of all the event information to be added into a document
+        // on firestore
+        Map<String, Object> userMap = user.userToMap();
 
-        db.collection("User").document(userId).set(user.toMap())
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "User added successfully"))
-                .addOnFailureListener(e -> Log.d("Firestore", "Error adding user", e));
+        // asynchronously add the event to Firestore and name the document
+        // the name of the event
+        return CompletableFuture.runAsync(() -> {
+            db.collection("users").document(user.getName()).set(userMap);
+        });
 
 
         /* before implementing count to create custom user count document name for each user
@@ -37,36 +52,26 @@ public class UserDB extends MainActivity {
          */
     }
 
-    public void updateUser(User user) {
+    public CompletableFuture<Void> updateUser(String userID, Map<String, Object> updates) {
 
-        // if the userID does not exist(there is no user document in
-        // firestore to update user info)
-        if (user.getUserID() == null || user.getUserID().isEmpty()) {
-            System.out.println("User document ID is missing.");
-            return;
-        }
+        // create a reference to the user documented meant to be edited and updated
+        DocumentReference userRef = db.collection("users").document(userID);
 
-        // SetOptions.merge() recommended by Openai, ChatGPT, March 6th, 2024, "how to update data in
-        // firestore in an existing document
+        // asynchronously update the user document in firestore
+        return CompletableFuture.runAsync(() -> userRef.update(updates));
 
-        // also, the document path using user.getUserID() hopefully should use the userID from MainActivity,
-        // that was set using the setter found in the User class into the userID attribute for a user ( User user )
-        db.collection("User").document(user.getUserID()).set(user.toMap(), SetOptions.merge())
-                .addOnSuccessListener(aVoid -> System.out.println("User updated successfully"))
-                .addOnFailureListener(e -> System.out.println("Error updating user: " + e.getMessage()));
-
-
-        /* before implementing user count and userID
-        db.collection("User").document(user.getName()).update(user.toMap())
-                .addOnSuccessListener(aVoid -> System.out.println("User updated successfully"))
-                .addOnFailureListener(e -> System.out.println("Error updating user: " + e.getMessage()));
-         */
     }
 
 
     // the userID used as an argument for this method can be retrieved using the getter
     // methods getUserID which should work once we have set the UserID when a user is added
     // in addUser (since we use the setter setUserID once a user is added)
+
+    /**
+     * Read a user's information in the database
+     * @param userID UserID of the user whose information is to be read
+     * @param listener Listener that checks if the user's information has been read
+     */
     public void readUser(String userID, final OnUserReadListener listener) {
 
         db.collection("User").document(userID).get()
@@ -114,37 +119,20 @@ public class UserDB extends MainActivity {
          */
     }
 
-    // get the userID using the getter method in MainActivity
-    // getUserIDForUserDB
-    public void deleteUser(String userID) {
+    // method used to delete a user from the user database
+    public CompletableFuture<Void> deleteUser(String userID) {
 
-        db.collection("User").document(userID).delete()
-                .addOnSuccessListener(aVoid -> System.out.println("User successfully deleted."))
-                .addOnFailureListener(e -> System.out.println("Error deleting user: " + e.getMessage()));
-        /*
-        db.collection("User").document(user.getName()).delete()
-                .addOnSuccessListener(aVoid -> System.out.println("User deleted successfully"))
-                .addOnFailureListener(e -> System.out.println("Error deleting user: " + e.getMessage()));
+        DocumentReference userRef = db.collection("users").document(userID); // Reference to the event document
 
-         */
+        // after getting a reference of the document, delete the document
+        return CompletableFuture.runAsync(userRef::delete);
     }
-
-    /* retrieve userID from MainActivity to be used in this file,
-        scrapped because we are inheriting from MainActivity and just use
-        getUserIDForUserDB() method found in MainActivity
-
-        public String retrieveUserIDForDocumentName() {
-
-        String userID = getUserIDForUserDB();
-
-        if (userID == null) {
-            System.out.println("User ID does not exist");
-        }
-        return userID;
-    }
-     */
 
     // interface for callbacks when reading user data
+
+    /**
+     * Interface for listener for callbacks when reading user data
+     */
     public interface OnUserReadListener {
         void onSuccess(User user);
         // handles the successfully fetched user

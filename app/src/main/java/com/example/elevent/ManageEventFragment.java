@@ -13,10 +13,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
+/*
+    This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
+    and handle notifications
+    Outstanding issues: notifications are buggy
+ */
+/**
+ * This fragment provides the organizer to manage their event
+ * Allows the organizer to view the list of attendees and push notifications to attendees
+ */
 public class ManageEventFragment extends Fragment {
 
-
+    /**
+     *
+     */
     interface ManageEventListener {
         //void onCreateEvent(Event event);
 
@@ -25,6 +35,10 @@ public class ManageEventFragment extends Fragment {
 
     private ManageEventFragment.ManageEventListener listener;
 
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -39,6 +53,19 @@ public class ManageEventFragment extends Fragment {
     private TextView attendeeListTextView;
     private ListView listOfAttendees;
 
+    /**
+     * Called immediately after has returned, but before any saved state has been restored in to the view.
+     * Initialize list of attendees
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the fragment's UI, or null
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -50,6 +77,13 @@ public class ManageEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Called immediately after has returned, but before any saved state has been restored in to the view.
+     * Initialize UI to allow organizer to handle notifications
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

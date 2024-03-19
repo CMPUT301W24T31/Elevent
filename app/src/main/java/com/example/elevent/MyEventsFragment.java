@@ -1,8 +1,6 @@
 package com.example.elevent;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +11,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-
+/*
+    This file implements the MyEventsFragment that is responsible for displaying the list of events that the organizer
+    has created. As well, is responsible for displaying the UI to allow a user to create an event.
+    Outstanding issues: n/a
+ */
+/**
+ * This fragment displays the events that an organizer has created
+ */
 public class MyEventsFragment extends Fragment {
 
     CreateEventFragment createEventFragment;
@@ -29,12 +32,22 @@ public class MyEventsFragment extends Fragment {
     private ListView myEventList;
     private EventArrayAdapter myEventsArrayAdapter;
 
+    /**
+     * Called upon initial creation of the fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myEvents = new ArrayList<>(); // Initialize ArrayList
 
     }
+
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     * Updates the app bar with the title of the fragment
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -44,6 +57,19 @@ public class MyEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * Initialize the event array adapter
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the fragment's UI, or null
+     */
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,6 +94,14 @@ public class MyEventsFragment extends Fragment {
         });
     }*/
 
+    /**
+     * Called after the view has been created
+     * Initialize UI to allow organizer to finialize creation
+     * Handle fragment switching
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -93,6 +127,20 @@ public class MyEventsFragment extends Fragment {
                 // Get the selected event
                 Event selectedEvent = myEvents.get(position);
 
+                // Add a notification to the selected event
+                selectedEvent.addNotification("New notification message");
+
+                // Update the UI to reflect the added notification
+                myEventsArrayAdapter.notifyDataSetChanged();
+            }
+        });
+
+        myEventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected event
+                Event selectedEvent = myEvents.get(position);
+
                 // Pass the selected event to CreatedEventFragment should still parse the data on here
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
                 Bundle bundle = new Bundle();
@@ -104,17 +152,25 @@ public class MyEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     mainActivity.updateAppBarTitle(selectedEvent.getEventName());
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(new CreatedEventFragment());
+                    helper.replaceFragment(createdEventFragment);
                 }
             }
         });
         fetchEvents();
     }
 
+    /**
+     * Add an event to the array adapter and notify
+     * @param event Created event
+     */
     public void addEvent(Event event){
         myEventsArrayAdapter.add(event);
         myEventsArrayAdapter.notifyDataSetChanged();
     }
+
+    /**
+     * Get the organizer's events from the events database
+     */
     private void fetchEvents() {
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb(); //
