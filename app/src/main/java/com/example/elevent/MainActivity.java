@@ -80,9 +80,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         return fragmentManagerHelper;
     }
 
-    // Implement the interface method
-
-
     private void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
 

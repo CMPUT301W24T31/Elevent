@@ -73,4 +73,20 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // Unit Testing
+    testImplementation( "org.mockito:mockito-core:4.0.0") // Add this line for Mockito
+
+    // AndroidX Test - Core library for Android unit testing
+    testImplementation ("androidx.test:core-ktx:1.4.0") // Add this line if using Kotlin
+    // or use the following for Java
+    // testImplementation 'androidx.test:core:1.4.0'
+
+    // Mockito Android library for better integration with Android
+    androidTestImplementation ("org.mockito:mockito-android:4.0.0") // Add this line for instrumented tests
+
+    // UI Testing with Espresso
+    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
+
 }
