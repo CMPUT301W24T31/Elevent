@@ -2,6 +2,7 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +22,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.Blob;
+
+import java.util.List;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
@@ -97,7 +101,14 @@ public class CreatedEventFragment extends Fragment {
         EditText eventDate = view.findViewById(R.id.event_date_text);
         EditText eventDescription = view.findViewById(R.id.event_description_text);
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
-        ImageView checkInQR = view.findViewById(R.id.checkinQR_image);
+
+        ImageView checkInQRDisplay = view.findViewById(R.id.checkinQR_image);
+        Bitmap checkInQRBitmap = convertBlobToBitmap(event.getCheckinQR());
+        checkInQRDisplay.setImageBitmap(checkInQRBitmap);
+        ImageView promotionalQRDisplay = view.findViewById(R.id.promotionalQR_image);
+        Bitmap promotionalQRBitmap = convertBlobToBitmap(event.getPromotionalQR());
+        promotionalQRDisplay.setImageBitmap(promotionalQRBitmap);
+
         return view;
     }
 
@@ -129,5 +140,11 @@ public class CreatedEventFragment extends Fragment {
                 //return null;
             }
         });
+    }
+    // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()
+    // OpenAI, 2024, ChatGPT, Display QR code from byte array
+    private Bitmap convertBlobToBitmap(Blob blob){
+        byte[] byteArray = blob.toBytes();
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 }

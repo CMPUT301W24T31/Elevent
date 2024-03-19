@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         if (userID == null){
             userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(PREF_NAME, userID);
+            editor.putString(KEY_USER_ID, userID);
             editor.apply();
         }
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {

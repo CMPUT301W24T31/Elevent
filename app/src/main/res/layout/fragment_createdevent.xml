@@ -109,21 +109,23 @@
 
             <ImageView
                 android:id="@+id/promotionalQR_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="166dp"
+                android:layout_height="165dp"
                 android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="1dp"
-                android:layout_marginTop="26dp" />
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="46dp"
+                android:layout_marginStart="5dp"/>
 
             <ImageView
                 android:id="@+id/checkinQR_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="166dp"
+                android:layout_height="165dp"
                 android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="26dp"
-                android:layout_marginRight="1dp" />
+                android:layout_marginTop="46dp"
+                android:layout_marginRight="25dp"
+                android:layout_marginStart="5dp"/>
 
             <Button
                 android:id="@+id/manage_the_event"

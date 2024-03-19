@@ -26,6 +26,7 @@ import org.checkerframework.checker.units.qual.A;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
     and handle notifications
@@ -138,10 +139,9 @@ public class ManageEventFragment extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     // gotta figure out the firebase cuz idk how that works rn
-                    String[] signedUpAttendees = (String[]) documentSnapshot.get("signedUpAttendees");
-                    if (signedUpAttendees != null){
-                        ArrayList<String> attendees = new ArrayList<>(Arrays.asList(signedUpAttendees));
-                        updateListView(attendees);
+                    ArrayList<String> signedUpAttendees = (ArrayList<String>) documentSnapshot.get("signedUpAttendees");
+                    if (signedUpAttendees != null) {
+                        updateListView(signedUpAttendees);
                     }
                 } else{
                     Log.d("fetchAttendees", "No such document");

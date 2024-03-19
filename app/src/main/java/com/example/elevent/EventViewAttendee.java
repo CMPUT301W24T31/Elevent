@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
@@ -75,32 +76,28 @@ public class EventViewAttendee extends Fragment {
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
-        System.out.println(userID);
-        if (event!= null) {
-            String[] signedUp = event.getSignedUpAttendees();
-            System.out.println(Arrays.toString(signedUp));
-            if (Arrays.asList(signedUp).contains(userID)){
-                signUpButton.setVisibility(View.INVISIBLE);
+        if(event!=null){
+            List<String> signedUp = event.getSignedUpAttendees();
+            if (signedUp.contains(userID)){
+                String signedUpText = "Signed up!";
+                signUpButton.setText(signedUpText);
+                signUpButton.setBackgroundColor(getResources().getColor(R.color.background_green));
+            } else{
+                signUpButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                        Bundle args = new Bundle();
+                        args.putSerializable("event", event);
+                        args.putString("userID", userID);
+                        eventSignUpDialogFragment.setArguments(args);
+                        eventSignUpDialogFragment.show(getActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                        String signedUpText = "Signing up...";
+                        signUpButton.setText(signedUpText);
+                    }
+                });
             }
         }
-
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (event != null){
-                    String[] signedUp = event.getSignedUpAttendees();
-                    String[] newSignedUp = new String[signedUp.length + 1];
-                    System.arraycopy(signedUp, 0, newSignedUp, 0, signedUp.length);
-                    newSignedUp[signedUp.length] = userID;
-                    event.setSignedUpAttendees(newSignedUp);
-                    System.out.println(Arrays.toString(event.getSignedUpAttendees()));
-                    Map<String, Object> updates = new HashMap<>();
-                    updates.put("signedUpAttendees", newSignedUp);
-                    onSignUp(event.getEventName(), updates);
-                }
-            }
-        });
 
         if (event != null) {
             eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
@@ -127,10 +124,5 @@ public class EventViewAttendee extends Fragment {
         });
 
 
-    }
-    private void onSignUp(String eventName, Map<String, Object> updates){
-        EventDB eventDB = new EventDB(new EventDBConnector());
-
-        eventDB.updateEvent(eventName, updates);
     }
 }

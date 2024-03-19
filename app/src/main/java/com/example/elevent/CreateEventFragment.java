@@ -21,11 +21,13 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.google.firebase.firestore.Blob;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -34,8 +36,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
     to allow an organizer to input event information and create the event.
@@ -46,7 +51,6 @@ import java.util.Map;
  * Creates an event object
  */
 public class CreateEventFragment extends Fragment {
-
 
 
     private byte[] eventPoster = null;
@@ -61,11 +65,11 @@ public class CreateEventFragment extends Fragment {
             // OpenAI, 2024, ChatGPT, Convert to byte array
             try {
                 InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
-                if (inputStream != null){
+                if (inputStream != null) {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     byte[] buffer = new byte[1024];
                     int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != -1){ //changed logic to -1(end of array)
+                    while ((bytesRead = inputStream.read(buffer)) != -1) { //changed logic to -1(end of array)
                         outputStream.write(buffer, 0, bytesRead);
                     }
                     eventPoster = outputStream.toByteArray();
@@ -101,7 +105,8 @@ public class CreateEventFragment extends Fragment {
             });
         }).exceptionally(e -> {
             getActivity().runOnUiThread(() -> {
-                Toast.makeText(getActivity(), "Failed to add event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getActivity(), "Failed to add event: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                throw new RuntimeException(e.getMessage());
             });
             return null;
         });
@@ -119,7 +124,6 @@ public class CreateEventFragment extends Fragment {
     }
 
 
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -134,14 +138,14 @@ public class CreateEventFragment extends Fragment {
      * Called to have the fragment instantiate its user interface view
      * Instantiates the UI features that accept user input for event details
      * Creates the event object
-     * @param inflater The LayoutInflater object that can be used to inflate
-     * any views in the fragment,
-     * @param container If non-null, this is the parent view that the fragment's
-     * UI should be attached to.  The fragment should not add the view itself,
-     * but this can be used to generate the LayoutParams of the view.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed
-     * from a previous saved state as given here.
      *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment,
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.  The fragment should not add the view itself,
+     *                           but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     *                           from a previous saved state as given here.
      * @return View for the user interface
      */
     @Nullable
@@ -169,18 +173,17 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     return; // Add return to exit early if validation fails
                 }
-
+                String eventID = UUID.randomUUID().toString();
                 // Arguments for event constructor to be passed into addEvent
-                byte[] promotionalQR = null;
-                byte[] checkInData = null;
+                byte[] promotionalQR = generateQRCode("Promotion," + name);
+                byte[] checkInQR = generateQRCode("Check In," + name);
                 String event_date = eventDate.getText().toString();
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
-                String[] notifications = null;
 
-                Event event = new Event(name, null, null, 0,
-                        event_date, event_time, event_desc, event_location, eventPoster, notifications);
+                Event event = new Event(name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
+                        event_date, event_time, event_desc, event_location, Blob.fromBytes(eventPoster));
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
             }
@@ -196,32 +199,16 @@ public class CreateEventFragment extends Fragment {
         getContentLauncher.launch("image/*");
     }
 
-    private byte[] getCheckInQRCode(String data){
-        byte[] qrCodeByteArray = null;
-        try{
-             qrCodeByteArray = generateQRCode(data);
-        } catch (WriterException e){
-            Toast.makeText(getActivity(), "Cannot generate QR code", Toast.LENGTH_SHORT).show();  // TODO: maybe change this idk what we want to do to handle this
+    private byte[] generateQRCode(String data) {
+        try {
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            Bitmap bitmap = barcodeEncoder.encodeBitmap(data, BarcodeFormat.QR_CODE, 300, 300);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return qrCodeByteArray;
-    }
-
-    private byte[] generateQRCode(String data) throws WriterException {
-        Map<EncodeHintType, Object> hints = new HashMap<>();
-        hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 512, 512, hints);
-        int width = bitMatrix.getWidth();
-        int height = bitMatrix.getHeight();
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-
-        for (int x = 0; x < width; x++){
-            for (int y = 0; y < height; y++){
-                bitmap.setPixel(x, y, bitMatrix.get(x,y) ? ContextCompat.getColor(requireActivity(), R.color.black) : ContextCompat.getColor(requireActivity(), R.color.white));
-            }
-        }
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        return outputStream.toByteArray();
     }
 }
