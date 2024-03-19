@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
     and handle notifications
@@ -93,11 +92,11 @@ public class ManageEventFragment extends Fragment {
             public void onClick(View v) {
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))
-                if (getActivity() instanceof MainActivity) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(new NotificationCentreFragment());
-                }
+//                if (getActivity() instanceof MainActivity) {
+//                    MainActivity mainActivity = (MainActivity) getActivity();
+//                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+//                    helper.replaceFragment(new NotificationCentreFragment());
+//                }
                 //return null;
             }
         });

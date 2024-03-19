@@ -1,7 +1,9 @@
 package com.example.elevent;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of an Event object
@@ -16,7 +18,7 @@ public class Event implements Serializable {
     private static final String eventID = "test";
     private String eventName;
     private byte[] promotionalQR; //byte array
-    private byte[] checkinQR; // byte array
+    private List<Byte> checkinQR; // byte array
     private int attendeesCount;
     private byte[] eventPoster; //byte array
     private String date;
@@ -27,6 +29,8 @@ public class Event implements Serializable {
 
     // No-argument constructor
     public Event() {
+        // Initialize checkinQR as ArrayList
+        this.checkinQR = new ArrayList<>();
     }
 
     /**
@@ -42,7 +46,7 @@ public class Event implements Serializable {
      * @param eventPoster Uploaded poster of the event
      * @param notifications Notifications for the event
      */
-    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount,
+    public Event(String eventName, byte[] promotionalQR, List<Byte> checkinQR, int attendeesCount,
                  String date, String time, String description, String location, byte[] eventPoster,
                  String[] notifications) {
         this.eventName = eventName;
@@ -129,7 +133,7 @@ public class Event implements Serializable {
      * Getter for the check in QR code
      * @return Check in QR code for the event
      */
-    public byte[] getCheckinQR() {
+    public List<Byte> getCheckinQR() {
         return checkinQR;
     }
 
@@ -169,7 +173,7 @@ public class Event implements Serializable {
      * Setter for the check in QR code
      * @param checkinQR Check in QR code for the event
      */
-    public void setCheckinQR(byte[] checkinQR) {
+    public void setCheckinQR(List<Byte> checkinQR) {
         this.checkinQR = checkinQR;
     }
 

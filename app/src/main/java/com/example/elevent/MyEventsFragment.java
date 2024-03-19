@@ -111,12 +111,12 @@ public class MyEventsFragment extends Fragment {
             public void onClick(View v) {
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))
-                if (getActivity() instanceof MainActivity) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(new CreateEventFragment());
-                    mainActivity.updateAppBarTitle("Creating Event...");
-                }
+//                if (getActivity() instanceof MainActivity) {
+//                    MainActivity mainActivity = (MainActivity) getActivity();
+//                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+//                    helper.replaceFragment(new CreateEventFragment());
+//                    mainActivity.updateAppBarTitle("Creating Event...");
+//                }
                 //return null;
             }
         });
@@ -147,13 +147,13 @@ public class MyEventsFragment extends Fragment {
                 bundle.putSerializable("selected_event", selectedEvent);
                 createdEventFragment.setArguments(bundle);
 
-                //switch fragments
-                if (getActivity() instanceof MainActivity) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    mainActivity.updateAppBarTitle(selectedEvent.getEventName());
-                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(createdEventFragment);
-                }
+//                //switch fragments
+//                if (getActivity() instanceof MainActivity) {
+//                    MainActivity mainActivity = (MainActivity) getActivity();
+//                    mainActivity.updateAppBarTitle(selectedEvent.getEventName());
+//                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+//                    helper.replaceFragment(createdEventFragment);
+//                }
             }
         });
         fetchEvents();
