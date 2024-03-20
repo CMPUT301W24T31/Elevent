@@ -2,8 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/app_navigation.xml"
-    app:startDestination="@id/mainFragment">
+    android:id="@+id/app_navigation"
+    app:startDestination="@id/allEventsFragment">
 
     <fragment
         android:id="@+id/createdEventFragment"
@@ -88,24 +88,6 @@
         <action
             android:id="@+id/action_notificationFragmentAttendee_to_eventViewAttendee2"
             app:destination="@id/eventViewAttendee2" />
-    </fragment>
-    <fragment
-        android:id="@+id/mainFragment"
-        android:name="com.example.elevent.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
-        <action
-            android:id="@+id/action_mainFragment_to_allEventsFragment"
-            app:destination="@id/allEventsFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_myEventsFragment"
-            app:destination="@id/myEventsFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
-        <action
-            android:id="@+id/action_mainFragment_to_scannerFragment"
-            app:destination="@id/scannerFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"

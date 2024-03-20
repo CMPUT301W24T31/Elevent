@@ -15,11 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
     Outstanding issues: n/a
@@ -165,22 +167,47 @@ public class AllEventsFragment extends Fragment {
      * Get the event from the database
      */
     public void fetchEvents() {
-        EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
-        FirebaseFirestore db = connector.getDb();
-
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 List<Event> eventsList = new ArrayList<>();
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
-                    eventsList.add(event);
+                    try {
+                        Event event = new Event();
+                        event.setEventName(document.getString("eventName"));
+                        event.setDate(document.getString("date"));
+                        event.setTime(document.getString("time"));
+                        event.setDescription(document.getString("description"));
+                        event.setLocation(document.getString("location"));
+                        Long attendeesCount = document.getLong("attendeesCount");
+                        if (attendeesCount != null) {
+                            event.setAttendeesCount(attendeesCount.intValue());
+                        }
+
+                        // Manually handle checkinQR
+                        try {
+                            Blob checkinQRBlob = document.getBlob("checkinQR");
+                            if (checkinQRBlob != null) {
+                                event.setCheckinQR(checkinQRBlob.toBytes());
+                            }
+                        } catch (Exception e) {
+                            Log.e("EventFetch", "Error deserializing checkinQR for event: " + event.getEventName(), e);
+                        }
+
+                        eventsList.add(event);
+                    } catch (Exception e) {
+                        Log.e("EventFetch", "Error deserializing document to Event: " + document.getId(), e);
+                    }
                 }
-                updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
+                // Update UI with the fetched list of events
+                updateListView(new ArrayList<>(eventsList));
             } else {
-                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+                Log.w("EventFetch", "Error getting documents: ", task.getException());
             }
         });
     }
+
+
 
     /**
      * Update the display of the events

@@ -21,24 +21,26 @@
 
         <Spinner
             android:id="@+id/event_filter_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_width="396dp"
+            android:layout_height="52dp"
             android:background="@drawable/rounded_corner"
             android:backgroundTint="@color/item_grey"
-            android:padding="30dp"/>
+            android:padding="30dp" />
 
 
         <ListView
             android:id="@+id/list_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
             android:layout_weight="1"
 
-            android:cacheColorHint="#B59D9D"
+
             android:background="@drawable/rounded_corner"
+            android:cacheColorHint="#B59D9D"
             android:divider="@android:color/transparent"
-            android:dividerHeight="10dp"
-            />
+            android:dividerHeight="10dp" />
         <!--
    <ExpandableListView
        android:layout_width="match_parent"
@@ -57,8 +59,7 @@
             android:text="Button" />
             -->
     </LinearLayout>
-<!--    TEMPORARY BUTTON TO TEST FRAGMENT NAVIGATION
-        REPLACE WITH EVENT ITEM CLICK FROM LIST VIEW    -->
+
 
 
 

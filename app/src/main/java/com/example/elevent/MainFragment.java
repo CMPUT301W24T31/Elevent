@@ -1,6 +1,7 @@
-package com.example.elevent;
+/*package com.example.elevent;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +43,7 @@ public class MainFragment extends Fragment {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     if (item.getItemId() == R.id.nav_bar_allevents) {
                         Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_allEventsFragment);
+                        Log.d("Navigation", "Navigating to All Events Fragment");
                         return true;
                     }else if (item.getItemId() == R.id.nav_bar_myevents) {
                         Navigation.findNavController(view).navigate(R.id.action_mainFragment_to_myEventsFragment);
@@ -58,3 +60,4 @@ public class MainFragment extends Fragment {
         });
     }
 }
+*/

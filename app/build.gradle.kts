@@ -43,7 +43,8 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore:24.10.3")
     val nav_version = "2.7.7"
-
+    //splash screen
+    implementation("androidx.core:core-splashscreen:1.0.0")
     // Java language implementation
     implementation("androidx.navigation:navigation-fragment:$nav_version")
     implementation("androidx.navigation:navigation-ui:$nav_version")

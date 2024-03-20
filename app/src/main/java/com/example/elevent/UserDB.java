@@ -34,7 +34,7 @@ public class UserDB extends MainActivity {
     public void addNewUser(User user) {
 
         // retrieve the userID from MainActivity
-        String userId = getUserIDForUserDB();
+        String userId = null;
         user.setUserID(userId); // set the randomly generated userID from MainActivity as the userID in User class
 
         db.collection("User").document(userId).set(user.toMap())

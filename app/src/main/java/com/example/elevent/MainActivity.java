@@ -4,129 +4,101 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.widget.TextView;
+
+import androidx.core.splashscreen.SplashScreen;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.UUID;
-/*
-    This file is responsible for being the host activity of all fragments in the app
-    Outstanding issues: some listeners that are implemented through MainActivity must be refined
- */
-
 /**
- * This is the main activity that all fragments and listeners attach to
- * Contains the navigation bar
+ * MainActivity serves as the primary activity that hosts all fragments
+ * in the application. It contains the bottom navigation bar for navigating
+ * between the fragments and manages the AppBar title updates based on the
+ * current screen.
  */
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
-    BottomNavigationView navigationView;
-    AllEventsFragment allEventsFragment = new AllEventsFragment();
-    MyEventsFragment myEventsFragment = new MyEventsFragment();
-    ScannerFragment scannerFragment = new ScannerFragment();
-    ProfileFragment profileFragment = new ProfileFragment();
+    // Tag for logging
+    private static final String TAG = "MainActivity";
 
-    private ActivityResultLauncher<Intent> generateQRLauncher;
-    private byte[] checkinQR;
-    private byte[] promotionQR;
-
-    /**
-     * Called when the activity is starting
-     * Initializes the tool bar
-     * Gives user a unique user ID when they open the app for the first time
-     *
-     * @param savedInstanceState If the activity is being re-initialized after
-     *                           previously being shut down then this Bundle contains the data it most
-     *                           recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_main);
+        setContentView(R.layout.activity_main);
 
-        // Find the Toolbar
+
+        // Initialize the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
-        // Set the Toolbar to act as the ActionBar
         setSupportActionBar(toolbar);
 
-        // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        // Initialize BottomNavigationView and NavController
+        BottomNavigationView navView = findViewById(R.id.activity_main_navigation_bar); // Correct ID reference
+        NavController navController = Navigation.findNavController(this, R.id.fragmentContainerView); // Correct ID reference
+
+        // Setup AppBarConfiguration with top-level destinations
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.allEventsFragment, R.id.myEventsFragment, R.id.scannerFragment, R.id.profileFragment)
+                .build();
+
+        // Link the NavController with the AppBar
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        // Link the BottomNavigationView with the NavController
+        NavigationUI.setupWithNavController(navView, navController);
+
+        // Generate a unique user ID on first launch
+        generateUniqueUserID();
+    }
+
+    /**
+     * Generates a unique user ID and stores it in SharedPreferences
+     * if it's the user's first launch of the app.
+     */
+    private void generateUniqueUserID() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
+
         if (isFirstLaunch) {
             String userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("isFirstLaunch", false);
             editor.putString("userID", userID);
             editor.apply();
+
+            Log.i(TAG, "Generated unique user ID on first launch: " + userID);
         }
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getByteArrayExtra("qrCode");
-                }
-            }
-        });
-
     }
 
-
-    //to implement the fragment to create event fragment
-    /*@Override
-    public void onCreateEvent(Event event) {
-
-    }*/
-
     /**
-     * Implementation of the CreateEventListener
+     * Overrides onSupportNavigateUp to handle Up navigation with NavController.
      *
-     * @param event The created event
+     * @return boolean indicating whether Up navigation was successfully handled.
      */
-    public void onPositiveClick(Event event) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String eventID = UUID.randomUUID().toString();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("eventID", eventID);
-        editor.apply();
-        MyEventsFragment fragment = new MyEventsFragment();
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("event", (Parcelable) event);
-        fragment.setArguments(bundle);
-        Navigation.findNavController(this, R.id.fragmentContainerView)
-                .navigate(R.id.action_mainFragment_to_myEventsFragment, bundle);
-        updateAppBarTitle("My Events");
-
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.fragmentContainerView);
+        return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
     /**
-     * Updates the title of the app bar at the top of the screen
+     * Updates the title of the AppBar based on the current screen.
      *
-     * @param title Title to be updated to
+     * @param title The new title to set for the AppBar.
      */
     public void updateAppBarTitle(String title) {
         TextView appBarTitle = findViewById(R.id.appbar_text);
         appBarTitle.setText(title);
     }
-
-
-    // use this method to get the UUID give to a user at
-    // first launch in the UserDB to be used as the document
-    // name in the firestore database collection 'User'
-
-    /**
-     * Gets the user ID to store into the user database
-     *
-     * @return User ID
-     */
-    public String getUserIDForUserDB() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return sharedPreferences.getString("userID", null); // Return null or a default value if not found
-    }
-
 }
