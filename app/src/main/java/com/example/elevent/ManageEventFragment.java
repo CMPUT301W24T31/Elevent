@@ -2,6 +2,7 @@ package com.example.elevent;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApiNotAvailableException;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
     and handle notifications
@@ -49,9 +63,17 @@ public class ManageEventFragment extends Fragment {
         }
     }
 
-
+    private Event event;
     private TextView attendeeListTextView;
     private ListView listOfAttendees;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null){
+            event = (Event) getArguments().getSerializable("event");
+        }
+    }
 
     /**
      * Called immediately after has returned, but before any saved state has been restored in to the view.
@@ -101,11 +123,35 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
+        fetchAttendees();
     }
 
         // You can also set data to your TextView and ListView
         // attendeeListTextView.setText("Attendees List");
         // Set adapter to ListView
         // Example: listOfAttendees.setAdapter(yourAdapter);
+    private void fetchAttendees(){
+        EventDBConnector connector = new EventDBConnector();
+        FirebaseFirestore db = connector.getDb();
 
+        db.collection("events").document(event.getEventName()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    // gotta figure out the firebase cuz idk how that works rn
+                    ArrayList<String> signedUpAttendees = (ArrayList<String>) documentSnapshot.get("signedUpAttendees");
+                    if (signedUpAttendees != null) {
+                        updateListView(signedUpAttendees);
+                    }
+                } else{
+                    Log.d("fetchAttendees", "No such document");
+                }
+            }
+        });
+    }
+    private void updateListView(ArrayList<String> attendees){
+        AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), attendees);
+        listOfAttendees = getView().findViewById(R.id.list_of_attendees);
+        listOfAttendees.setAdapter(attendeeArrayAdapter);
+    }
 }

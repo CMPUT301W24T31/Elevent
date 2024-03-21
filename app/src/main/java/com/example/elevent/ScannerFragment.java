@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -15,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,10 +24,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.client.android.Intents;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+
+import java.util.Map;
+import java.util.Objects;
 /*
     This file contains the implementation of the ScannerFragment that is responsible for
     requesting for camera permission and opening the camera to scan QR codes.
@@ -68,7 +76,13 @@ public class ScannerFragment extends Fragment {
                 }
             } else {
                 Log.d("ScanQRCodeActivity", "Scanned");
-                Toast.makeText(getContext(), "Scanned", Toast.LENGTH_SHORT).show();  // placeholder; TODO: replace this with the actual content of the QR code
+                String resultContents = result.getContents();
+                String[] data = resultContents.split(",");
+                if (Objects.equals(data[0], "Check In")){
+                    onAttendeeCheckIn(data[1]);
+                } else if (Objects.equals(data[0], "Promotion")){
+                    onPromotionScan(data[1]);
+                }
             }
         });
          requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -133,4 +147,60 @@ public class ScannerFragment extends Fragment {
         qrScannerLauncher.launch(options);
     }
 
+    private void onAttendeeCheckIn(String eventName){
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString("userID", null);
+        EventDBConnector eventDBConnector = new EventDBConnector();
+        FirebaseFirestore db = eventDBConnector.getDb();
+
+        db.collection("events").document(eventName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    Map<String, Integer> checkedInAttendees = (Map<String, Integer>) documentSnapshot.get("checkedInAttendees");
+                    if (checkedInAttendees != null){
+                        if (checkedInAttendees.containsKey(userID)) {
+                            int checkInCount = checkedInAttendees.get(userID);
+                            checkInCount++;
+                            checkedInAttendees.put(userID, checkInCount);
+                        } else {
+                            checkedInAttendees.put(userID, 0);
+                        }
+                    }
+                } else{
+                    Log.d("onAttendeeCheckIn", "Document does not exist");
+                }
+            }
+        });
+        Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_SHORT).show();
+        if (getActivity() instanceof MainActivity){
+            MainActivity mainActivity = (MainActivity) getActivity();
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            fragmentManager.popBackStack();
+        }
+    }
+    private void onPromotionScan(String eventName){
+        EventDBConnector connector = new EventDBConnector();
+        FirebaseFirestore db = connector.getDb();
+
+        db.collection("events").document(eventName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    if (getActivity() instanceof MainActivity) {
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+
+                        Event event = documentSnapshot.toObject(Event.class);
+                        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+                        Bundle args = new Bundle();
+                        args.putSerializable("event", event);
+                        eventViewAttendeeFragment.setArguments(args);
+
+                        helper.replaceFragment(eventViewAttendeeFragment);
+                    }
+                }
+            }
+        });
+    }
 }

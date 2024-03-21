@@ -146,6 +146,8 @@ public class AllEventsFragment extends Fragment {
         listView.setAdapter(eventAdapter);
     */
 
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
+        listView.setAdapter(eventAdapter);
 
         listView.setOnItemClickListener((parent, view1, position, id) -> {
             if (getActivity() instanceof MainActivity) {
@@ -162,9 +164,6 @@ public class AllEventsFragment extends Fragment {
                 helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
             }
         });
-
-        EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
-        listView.setAdapter(eventAdapter);
         fetchEvents();
     }
 
