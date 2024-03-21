@@ -2,6 +2,18 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="AllEventsSpinnerDropdownTest">
+        <State />
+      </entry>
+      <entry key="CreateButtonExistsTest">
+        <State />
+      </entry>
+      <entry key="CreatedEventManageTest">
+        <State />
+      </entry>
+      <entry key="InEventNavBarShowingTest">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>
@@ -17,6 +29,9 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-03-09T22:59:29.163296Z" />
         </State>
+      </entry>
+      <entry key="createButtonExistsTest()">
+        <State />
       </entry>
     </value>
   </component>

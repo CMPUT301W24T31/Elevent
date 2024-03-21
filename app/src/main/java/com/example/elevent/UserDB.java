@@ -8,6 +8,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+
 /*
     This file is responsible for handling all user database functionalities required for the app
     Outstanding issues: n/a
@@ -27,19 +32,17 @@ public class UserDB extends MainActivity {
         this.db = connector.getDb();
     }
 
-    /**
-     * Add a new user to the database
-     * @param user User to be added
-     */
-    public void addNewUser(User user) {
+    public CompletableFuture<Void> addUser (User user) {
 
-        // retrieve the userID from MainActivity
-        String userId = null;
-        user.setUserID(userId); // set the randomly generated userID from MainActivity as the userID in User class
+        // a map of all the event information to be added into a document
+        // on firestore
+        Map<String, Object> userMap = user.userToMap();
 
-        db.collection("User").document(userId).set(user.toMap())
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "User added successfully"))
-                .addOnFailureListener(e -> Log.d("Firestore", "Error adding user", e));
+        // asynchronously add the event to Firestore and name the document
+        // the name of the event
+        return CompletableFuture.runAsync(() -> {
+            db.collection("users").document(user.getName()).set(userMap);
+        });
 
 
         /* before implementing count to create custom user count document name for each user
@@ -49,34 +52,14 @@ public class UserDB extends MainActivity {
          */
     }
 
-    /**
-     * Update a user's information in the database
-     * @param user User whose information must be updated
-     */
-    public void updateUser(User user) {
+    public CompletableFuture<Void> updateUser(String userID, Map<String, Object> updates) {
 
-        // if the userID does not exist(there is no user document in
-        // firestore to update user info)
-        if (user.getUserID() == null || user.getUserID().isEmpty()) {
-            System.out.println("User document ID is missing.");
-            return;
-        }
+        // create a reference to the user documented meant to be edited and updated
+        DocumentReference userRef = db.collection("users").document(userID);
 
-        // SetOptions.merge() recommended by Openai, ChatGPT, March 6th, 2024, "how to update data in
-        // firestore in an existing document
+        // asynchronously update the user document in firestore
+        return CompletableFuture.runAsync(() -> userRef.update(updates));
 
-        // also, the document path using user.getUserID() hopefully should use the userID from MainActivity,
-        // that was set using the setter found in the User class into the userID attribute for a user ( User user )
-        db.collection("User").document(user.getUserID()).set(user.toMap(), SetOptions.merge())
-                .addOnSuccessListener(aVoid -> System.out.println("User updated successfully"))
-                .addOnFailureListener(e -> System.out.println("Error updating user: " + e.getMessage()));
-
-
-        /* before implementing user count and userID
-        db.collection("User").document(user.getName()).update(user.toMap())
-                .addOnSuccessListener(aVoid -> System.out.println("User updated successfully"))
-                .addOnFailureListener(e -> System.out.println("Error updating user: " + e.getMessage()));
-         */
     }
 
 
@@ -136,40 +119,14 @@ public class UserDB extends MainActivity {
          */
     }
 
-    // get the userID using the getter method in MainActivity
-    // getUserIDForUserDB
+    // method used to delete a user from the user database
+    public CompletableFuture<Void> deleteUser(String userID) {
 
-    /**
-     * Deletes a user from the database
-     * @param userID User ID of the user to be deleted
-     */
-    public void deleteUser(String userID) {
+        DocumentReference userRef = db.collection("users").document(userID); // Reference to the event document
 
-        db.collection("User").document(userID).delete()
-                .addOnSuccessListener(aVoid -> System.out.println("User successfully deleted."))
-                .addOnFailureListener(e -> System.out.println("Error deleting user: " + e.getMessage()));
-        /*
-        db.collection("User").document(user.getName()).delete()
-                .addOnSuccessListener(aVoid -> System.out.println("User deleted successfully"))
-                .addOnFailureListener(e -> System.out.println("Error deleting user: " + e.getMessage()));
-
-         */
+        // after getting a reference of the document, delete the document
+        return CompletableFuture.runAsync(userRef::delete);
     }
-
-    /* retrieve userID from MainActivity to be used in this file,
-        scrapped because we are inheriting from MainActivity and just use
-        getUserIDForUserDB() method found in MainActivity
-
-        public String retrieveUserIDForDocumentName() {
-
-        String userID = getUserIDForUserDB();
-
-        if (userID == null) {
-            System.out.println("User ID does not exist");
-        }
-        return userID;
-    }
-     */
 
     // interface for callbacks when reading user data
 
