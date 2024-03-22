@@ -13,7 +13,7 @@ import java.util.Map;
 public class Event implements Serializable {
 
     // attributes for the information of an event
-    private static final String eventID = "test";
+    private String eventID;
     private String eventName;
     private byte[] promotionalQR; //byte array
     private byte[] checkinQR; // byte array
@@ -55,6 +55,7 @@ public class Event implements Serializable {
         this.eventPoster = eventPoster;
         this.location = location;
         this.notifications = notifications;
+        eventID = String.valueOf(System.currentTimeMillis());
     }
 
     /**
@@ -239,5 +240,9 @@ public class Event implements Serializable {
 
     public void addNotification(String newNotificationMessage) {
 
+    }
+
+    public String getEventID() {
+        return eventID;
     }
 }

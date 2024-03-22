@@ -55,7 +55,7 @@ public class EventDB {
         // asynchronously add the event to Firestore and name the document
         // the name of the event
         return CompletableFuture.runAsync(() -> {
-            db.collection("events").document(event.getEventName()).set(eventMap);
+            db.collection("events").document(event.getEventID()).set(eventMap);
         });
     }
 
@@ -67,12 +67,11 @@ public class EventDB {
 
     /**
      * Updates the information of an event in the database
-     * @param oldEventName The Previous Name of the Event, to find it in the database
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
      * @return Result of the operation
      */
-    public CompletableFuture<Void> updateEvent(String oldEventName, Event newEvent) {
-        DocumentReference eventRef = db.collection("events").document(oldEventName);
+    public CompletableFuture<Void> updateEvent(Event newEvent) {
+        DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());
 
         // asynchronously update the event document in firestore
         return CompletableFuture.runAsync(() -> eventRef.update(newEvent.toMap()));
@@ -86,11 +85,11 @@ public class EventDB {
 
     /**
      * Deletes an event from the database
-     * @param eventName Name of the event
+     * @param eventID ID of the event
      * @return Result of the operation
      */
-    public CompletableFuture<Void> deleteEvent(String eventName) {
-        DocumentReference eventRef = db.collection("events").document(eventName); // Reference to the event document
+    public CompletableFuture<Void> deleteEvent(String eventID) {
+        DocumentReference eventRef = db.collection("events").document(eventID); // Reference to the event document
 
         // after getting a reference of the document, delete the document
         return CompletableFuture.runAsync(eventRef::delete);
