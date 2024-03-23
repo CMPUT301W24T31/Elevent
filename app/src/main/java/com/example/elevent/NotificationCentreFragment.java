@@ -31,6 +31,7 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
     }
 
     private NotificationCentreFragment.NotificationCentreDialogListener listener;
+    private Event event;
 
     /**
      * Called when a fragment is first attached to its host activity
@@ -46,6 +47,13 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null){
+            event = (Event) getArguments().getSerializable("event");
+        }
+    }
 
     private TextView notificationListTextView;
     private ListView listOfNotifications;
@@ -95,7 +103,10 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
             addNotification.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Bundle args = new Bundle();
+                    args.putSerializable("event", event);
                     AddNotificationDialogFragment dialogFragment = new AddNotificationDialogFragment();
+                    dialogFragment.setArguments(args);
                     dialogFragment.show(getChildFragmentManager(), "AddNotificationDialogFragment");
                 }
             });

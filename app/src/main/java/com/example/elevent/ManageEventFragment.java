@@ -116,9 +116,13 @@ public class ManageEventFragment extends Fragment {
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))
                 if (getActivity() instanceof MainActivity) {
+                    NotificationCentreFragment notificationCentreFragment = new NotificationCentreFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("event", event);
+                    notificationCentreFragment.setArguments(args);
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(new NotificationCentreFragment());
+                    helper.replaceFragment(notificationCentreFragment);
                 }
                 //return null;
             }

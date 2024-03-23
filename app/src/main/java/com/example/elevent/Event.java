@@ -21,6 +21,7 @@ public class Event implements Serializable {
 
     // attributes for the information of an event
     private static final String eventID = "test";
+    private String organizerID;
     private String eventName;
     private Blob promotionalQR; //byte array
     private Blob checkinQR; // byte array
@@ -30,7 +31,7 @@ public class Event implements Serializable {
     private String time;
     private String description;
     private String location;
-    private String[] notifications;
+    private List<String> notifications;
     private List<String> signedUpAttendees;
     private Map<String, Integer> checkedInAttendees;
 
@@ -50,8 +51,9 @@ public class Event implements Serializable {
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
      */
-    public Event(String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+    public Event(String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster) {
+        this.organizerID = organizerID;
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
@@ -61,7 +63,7 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
-        this.notifications = null;
+        this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkedInAttendees = new HashMap<>();
     }
@@ -72,6 +74,7 @@ public class Event implements Serializable {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("organizerID", organizerID);
         eventMap.put("eventName", eventName);
         eventMap.put("location", location);
         eventMap.put("date", date);
@@ -86,6 +89,10 @@ public class Event implements Serializable {
         eventMap.put("checkedInAttendees", checkedInAttendees);
 
         return eventMap;
+    }
+
+    public String getOrganizerID() {
+        return organizerID;
     }
 
     /**
@@ -160,10 +167,17 @@ public class Event implements Serializable {
         return eventPoster;
     }
 
+    public Map<String, Integer> getCheckedInAttendees() {
+        return checkedInAttendees;
+    }
+
     public List<String> getSignedUpAttendees() {
         return signedUpAttendees;
     }
-    public Map<String, Integer> getCheckedInAttendees(){return getCheckedInAttendees();}
+
+    public void setOrganizerID(String organizerID) {
+        this.organizerID = organizerID;
+    }
 
     /**
      * Setter for the event name
@@ -241,7 +255,7 @@ public class Event implements Serializable {
      * Getter for the notifications for the event
      * @return Notifications for the event
      */
-    public String[] getNotifications() {
+    public List<String> getNotifications() {
         return notifications;
     }
 
@@ -249,7 +263,7 @@ public class Event implements Serializable {
      * Setter for the notifications of the event
      * @param notifications Notifications for the event
      */
-    public void setNotifications(String[] notifications) {
+    public void setNotifications(List<String> notifications) {
         this.notifications = notifications;
     }
 

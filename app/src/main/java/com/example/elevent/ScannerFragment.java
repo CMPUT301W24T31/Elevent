@@ -28,10 +28,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.client.android.Intents;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
 import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
+import com.journeyapps.barcodescanner.camera.CameraSettings;
 
+import org.checkerframework.checker.units.qual.C;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 /*
@@ -47,7 +56,6 @@ public class ScannerFragment extends Fragment {
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
-    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     /**
      * Required empty public constructor
@@ -66,15 +74,7 @@ public class ScannerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
-            if (result.getContents() == null) {
-                Intent originalIntent = result.getOriginalIntent();
-                if (originalIntent == null) {
-                    Log.d("ScanQRCodeActivity", "Cancelled scan");
-                } else if (originalIntent.hasExtra(Intents.Scan.MISSING_CAMERA_PERMISSION)) {
-                    Log.d("ScanQRCodeActivity", "Cancelled scan due to missing camera permission");
-                    Toast.makeText(getContext(), "Camera permission required", Toast.LENGTH_SHORT).show();
-                }
-            } else {
+            if (result.getContents() != null){
                 Log.d("ScanQRCodeActivity", "Scanned");
                 String resultContents = result.getContents();
                 String[] data = resultContents.split(",");
@@ -85,12 +85,7 @@ public class ScannerFragment extends Fragment {
                 }
             }
         });
-         requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-            if (isGranted){
-                scanQR();
-            }
-        });
-        requestPermissionLauncher.launch(Manifest.permission.CAMERA);  // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
+        scanQR();
     }
 
     /**
@@ -123,17 +118,6 @@ public class ScannerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        checkCameraPermission();
-    }
-
-    /**
-     * Check that the user has given permission to use the camera
-     * If so, open the scanner
-     */
-    private void checkCameraPermission(){
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            scanQR();
-        }
     }
 
     /**
@@ -144,11 +128,12 @@ public class ScannerFragment extends Fragment {
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(true);
         options.setPrompt("");
+        options.setCaptureActivity(CaptureAct.class);
         qrScannerLauncher.launch(options);
     }
 
     private void onAttendeeCheckIn(String eventName){
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb();
@@ -164,15 +149,19 @@ public class ScannerFragment extends Fragment {
                             checkInCount++;
                             checkedInAttendees.put(userID, checkInCount);
                         } else {
-                            checkedInAttendees.put(userID, 0);
+                            checkedInAttendees.put(userID, 1);
                         }
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("checkedInAttendees", checkedInAttendees);
+                        EventDB eventDB = new EventDB(eventDBConnector);
+                        eventDB.updateEvent(eventName, updates);
                     }
                 } else{
                     Log.d("onAttendeeCheckIn", "Document does not exist");
                 }
             }
         });
-        Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_LONG).show();
         if (getActivity() instanceof MainActivity){
             MainActivity mainActivity = (MainActivity) getActivity();
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

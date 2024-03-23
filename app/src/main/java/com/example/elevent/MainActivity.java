@@ -1,8 +1,12 @@
 package com.example.elevent;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,11 +16,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.fragment.FragmentNavigatorExtrasKt;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.Objects;
 import java.util.UUID;
 /*
     This file is responsible for being the host activity of all fragments in the app
@@ -42,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private byte[] promotionQR;
     private static final String PREF_NAME = "MyPrefs";
     private static final String KEY_USER_ID = "userID";
+    private static final String CHANNEL_ID = "EleventChannel";
 
     /**
      * Called when the activity is starting
@@ -62,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         Toolbar toolbar = findViewById(R.id.toolbar);
         // Set the Toolbar to act as the ActionBar
         setSupportActionBar(toolbar);
+        createNotificationChannel();
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
@@ -82,7 +90,16 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
         initNavView();
         Log.d("DEBUG", "test");
-
+        if (getIntent().hasExtra("OpenNotificationFromFragment")){
+            if(Objects.equals(getIntent().getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")){
+                NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                Bundle args = new Bundle();
+                Event eventToOpen = (Event) getIntent().getSerializableExtra("event");
+                args.putSerializable("event", eventToOpen);
+                notificationFragmentAttendee.setArguments(args);
+                fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
+            }
+        }
     }
 
     /**
@@ -199,5 +216,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
         fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
         updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
+    }
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "Event Announcements";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }
