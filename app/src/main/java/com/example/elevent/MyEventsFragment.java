@@ -1,5 +1,7 @@
 package com.example.elevent;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 /*
     This file implements the MyEventsFragment that is responsible for displaying the list of events that the organizer
     has created. As well, is responsible for displaying the UI to allow a user to create an event.
@@ -172,6 +175,8 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
      * Get the organizer's events from the events database
      */
     private void fetchEvents() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String organizerID = sharedPreferences.getString("userID", null);
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb(); //
 
@@ -179,8 +184,10 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
             if (task.isSuccessful()) {
                 myEvents.clear(); // Clear existing events before adding new ones
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
-                    myEvents.add(event); // Add the fetched event to the list
+                    if (Objects.equals(document.getString("organizerID"), organizerID)) {
+                        Event event = document.toObject(Event.class);
+                        myEvents.add(event); // Add the fetched event to the list
+                    }
                 }
                 myEventsArrayAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
             } else {

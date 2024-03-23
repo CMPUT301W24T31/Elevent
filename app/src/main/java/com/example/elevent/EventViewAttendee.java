@@ -2,6 +2,8 @@ package com.example.elevent;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -102,6 +105,11 @@ public class EventViewAttendee extends Fragment {
         if (event != null) {
             eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
             eventDescriptionTextView.setText(event.getDescription()); //after description is implemented
+            if (event.getEventPoster() != null){
+                Blob eventPosterBlob = event.getEventPoster();
+                Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
+                eventPosterImageView.setImageBitmap(eventPoster);
+            }
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
             }
@@ -124,5 +132,9 @@ public class EventViewAttendee extends Fragment {
         });
 
 
+    }
+    private Bitmap convertBlobToBitmap(Blob blob){
+        byte[] byteArray = blob.toBytes();
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 }

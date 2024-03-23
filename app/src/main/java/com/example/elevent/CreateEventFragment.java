@@ -2,8 +2,11 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +39,8 @@ import java.util.UUID;
  */
 public class CreateEventFragment extends Fragment {
 
-    private byte[] eventPoster = null;
+
+    private byte[] eventPosterByteArray = null;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
@@ -47,18 +51,10 @@ public class CreateEventFragment extends Fragment {
         if (uri != null) {
             // OpenAI, 2024, ChatGPT, Convert to byte array
             try {
-                InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
-                if (inputStream != null) {
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(buffer)) != -1) { //changed logic to -1(end of array)
-                        outputStream.write(buffer, 0, bytesRead);
-                    }
-                    eventPoster = outputStream.toByteArray();
-                    inputStream.close();
-                    outputStream.close();
-                }
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                eventPosterByteArray = byteArrayOutputStream.toByteArray();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -151,6 +147,8 @@ public class CreateEventFragment extends Fragment {
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                String organizerID = sharedPreferences.getString("userID", null);
                 String name = eventName.getText().toString();
                 if (name.isEmpty()) {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
@@ -160,13 +158,17 @@ public class CreateEventFragment extends Fragment {
                 // Arguments for event constructor to be passed into addEvent
                 byte[] promotionalQR = generateQRCode("Promotion," + name);
                 byte[] checkInQR = generateQRCode("Check In," + name);
+                Blob eventPoster = null;
+                if (eventPosterByteArray != null){
+                    eventPoster = Blob.fromBytes(eventPosterByteArray);
+                }
                 String event_date = eventDate.getText().toString();
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
 
-                Event event = new Event(name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                        event_date, event_time, event_desc, event_location, Blob.fromBytes(eventPoster));
+                Event event = new Event(organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
+                        event_date, event_time, event_desc, event_location, eventPoster);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
 

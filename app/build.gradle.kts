@@ -72,6 +72,7 @@ dependencies {
     implementation("androidx.tracing:tracing:1.2.0")
     implementation("androidx.navigation:navigation-runtime:2.7.7")
     implementation("com.google.firebase:firebase-storage:20.3.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.0-alpha03")
 

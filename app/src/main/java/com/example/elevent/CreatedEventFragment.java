@@ -86,12 +86,25 @@ public class CreatedEventFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_createdevent, container, false);
-        EditText eventNameText = view.findViewById(R.id.event_name_text);
-        EditText eventLocationText = view.findViewById(R.id.event_location_text);
-        EditText eventTimeText = view.findViewById(R.id.event_time_text);
-        EditText eventDateText = view.findViewById(R.id.event_date_text);
-        EditText eventDescriptionText = view.findViewById(R.id.event_description_text);
-        Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
+        EditText eventName = view.findViewById(R.id.event_name_text);
+        eventName.setText(event.getEventName());
+        EditText eventAddress = view.findViewById(R.id.event_location_text);
+        if (event.getLocation() != null){
+            eventAddress.setText(event.getLocation());
+        }
+        EditText eventTime = view.findViewById(R.id.event_time_text);
+        if (event.getTime() != null){
+            eventTime.setText(event.getTime());
+        }
+        EditText eventDate = view.findViewById(R.id.event_date_text);
+        if (event.getDate() != null){
+            eventDate.setText(event.getDate());
+        }
+        EditText eventDescription = view.findViewById(R.id.event_description_text);
+        if (event.getDescription() != null){
+            eventDescription.setText(event.getDescription());
+        }
+        Button addEventImage = view.findViewById(R.id.eventPoster_image);
 
         ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
         ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
