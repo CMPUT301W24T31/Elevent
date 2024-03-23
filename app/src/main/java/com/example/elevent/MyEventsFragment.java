@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * This fragment displays the events that an organizer has created
  */
-public class MyEventsFragment extends Fragment {
+public class MyEventsFragment extends Fragment implements CreatedEventFragment.CreatedEventListener{
 
     CreateEventFragment createEventFragment;
     private ArrayList<Event> myEvents;
@@ -115,7 +115,7 @@ public class MyEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreateEventFragment());
-                    mainActivity.updateAppBarTitle("Creating Event...");
+                    mainActivity.updateAppBarTitle("Creating Event");
                 }
                 //return null;
             }
@@ -188,4 +188,22 @@ public class MyEventsFragment extends Fragment {
             }
         });
     }
+
+    @Override
+    public void editEvent(Event event) {
+        // Find the index of the edited event in the list
+        int position = -1;
+        for (int i = 0; i < myEvents.size(); i++) {
+            if (myEvents.get(i).getId().equals(event.getId())) {
+                position = i;
+                break;
+            }
+        }
+        // Update the event if found
+        if (position != -1) {
+            myEvents.set(position, event);
+            myEventsArrayAdapter.notifyDataSetChanged();
+        }
+    }
+
 }

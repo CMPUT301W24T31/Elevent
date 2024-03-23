@@ -152,7 +152,7 @@
                 android:textSize="15sp" />
 
             <Button
-                android:id="@+id/edit_the_event"
+                android:id="@+id/save_the_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/promotionalQR_image"
@@ -161,7 +161,7 @@
                 android:layout_toEndOf="@+id/manage_the_event"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
-                android:text="@string/edit"
+                android:text="save"
                 android:textSize="15sp" />
         </RelativeLayout>
     </ScrollView>

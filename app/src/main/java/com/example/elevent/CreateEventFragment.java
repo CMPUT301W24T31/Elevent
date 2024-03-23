@@ -2,9 +2,7 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,29 +15,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.firestore.Blob;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
@@ -51,7 +35,6 @@ import java.util.UUID;
  * Creates an event object
  */
 public class CreateEventFragment extends Fragment {
-
 
     private byte[] eventPoster = null;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -186,11 +169,19 @@ public class CreateEventFragment extends Fragment {
                         event_date, event_time, event_desc, event_location, Blob.fromBytes(eventPoster));
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
+
+
+                // Pass the event object to CreatedEventFragment
+                CreatedEventFragment createdEventFragment = new CreatedEventFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("selected_event", event); // Assuming "event" is your Event object
+                createdEventFragment.setArguments(args);
+
             }
         });
-
         return view;
     }
+
 
     /**
      * Launches the content launcher that allows the user to upload an event poster
