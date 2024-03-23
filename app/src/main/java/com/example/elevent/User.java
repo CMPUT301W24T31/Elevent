@@ -20,10 +20,30 @@ public class User {
 
     private String userID;
 
-    /**
-     * Getter for the name of the user
-     * @return Name of the user
-     */
+    // no argument constructor
+    public User() {
+    }
+
+    public User(String name, String[] contact, byte[] profilePic, String homePage, String userID) {
+
+        this.name = name;
+        this.contact = contact;
+        this.profilePic = profilePic;
+        this.homePage = homePage;
+        this.userID = userID;
+    }
+
+    public Map<String, Object> userToMap() {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("name", name);
+        userMap.put("contact", contact);
+        userMap.put("profile picture", profilePic);
+        userMap.put("home page", homePage);
+        userMap.put("userID", userID);
+
+        return userMap;
+    }
+
     public String getName() {
         return name;
     }
