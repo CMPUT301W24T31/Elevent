@@ -87,22 +87,22 @@ public class CreatedEventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_createdevent, container, false);
         EditText eventName = view.findViewById(R.id.event_name_text);
-        eventName.setText(event.getEventName());
+        eventName.setText(selectedEvent.getEventName());
         EditText eventAddress = view.findViewById(R.id.event_location_text);
-        if (event.getLocation() != null){
-            eventAddress.setText(event.getLocation());
+        if (selectedEvent.getLocation() != null){
+            eventAddress.setText(selectedEvent.getLocation());
         }
         EditText eventTime = view.findViewById(R.id.event_time_text);
-        if (event.getTime() != null){
-            eventTime.setText(event.getTime());
+        if (selectedEvent.getTime() != null){
+            eventTime.setText(selectedEvent.getTime());
         }
         EditText eventDate = view.findViewById(R.id.event_date_text);
-        if (event.getDate() != null){
-            eventDate.setText(event.getDate());
+        if (selectedEvent.getDate() != null){
+            eventDate.setText(selectedEvent.getDate());
         }
         EditText eventDescription = view.findViewById(R.id.event_description_text);
-        if (event.getDescription() != null){
-            eventDescription.setText(event.getDescription());
+        if (selectedEvent.getDescription() != null){
+            eventDescription.setText(selectedEvent.getDescription());
         }
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
 
@@ -110,11 +110,11 @@ public class CreatedEventFragment extends Fragment {
         ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
 
         if (selectedEvent != null) {
-            eventNameText.setText(selectedEvent.getEventName());
-            eventLocationText.setText(selectedEvent.getLocation());
-            eventTimeText.setText(selectedEvent.getTime());
-            eventDateText.setText(selectedEvent.getDate());
-            eventDescriptionText.setText(selectedEvent.getDescription());
+            eventName.setText(selectedEvent.getEventName());
+            eventAddress.setText(selectedEvent.getLocation());
+            eventTime.setText(selectedEvent.getTime());
+            eventDate.setText(selectedEvent.getDate());
+            eventDescription.setText(selectedEvent.getDescription());
 
             Blob checkinQRBlob = selectedEvent.getCheckinQR();
             if (checkinQRBlob != null) {
