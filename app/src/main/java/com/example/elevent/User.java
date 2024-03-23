@@ -34,14 +34,14 @@ public class User {
     }
 
     public Map<String, Object> userToMap() {
-        Map<String, Object> eventMap = new HashMap<>();
-        eventMap.put("name", name);
-        eventMap.put("contact", contact);
-        eventMap.put("profile picture", profilePic);
-        eventMap.put("home page", homePage);
-        eventMap.put("userID", userID);
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("name", name);
+        userMap.put("contact", contact);
+        userMap.put("profile picture", profilePic);
+        userMap.put("home page", homePage);
+        userMap.put("userID", userID);
 
-        return eventMap;
+        return userMap;
     }
 
     public String getName() {

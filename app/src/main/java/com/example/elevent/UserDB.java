@@ -32,13 +32,18 @@ public class UserDB extends MainActivity {
         this.db = connector.getDb();
     }
 
+    public UserDB() {
+        UserDBConnector connector = new UserDBConnector();
+        this.db = connector.getDb();
+    }
+
     public CompletableFuture<Void> addUser (User user) {
 
-        // a map of all the event information to be added into a document
+        // a map of all the user information to be added into a document
         // on firestore
         Map<String, Object> userMap = user.userToMap();
 
-        // asynchronously add the event to Firestore and name the document
+        // asynchronously add the user to Firestore and name the document
         // the name of the event
         return CompletableFuture.runAsync(() -> {
             db.collection("users").document(user.getName()).set(userMap);
@@ -52,13 +57,19 @@ public class UserDB extends MainActivity {
          */
     }
 
-    public CompletableFuture<Void> updateUser(String userID, Map<String, Object> updates) {
+    /**
+     * Updates the information of an user in the database
+     * @param user The updated user to be passed into the firestore
+     * @return Result of the operation
+     */
+    public CompletableFuture<Void> updateUser(User user) {
+
 
         // create a reference to the user documented meant to be edited and updated
-        DocumentReference userRef = db.collection("users").document(userID);
+        DocumentReference userRef = db.collection("users").document(user.getUserID());
 
         // asynchronously update the user document in firestore
-        return CompletableFuture.runAsync(() -> userRef.update(updates));
+        return CompletableFuture.runAsync(() -> userRef.update(user.userToMap()));
 
     }
 

@@ -20,8 +20,7 @@ import java.util.Map;
 public class Event implements Serializable {
 
     // attributes for the information of an event
-    private static final String eventID = "test";
-    private String organizerID;
+    private String eventID;
     private String eventName;
     private Blob promotionalQR; //byte array
     private Blob checkinQR; // byte array
@@ -63,9 +62,10 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
-        this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkedInAttendees = new HashMap<>();
+        this.notifications = notifications;
+        eventID = String.valueOf(System.currentTimeMillis());
     }
 
     /**
@@ -274,5 +274,9 @@ public class Event implements Serializable {
 
     public void addNotification(String newNotificationMessage) {
 
+    }
+
+    public String getEventID() {
+        return eventID;
     }
 }
