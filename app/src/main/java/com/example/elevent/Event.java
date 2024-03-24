@@ -51,7 +51,7 @@ public class Event implements Serializable {
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
      */
-    public Event(String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster) {
         this.organizerID = organizerID;
         this.eventName = eventName;
@@ -66,7 +66,7 @@ public class Event implements Serializable {
         this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkedInAttendees = new HashMap<>();
-        eventID = String.valueOf(System.currentTimeMillis());
+        this.eventID = eventID;
     }
 
     /**

@@ -169,10 +169,10 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     return; // Add return to exit early if validation fails
                 }
-                String eventID = UUID.randomUUID().toString();
+                String eventID = String.valueOf(System.currentTimeMillis());
                 // Arguments for event constructor to be passed into addEvent
-                byte[] promotionalQR = generateQRCode("Promotion," + name);
-                byte[] checkInQR = generateQRCode("Check In," + name);
+                byte[] promotionalQR = generateQRCode("Promotion," + eventID);
+                byte[] checkInQR = generateQRCode("Check In," + eventID);
                 Blob eventPoster = null;
                 if (eventPosterByteArray != null){
                     eventPoster = Blob.fromBytes(eventPosterByteArray);
@@ -182,7 +182,7 @@ public class CreateEventFragment extends Fragment {
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
 
-                Event event = new Event(organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
+                Event event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
                         event_date, event_time, event_desc, event_location, eventPoster);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);

@@ -46,13 +46,11 @@ public class EventSignUpDialogFragment extends DialogFragment {
         List<String> newSignUp = event.getSignedUpAttendees();
         newSignUp.add(userID);
         event.setSignedUpAttendees(newSignUp);
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("signedUpAttendees", newSignUp);
-        onSignUp(event.getEventName(), updates);
+        onSignUp(event);
     }
-    private void onSignUp(String eventName, Map<String, Object> updates){
+    private void onSignUp(Event event){
         EventDB eventDB = new EventDB(new EventDBConnector());
 
-        eventDB.updateEvent(eventName, updates);
+        eventDB.updateEvent(event);
     }
 }

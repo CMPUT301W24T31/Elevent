@@ -118,9 +118,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
                             List<String> notifications = event.getNotifications();
                             notifications.add(notificationText);
                             event.setNotifications(notifications);
-                            Map<String, Object> updates = new HashMap<>();
-                            updates.put("notifications", notifications);
-                            updateNotifications(updates);
+                            updateNotifications(event);
                         }
                     } else {
                         Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
@@ -131,9 +129,9 @@ public class AddNotificationDialogFragment extends DialogFragment {
     private void requestNotificationPermission(){
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
-    private void updateNotifications(Map<String, Object> updates) {
+    private void updateNotifications(Event event) {
         EventDB db = new EventDB(new EventDBConnector());
-        db.updateEvent(event.getEventName(), updates);
+        db.updateEvent(event);
     }
 
     private void createNotification() {
