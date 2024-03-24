@@ -57,8 +57,7 @@
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/rounded_corner"
-                android:text=""
-                android:inputType="text"
+                android:inputType="none"
                 android:hint="@string/date"
                 android:theme="@style/FontTheme" />
 
@@ -72,8 +71,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="20dp"
                 android:background="@drawable/rounded_corner"
-                android:text=""
-                android:inputType="text"
+                android:inputType="none"
                 android:hint="@string/time"
                 android:theme="@style/FontTheme" />
 
@@ -87,7 +85,6 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="20dp"
                 android:background="@drawable/rounded_corner"
-                android:text=""
                 android:inputType="text"
                 android:hint="@string/location"
                 android:theme="@style/FontTheme" />
