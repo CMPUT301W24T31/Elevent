@@ -67,7 +67,12 @@ public class EventDB {
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
      */
     public void updateEvent(Event newEvent) {
-        DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());
+        DocumentReference eventRef;
+        try{
+            eventRef = db.collection("events").document(newEvent.getEventID());
+        } catch(Exception e){
+            throw new RuntimeException(newEvent.getEventID());
+        }
 
         // asynchronously update the event document in firestore
         CompletableFuture.runAsync(() -> eventRef.update(newEvent.toMap()));

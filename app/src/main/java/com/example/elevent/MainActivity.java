@@ -72,14 +72,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         createNotificationChannel();
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        String userID = sharedPreferences.getString(KEY_USER_ID, null);
-        if (userID == null){
-            userID = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(KEY_USER_ID, userID);
-            editor.apply();
-        }
+        createUser();
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK) {
                 if (result.getData() != null && result.getData().hasExtra("qrCode")) {
@@ -225,6 +218,16 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
+        }
+    }
+    private void createUser(){
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        if (userID == null){
+            userID = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(KEY_USER_ID, userID);
+            editor.apply();
         }
     }
 }
