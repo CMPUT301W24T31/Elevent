@@ -46,7 +46,7 @@ public class UserDB extends MainActivity {
         // asynchronously add the user to Firestore and name the document
         // the name of the event
         return CompletableFuture.runAsync(() -> {
-            db.collection("users").document(user.getName()).set(userMap);
+            db.collection("users").document(user.getUserID()).set(userMap);
         });
 
 

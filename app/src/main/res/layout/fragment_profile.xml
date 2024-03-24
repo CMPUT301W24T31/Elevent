@@ -6,10 +6,59 @@
     android:background="@color/background_blue"
     tools:context=".ProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Profile" />
+        android:background="@color/background_blue">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/profile_image"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:src="@drawable/ic_launcher_background" /> <!-- Placeholder image, replace with actual default or user image -->
+
+            <EditText
+                android:id="@+id/profile_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/name"
+                android:inputType="textPersonName"
+                android:layout_marginTop="16dp"/>
+
+            <EditText
+                android:id="@+id/profile_homepage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/home_page"
+                android:inputType="textWebEmailAddress"
+                android:layout_marginTop="8dp"/>
+
+            <EditText
+                android:id="@+id/profile_contact"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/contact"
+                android:inputType="text"
+                android:layout_marginTop="8dp"/>
+
+            <Button
+                android:id="@+id/save_profile_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
 
 </FrameLayout>

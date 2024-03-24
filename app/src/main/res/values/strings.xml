@@ -55,5 +55,8 @@
     <string name="manage">manage</string>
     <string name="create">create</string>
     <string name="edit">edit</string>
+    <string name="home_page">Home Page\n</string>
+    <string name="contact">Contact Info</string>
+    <string name="save">Save</string>
 
 </resources>
