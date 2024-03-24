@@ -16,7 +16,7 @@
             <FrameLayout
                 android:id="@+id/create_event_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
             <EditText
                 android:id="@+id/event_name_input"
@@ -27,24 +27,24 @@
                 android:layout_marginRight="20dp"
                 android:background="@drawable/rounded_corner"
                 android:backgroundTint="@color/item_grey"
-                android:text=""
-                android:inputType="text"
                 android:hint="@string/name"
+                android:inputType="text"
+                android:text=""
                 android:theme="@style/FontTheme" />
 
             <EditText
                 android:id="@+id/event_description_input"
-                android:layout_below="@id/event_name_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/event_name_input"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="17dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/rounded_corner"
                 android:backgroundTint="@color/item_grey"
-                android:text=""
-                android:inputType="text"
                 android:hint="@string/description"
+                android:inputType="text"
+                android:text=""
                 android:theme="@style/FontTheme" />
 
             <EditText
@@ -57,8 +57,8 @@
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/rounded_corner"
-                android:inputType="none"
                 android:hint="@string/date"
+                android:inputType="none"
                 android:theme="@style/FontTheme" />
 
             <EditText
@@ -67,12 +67,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_date_input"
                 android:layout_alignParentRight="true"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
                 android:background="@drawable/rounded_corner"
-                android:inputType="none"
                 android:hint="@string/time"
+                android:inputType="none"
                 android:theme="@style/FontTheme" />
 
             <EditText
@@ -81,14 +81,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_time_input"
                 android:layout_alignParentRight="true"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="17dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginStart="20dp"
                 android:background="@drawable/rounded_corner"
-                android:inputType="text"
                 android:hint="@string/location"
+                android:inputType="text"
                 android:theme="@style/FontTheme" />
-
 
 
             <Button
@@ -96,44 +95,42 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_below="@id/event_location_input"
-                android:text="@string/add_image"
-                android:backgroundTint="@color/item_blue"
-                android:fontFamily="monospace"
-                android:textSize="25sp"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="80dp"
-                android:layout_marginTop="35dp" />
+                android:layout_marginTop="35dp"
+                android:backgroundTint="@color/item_blue"
+                android:fontFamily="monospace"
+                android:text="@string/add_image"
+                android:textSize="25sp" />
 
-            <ImageView
-                android:id="@+id/promotionalQR"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+            <TextView
+                android:id="@+id/label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/eventPoster_create"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="1dp"
-                android:layout_marginTop="26dp" />
+                android:layout_marginTop="30dp"
+                android:background="@drawable/rounded_corner"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/check_in_and_promotional_qr_codes_will_be_generated_upon_event_creation"
+                android:textSize="15sp">
 
-            <ImageView
-                android:id="@+id/checkinQR"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_below="@id/eventPoster_create"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="26dp"
-                android:layout_marginRight="1dp" />
+            </TextView>
+
+
 
             <Button
                 android:id="@+id/create_the_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/promotionalQR"
+                android:layout_below="@id/label"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="20dp"
-                android:text="create"
-                android:textSize="15sp"
                 android:backgroundTint="@color/item_blue"
-                android:fontFamily="monospace"/>
+                android:fontFamily="monospace"
+                android:text="create"
+                android:textSize="15sp" />
         </RelativeLayout>
     </ScrollView>
 
