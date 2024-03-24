@@ -3,7 +3,6 @@ package com.example.elevent;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -24,8 +22,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import java.util.HashMap;
 import java.util.List;
@@ -131,9 +127,11 @@ public class AddNotificationDialogFragment extends DialogFragment {
     private void requestNotificationPermission(){
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
+    //suggested by gpt
     private void updateNotifications(Map<String, Object> updates) {
         EventDB db = new EventDB(new EventDBConnector());
-        db.updateEvent(event.getEventName(), updates);
+        event.setNotifications((List<String>) updates.get("notifications")); // Update notifications of the existing event object
+        db.updateEvent(event); // Pass the existing event object to the updateEvent method
     }
 
     private void createNotification() {
@@ -142,7 +140,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
         intent.putExtra("event", event);
         PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "EleventChannel")
-                .setContentTitle(event.getEventName())
+                .setContentTitle((CharSequence) event.getEventName())
                 .setContentText(notificationText)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(notificationText))

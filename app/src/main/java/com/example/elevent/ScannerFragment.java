@@ -154,7 +154,16 @@ public class ScannerFragment extends Fragment {
                         Map<String, Object> updates = new HashMap<>();
                         updates.put("checkedInAttendees", checkedInAttendees);
                         EventDB eventDB = new EventDB(eventDBConnector);
-                        eventDB.updateEvent(eventName, updates);
+                        /*
+                              eventDB.updateEvent(eventName, updates);
+                              required: Event
+                              found:    String,Map<String,Object>
+                              reason: actual and formal argument lists differ in length
+                              so i tried using gpt's suggestion
+                         */
+                        Event updatedEvent = new Event(eventName, updates);
+                        // Pass the updated Event object to the updateEvent method
+                        eventDB.updateEvent(updatedEvent);
                     }
                 } else{
                     Log.d("onAttendeeCheckIn", "Document does not exist");

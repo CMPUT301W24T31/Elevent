@@ -2,11 +2,8 @@ package com.example.elevent;
 
 import com.google.firebase.firestore.Blob;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +18,7 @@ public class Event implements Serializable {
 
     // attributes for the information of an event
     private String eventID;
+    private String organizerID;
     private String eventName;
     private Blob promotionalQR; //byte array
     private Blob checkinQR; // byte array
@@ -68,6 +66,10 @@ public class Event implements Serializable {
         eventID = String.valueOf(System.currentTimeMillis());
     }
 
+    //change suggested by gpt with respect to the change made in scannerFragment
+    public Event(String eventName, Map<String, Object> updates) {
+    }
+
     /**
      * Create the map to be put into the event database
      * @return Map that contains the event information
@@ -95,8 +97,10 @@ public class Event implements Serializable {
         return organizerID;
     }
 
+
     /**
      * Getter for the event name
+     *
      * @return Name of the event
      */
     public String getEventName() {

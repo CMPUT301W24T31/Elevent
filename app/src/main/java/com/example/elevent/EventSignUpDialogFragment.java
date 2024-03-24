@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,17 +41,17 @@ public class EventSignUpDialogFragment extends DialogFragment {
                 })
                 .create();
     }
-    private void addAttendeeSignUp(Event event, String userID){
+    private void addAttendeeSignUp(Event event, String userID) {
         List<String> newSignUp = event.getSignedUpAttendees();
         newSignUp.add(userID);
         event.setSignedUpAttendees(newSignUp);
         Map<String, Object> updates = new HashMap<>();
         updates.put("signedUpAttendees", newSignUp);
-        onSignUp(event.getEventName(), updates);
+        onSignUp(event, updates); // Pass the Event object itself to onSignUp gpt
     }
-    private void onSignUp(String eventName, Map<String, Object> updates){
+    private void onSignUp(Event event, Map<String, Object> updates) {
         EventDB eventDB = new EventDB(new EventDBConnector());
-
-        eventDB.updateEvent(eventName, updates);
+        eventDB.updateEvent(event); // Pass the existing event object to the updateEvent method
     }
+
 }
