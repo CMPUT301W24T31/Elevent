@@ -34,7 +34,7 @@ public class CreatedEventFragment extends Fragment {
     interface CreatedEventListener {
         //void onCreateEvent(Event event);
 
-        void editEvent(Event event);
+        void updateEvent(Event event);
     }
 
     private Event selectedEvent;
@@ -196,7 +196,7 @@ public class CreatedEventFragment extends Fragment {
 
                 // Notify the listener about the positive action with the updated selectedEvent
                 if (listener != null) {
-                    listener.editEvent(selectedEvent);
+                    listener.updateEvent(selectedEvent);
                 }
             }
         });

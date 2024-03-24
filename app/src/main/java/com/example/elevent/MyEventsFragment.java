@@ -196,20 +196,19 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
         });
     }
 
-    @Override
-    public void editEvent(Event event) {
-        // Find the index of the edited event in the list
-        int position = -1;
+    // MyEventsFragment.java
+
+    public void updateEvent(Event updatedEvent) {
+        if (updatedEvent == null || updatedEvent.getEventID() == null) {
+            return; // Ensure updatedEvent or its ID is not null
+        }
         for (int i = 0; i < myEvents.size(); i++) {
-            if (myEvents.get(i).getId().equals(event.getId())) {
-                position = i;
+            Event event = myEvents.get(i);
+            if (event != null && event.getEventID() != null && event.getEventID().equals(updatedEvent.getEventID())) {
+                myEvents.set(i, updatedEvent);
+                myEventsArrayAdapter.notifyDataSetChanged();
                 break;
             }
-        }
-        // Update the event if found
-        if (position != -1) {
-            myEvents.set(position, event);
-            myEventsArrayAdapter.notifyDataSetChanged();
         }
     }
 
