@@ -58,5 +58,8 @@
     <string name="check_in_nqr_code">check-in \nQR code</string>
     <string name="promotional_nqr_code">promotional \nQR code</string>
     <string name="check_in_and_promotional_qr_codes_will_be_generated_upon_event_creation">  check-in and promotional QR codes will be generated upon event creation  </string>
+    <string name="home_page">Home Page\n</string>
+    <string name="contact">Contact Info</string>
+    <string name="save">Save</string>
 
 </resources>
