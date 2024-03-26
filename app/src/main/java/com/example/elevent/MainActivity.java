@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -17,9 +18,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
+import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 /*
@@ -47,6 +51,11 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private static final String PREF_NAME = "MyPrefs";
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
+    private List<String> adminUserIds = Arrays.asList(
+            "b5334c2f-4faf-441b-9151-3de5ce92339b",
+            "da58ae40-1501-410d-9d27-a87e2c81c445",
+            "0b046a02-4a9d-4727-9522-ec3223b48e21"
+    );
 
     /**
      * Called when the activity is starting
@@ -60,18 +69,34 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString(KEY_USER_ID, "");
         fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
 
-        // Find the Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        // Set the Toolbar to act as the ActionBar
-        setSupportActionBar(toolbar);
-        createNotificationChannel();
+
+        if (adminUserIds.contains(userID)) { // check if user is admin
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            navigationView = findViewById(R.id.activity_main_navigation_bar);
+            navigationView.setVisibility(View.GONE);
+            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
+
+        } else { // if user is NOT admin
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            navigationView = findViewById(R.id.activity_main_navigation_bar);
+            createNotificationChannel();
+            // setup bottom navbar for non admin users
+            navigationView.setVisibility(View.VISIBLE);
+            initNavView();
+        }
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        userID = sharedPreferences.getString(KEY_USER_ID, null);
         if (userID == null){
             userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -86,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             }
         });
 
-        initNavView();
         Log.d("DEBUG", "test");
         if (getIntent().hasExtra("OpenNotificationFromFragment")){
             if(Objects.equals(getIntent().getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")){
