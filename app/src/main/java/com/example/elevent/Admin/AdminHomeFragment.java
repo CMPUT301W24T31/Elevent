@@ -17,7 +17,7 @@ public class AdminHomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.admin_homepage, container, false);
     }
 
@@ -36,7 +36,7 @@ public class AdminHomeFragment extends Fragment {
         if (getFragmentManager() != null) {
             getFragmentManager().beginTransaction()
                     .replace(((ViewGroup)getView().getParent()).getId(), fragment)
-                    .addToBackStack(null) // Optional: for back navigation
+                    .addToBackStack(null)
                     .commit();
         }
     }
