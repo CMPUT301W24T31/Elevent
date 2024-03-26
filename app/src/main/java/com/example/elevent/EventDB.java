@@ -1,6 +1,5 @@
 package com.example.elevent;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -9,8 +8,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 //import com.google.firebase.storage.FirebaseStorage;
 //import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +140,31 @@ public class EventDB {
 
         return myEvents;
     }
+
+    public void fetchSignedUpEvents(String userID, OnEventsFetchedListener listener) {
+        db.collection("events")
+                .whereArrayContains("signedUpAttendees", userID)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> signedUpEvents = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Event event = document.toObject(Event.class);
+                        signedUpEvents.add(event);
+                    }
+                    listener.onSuccess(signedUpEvents);
+                })
+                .addOnFailureListener(e -> listener.onFailure(e));
+    }
+
+    public interface OnEventsFetchedListener {
+        void onSuccess(List<Event> signedUpEventsList);
+        // handles the successfully fetched user
+        // System.out.println("User Name: " + user.getName()); is what we would implement
+        void onFailure(Exception e);
+        // handle the error of user not being parsed
+        // System.err.println("Error fetching user: " + e.getMessage()); is what we would implement
+    }
+
 
 
 

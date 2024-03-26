@@ -214,7 +214,7 @@ public class AllEventsFragment extends Fragment {
      * Get the event from the database
      */
     public void fetchEvents() {
-        EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
+        EventDBConnector connector = new EventDBConnector();
         FirebaseFirestore db = connector.getDb();
 
         db.collection("events").get().addOnCompleteListener(task -> {
@@ -224,7 +224,7 @@ public class AllEventsFragment extends Fragment {
                     Event event = document.toObject(Event.class);
                     eventsList.add(event);
                 }
-                updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
+                updateListView(new ArrayList<>(eventsList));
             } else {
                 Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
             }
