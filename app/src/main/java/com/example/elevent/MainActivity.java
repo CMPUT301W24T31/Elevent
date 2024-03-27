@@ -1,6 +1,5 @@
 package com.example.elevent;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -16,12 +15,16 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.navigation.fragment.FragmentNavigatorExtrasKt;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.Objects;
 import java.util.UUID;
 /*
@@ -73,21 +76,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
         createUser();
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getByteArrayExtra("qrCode");
-                }
-            }
-        });
 
         initNavView();
         Log.d("DEBUG", "test");
         if (getIntent().hasExtra("OpenNotificationFromFragment")){
             if(Objects.equals(getIntent().getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")){
                 NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                byte[] eventToOpenBA = getIntent().getByteArrayExtra("eventByteArray");
+                Event eventToOpen = (Event) convertByteArrayToObject(eventToOpenBA);
                 Bundle args = new Bundle();
-                Event eventToOpen = (Event) getIntent().getSerializableExtra("event");
                 args.putSerializable("event", eventToOpen);
                 notificationFragmentAttendee.setArguments(args);
                 fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
@@ -220,14 +217,37 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             notificationManager.createNotificationChannel(channel);
         }
     }
-    private void createUser(){
+    private void createUser() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         String userID = sharedPreferences.getString(KEY_USER_ID, null);
-        if (userID == null){
+        if (userID == null) {
             userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(KEY_USER_ID, userID);
             editor.apply();
+            User newUser = new User(userID);
+
+            UserDBConnector connector = new UserDBConnector();
+            UserDB userDB = new UserDB(connector);
+            userDB.addUser(newUser);
         }
+    }
+
+    @Override
+    public void updateEvent(Event event) {
+        MyEventsFragment myEventsFragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
+        if (myEventsFragment != null) {
+            myEventsFragment.updateEvent(event);
+        }
+    }
+
+    private Object convertByteArrayToObject(byte[] eventBA){
+        InputStream inputStream = new ByteArrayInputStream(eventBA);
+        try (ObjectInputStream in = new ObjectInputStream(inputStream)){
+            return in.readObject();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        throw new RuntimeException();
     }
 }

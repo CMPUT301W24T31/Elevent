@@ -3,14 +3,19 @@ package com.example.elevent;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import java.util.ArrayList;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,19 +43,41 @@ public class EventSignUpDialogFragment extends DialogFragment {
                 .setTitle("Disclaimer")
                 .setNegativeButton("Cancel", null)
                 .setPositiveButton("Confirm", (dialog, which) -> {
-                    addAttendeeSignUp(event, userID);
+                    addAttendeeSignUpToEvent();
+                    addEventSignedUpByAttendee();
+                    Toast.makeText(requireContext(), "You are now signed up!", Toast.LENGTH_LONG).show();
                 })
                 .create();
     }
-    private void addAttendeeSignUp(Event event, String userID){
+    private void addAttendeeSignUpToEvent() {
         List<String> newSignUp = event.getSignedUpAttendees();
         newSignUp.add(userID);
         event.setSignedUpAttendees(newSignUp);
-        onSignUp(event);
-    }
-    private void onSignUp(Event event){
         EventDB eventDB = new EventDB(new EventDBConnector());
-
         eventDB.updateEvent(event);
+    }
+
+    private void addEventSignedUpByAttendee() {
+        UserDBConnector connector = new UserDBConnector();
+        FirebaseFirestore db = connector.getDb();
+        db.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    User user = documentSnapshot.toObject(User.class); // TODO: fix
+                    if (user != null) {
+                        List<String> signedUpEvents = user.getSignedUpEvents();
+                        signedUpEvents.add(event.getEventID());
+                        user.setSignedUpEvents(signedUpEvents);
+                        UserDB userDB = new UserDB(new UserDBConnector());
+                        userDB.updateUser(user);
+                    } else {
+                        Log.d("addEventSignedUpByAttendee", "User is not in db");
+                    }
+                } else {
+                    Log.d("addEventSignedUpByAttendee", "Document does not exist");
+                }
+            }
+        });
     }
 }

@@ -1,47 +1,37 @@
 package com.example.elevent;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.firestore.Blob;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.UUID;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
@@ -152,12 +142,31 @@ public class CreateEventFragment extends Fragment {
         EditText eventDate = view.findViewById(R.id.event_date_input);
         EditText eventDescription = view.findViewById(R.id.event_description_input);
         Button addEventImage = view.findViewById(R.id.eventPoster_create);
+
+        eventDate.setInputType(InputType.TYPE_NULL);
+        eventTime.setInputType(InputType.TYPE_NULL);
+        
         addEventImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
             }
         });
+
+        eventDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateDialog(eventDate);
+            }
+        });
+
+        eventTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimeDialog(eventTime);
+            }
+        });
+
         Button createEventButton = view.findViewById(R.id.create_the_event);
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -186,11 +195,52 @@ public class CreateEventFragment extends Fragment {
                         event_date, event_time, event_desc, event_location, eventPoster);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
+
+
+                // Pass the event object to CreatedEventFragment
+                CreatedEventFragment createdEventFragment = new CreatedEventFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("selected_event", event); // Assuming "event" is your Event object
+                createdEventFragment.setArguments(args);
+
             }
         });
-
         return view;
     }
+
+    private void showDateDialog(final EditText eventDate) {
+        final Calendar calendar = Calendar.getInstance();
+        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yy"); // Corrected date format
+                eventDate.setText(simpleDateFormat.format(calendar.getTime()));
+            }
+        };
+
+        new DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void showTimeDialog(final EditText eventTime) {
+        final Calendar calendar = Calendar.getInstance();
+
+        TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+                eventTime.setText(simpleDateFormat.format(calendar.getTime()));
+            }
+        };
+
+        new TimePickerDialog(requireContext(), timeSetListener, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), false).show();
+    }
+
+
 
     /**
      * Launches the content launcher that allows the user to upload an event poster

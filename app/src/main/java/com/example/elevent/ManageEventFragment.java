@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
     and handle notifications
@@ -138,14 +140,14 @@ public class ManageEventFragment extends Fragment {
         EventDBConnector connector = new EventDBConnector();
         FirebaseFirestore db = connector.getDb();
 
-        db.collection("events").document(event.getEventName()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        db.collection("events").document(event.getEventID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     // gotta figure out the firebase cuz idk how that works rn
                     ArrayList<String> signedUpAttendees = (ArrayList<String>) documentSnapshot.get("signedUpAttendees");
                     if (signedUpAttendees != null) {
-                        updateListView(signedUpAttendees);
+                        getAttendeeInformation(signedUpAttendees);
                     }
                 } else{
                     Log.d("fetchAttendees", "No such document");
@@ -153,9 +155,35 @@ public class ManageEventFragment extends Fragment {
             }
         });
     }
-    private void updateListView(ArrayList<String> attendees){
-        AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), attendees);
+    private void updateListView(List<String> attendeeInformation){
+        AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), (ArrayList<String>) attendeeInformation);
         listOfAttendees = getView().findViewById(R.id.list_of_attendees);
         listOfAttendees.setAdapter(attendeeArrayAdapter);
+    }
+    private void getAttendeeInformation(List<String> signedUpAttendees){
+        EventDBConnector connector = new EventDBConnector();
+        FirebaseFirestore db = connector.getDb();
+        List<String> attendeeInformation = new ArrayList<>();
+        AtomicInteger count = new AtomicInteger(signedUpAttendees.size());  // OpenAI, 2024, ChatGPT, Filling list in Firestore call returns empty list
+        for (String userID : signedUpAttendees){
+            db.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()){
+                        String name = (String) documentSnapshot.get("name");
+                        if (name != null){
+                            attendeeInformation.add(name);
+                        } else if ((String) documentSnapshot.get("userID") != null){
+                            attendeeInformation.add((String) documentSnapshot.get("userID"));
+                        }
+                    } else {
+                        Log.d("getAttendeeInformation", "Document does not exist");
+                    }
+                    if (count.decrementAndGet() == 0){
+                        updateListView(attendeeInformation);
+                    }
+                }
+            });
+        }
     }
 }

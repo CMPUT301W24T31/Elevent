@@ -3,7 +3,6 @@ package com.example.elevent;
 import android.Manifest;
 import android.app.Dialog;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -24,9 +22,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +117,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
                             List<String> notifications = event.getNotifications();
                             notifications.add(notificationText);
                             event.setNotifications(notifications);
-                            updateNotifications(event);
+                            updateNotifications();
                         }
                     } else {
                         Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
@@ -129,18 +128,20 @@ public class AddNotificationDialogFragment extends DialogFragment {
     private void requestNotificationPermission(){
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
-    private void updateNotifications(Event event) {
+    //suggested by gpt
+    private void updateNotifications() {
         EventDB db = new EventDB(new EventDBConnector());
-        db.updateEvent(event);
+        db.updateEvent(event); // Pass the existing event object to the updateEvent method
     }
 
     private void createNotification() {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra("OpenNotificationFromFragment", "NotificationFragmentAttendee");
-        intent.putExtra("event", event);
+        byte[] eventByteArray = convertEventToByteArray();
+        intent.putExtra("eventByteArray", eventByteArray);
         PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "EleventChannel")
-                .setContentTitle(event.getEventName())
+                .setContentTitle((CharSequence) event.getEventName())
                 .setContentText(notificationText)
                 .setStyle(new NotificationCompat.BigTextStyle()
                         .bigText(notificationText))
@@ -162,5 +163,16 @@ public class AddNotificationDialogFragment extends DialogFragment {
         }
         notificationSent = true;
         notificationManagerCompat.notify(1, builder.build());
+    }
+
+    private byte[] convertEventToByteArray() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ObjectOutputStream out = new ObjectOutputStream(outputStream)){
+            out.writeObject(event);
+            return outputStream.toByteArray();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        throw new RuntimeException();
     }
 }

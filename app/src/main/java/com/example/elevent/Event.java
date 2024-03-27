@@ -1,12 +1,11 @@
 package com.example.elevent;
 
-import com.google.firebase.firestore.Blob;
+import androidx.annotation.Keep;
 
-import org.checkerframework.checker.units.qual.A;
+import com.google.firebase.firestore.Blob;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +52,7 @@ public class Event implements Serializable {
      */
     public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster) {
+        this.eventID = eventID;
         this.organizerID = organizerID;
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
@@ -66,7 +66,6 @@ public class Event implements Serializable {
         this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkedInAttendees = new HashMap<>();
-        this.eventID = eventID;
     }
 
     /**
@@ -75,6 +74,7 @@ public class Event implements Serializable {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("eventID", eventID);
         eventMap.put("organizerID", organizerID);
         eventMap.put("eventName", eventName);
         eventMap.put("location", location);
@@ -96,8 +96,10 @@ public class Event implements Serializable {
         return organizerID;
     }
 
+
     /**
      * Getter for the event name
+     *
      * @return Name of the event
      */
     public String getEventName() {

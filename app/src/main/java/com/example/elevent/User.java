@@ -1,6 +1,11 @@
 package com.example.elevent;
 
+
+import java.io.Serializable;
+import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of a User object
@@ -9,28 +14,30 @@ import java.util.Map;
 /**
  * This class represents a user of the app
  */
-public class User {
+public class User implements Serializable {
 
     // attributes for User class
     // (what information a user has)
     private String name;
     private String[] contact;
-    private byte[] profilePic;
+    private Blob profilePic;
     private String homePage;
-
     private String userID;
+    private List<String> signedUpEvents;
 
-    // no argument constructor
-    public User() {
+    public User(){}  // no argument constructor
+    public User(String userID){
+        this.userID = userID;
+        this.signedUpEvents = new ArrayList<>();
     }
-
-    public User(String name, String[] contact, byte[] profilePic, String homePage, String userID) {
+    public User(String name, String[] contact, Blob profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;
         this.profilePic = profilePic;
         this.homePage = homePage;
         this.userID = userID;
+        this.signedUpEvents = new ArrayList<>();
     }
 
     public Map<String, Object> userToMap() {
@@ -40,6 +47,7 @@ public class User {
         userMap.put("profile picture", profilePic);
         userMap.put("home page", homePage);
         userMap.put("userID", userID);
+        userMap.put("signedUpEvents", signedUpEvents);
 
         return userMap;
     }
@@ -76,7 +84,7 @@ public class User {
      * Getter for the profile picture of the user
      * @return Profile picture of the user
      */
-    public byte[] getProfilePic() {
+    public Blob getProfilePic() {
         return profilePic;
     }
 
@@ -84,8 +92,16 @@ public class User {
      * Setter for the profile picture of the user
      * @param profilePic Profile picture of the user
      */
-    public void setProfilePic(byte[] profilePic) {
+    public void setProfilePic(Blob profilePic) {
         this.profilePic = profilePic;
+    }
+
+    public List<String> getSignedUpEvents() {
+        return signedUpEvents;
+    }
+
+    public void setSignedUpEvents(List<String> signedUpEvents) {
+        this.signedUpEvents = signedUpEvents;
     }
 
     /**
@@ -109,7 +125,7 @@ public class User {
      * @return Unique user ID
      */
     public String getUserID() {
-        return userID;
+        return this.userID;
     }
 
     /**
@@ -117,8 +133,9 @@ public class User {
      * @param userID Unique user ID
      */
     public void setUserID(String userID) {
-        userID = userID;
+        this.userID = userID;
     }
+
 
     /**
      * Create the map to be put into the user database

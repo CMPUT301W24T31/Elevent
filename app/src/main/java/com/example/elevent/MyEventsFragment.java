@@ -28,7 +28,7 @@ import java.util.Objects;
 /**
  * This fragment displays the events that an organizer has created
  */
-public class MyEventsFragment extends Fragment {
+public class MyEventsFragment extends Fragment implements CreatedEventFragment.CreatedEventListener{
 
     CreateEventFragment createEventFragment;
     private ArrayList<Event> myEvents;
@@ -118,7 +118,7 @@ public class MyEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreateEventFragment());
-                    mainActivity.updateAppBarTitle("Creating Event...");
+                    mainActivity.updateAppBarTitle("Creating Event");
                 }
                 //return null;
             }
@@ -195,4 +195,21 @@ public class MyEventsFragment extends Fragment {
             }
         });
     }
+
+    // MyEventsFragment.java
+
+    public void updateEvent(Event updatedEvent) {
+        if (updatedEvent == null || updatedEvent.getEventID() == null) {
+            return; // Ensure updatedEvent or its ID is not null
+        }
+        for (int i = 0; i < myEvents.size(); i++) {
+            Event event = myEvents.get(i);
+            if (event != null && event.getEventID() != null && event.getEventID().equals(updatedEvent.getEventID())) {
+                myEvents.set(i, updatedEvent);
+                myEventsArrayAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
+
 }

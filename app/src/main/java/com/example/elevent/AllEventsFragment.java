@@ -166,7 +166,7 @@ public class AllEventsFragment extends Fragment {
                 if (Objects.equals(selection, "signed up")) {
                     SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                     String userID = sharedPreferences.getString("userID", null);
-                    //fetchSignedUpEvents(userID);
+                    fetchSignedUpEvents(userID);
                 } else if (Objects.equals(selection, "all")){
                     fetchEvents();
                 }
@@ -213,7 +213,7 @@ public class AllEventsFragment extends Fragment {
     /**
      * Get the event from the database
      */
-    public void fetchEvents() {
+    private void fetchEvents() {
         EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
         FirebaseFirestore db = connector.getDb();
 
@@ -231,11 +231,16 @@ public class AllEventsFragment extends Fragment {
         });
     }
 
+    private void fetchSignedUpEvents(String userID){
+        EventDBConnector connector = new EventDBConnector();
+        FirebaseFirestore db = connector.getDb();
+    }
+
     /**
      * Update the display of the events
      * @param events List of events
      */
-    public void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
+    private void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
         EventArrayAdapter eventAdapter = new EventArrayAdapter(requireActivity(), events); // Use requireActivity() to ensure non-null Context
         ListView listView = getView().findViewById(R.id.list_view);
         listView.setAdapter(eventAdapter);
