@@ -2,6 +2,7 @@ package com.example.elevent;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -65,13 +66,15 @@ public class EventDB {
      * Updates the information of an event in the database
      *
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
+     * @return
      */
-    public void updateEvent(Event newEvent) {
+    public Task<Void> updateEvent(Event newEvent) {
         DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());
 
-        // asynchronously update the event document in firestore
-        CompletableFuture.runAsync(() -> eventRef.update(newEvent.toMap()));
+        // Asynchronously update the event document in Firestore and return the Task
+        return eventRef.update(newEvent.toMap());
     }
+
 
 
     // delete an event by taking in the eventName, and thus its
