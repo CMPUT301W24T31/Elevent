@@ -107,23 +107,55 @@
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="35dp" />
 
+            <TextView
+                android:id="@+id/promotion_label"
+                android:layout_width="171dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventPoster_image"
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_corner"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/promotional_nqr_code"
+                android:textSize="15sp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/checkin_label"
+                android:layout_width="163dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventPoster_image"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/rounded_corner"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/check_in_nqr_code"
+                android:textSize="15sp">
+
+            </TextView>
+
             <ImageView
                 android:id="@+id/promotionalQR_image"
                 android:layout_width="166dp"
                 android:layout_height="165dp"
-                android:layout_below="@id/eventPoster_image"
+                android:layout_below="@id/promotion_label"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="25dp"
-                android:layout_marginTop="46dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginStart="5dp"/>
 
             <ImageView
                 android:id="@+id/checkinQR_image"
                 android:layout_width="166dp"
                 android:layout_height="165dp"
-                android:layout_below="@id/eventPoster_image"
+                android:layout_below="@id/checkin_label"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="46dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="25dp"
                 android:layout_marginStart="5dp"/>
 
