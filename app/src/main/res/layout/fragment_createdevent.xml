@@ -107,6 +107,28 @@
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="35dp" />
 
+            <ImageView
+                android:id="@+id/created_event_image_view_clickable"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_below="@+id/event_location_text"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="20dp"/>
+            <TextView
+                android:id="@+id/edit_event_poster_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit event poster"
+                android:clickable="true"
+                android:layout_below="@+id/created_event_image_view_clickable"
+                android:layout_alignParentLeft="true"
+                android:textColor="@color/text_white"
+                android:textSize="18sp"
+                android:layout_marginLeft="115dp"
+                android:focusable="true" />
+
+
             <TextView
                 android:id="@+id/promotion_label"
                 android:layout_width="171dp"

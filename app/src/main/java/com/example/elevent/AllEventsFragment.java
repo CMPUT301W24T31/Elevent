@@ -241,7 +241,7 @@ public class AllEventsFragment extends Fragment {
      * @param events List of events
      */
     private void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
-        EventArrayAdapter eventAdapter = new EventArrayAdapter(requireActivity(), events); // Use requireActivity() to ensure non-null Context
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(requireContext(), events); // Use requireActivity() to ensure non-null Context
         ListView listView = getView().findViewById(R.id.list_view);
         listView.setAdapter(eventAdapter);
     }

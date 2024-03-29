@@ -1,21 +1,31 @@
 package com.example.elevent;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.Blob;
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
@@ -39,6 +49,25 @@ public class CreatedEventFragment extends Fragment {
 
     private Event selectedEvent;
     private CreatedEventListener listener;
+    private byte[] eventPosterByteArray = null;
+    private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+        if (isGranted) {
+            getEventPosterImage();
+        }
+    });
+    private final ActivityResultLauncher<String> getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        if (uri != null) {
+            // OpenAI, 2024, ChatGPT, Convert to byte array
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                eventPosterByteArray = byteArrayOutputStream.toByteArray();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    });
 
     /**
      * Called when a fragment is first attached to its host activity
@@ -105,6 +134,18 @@ public class CreatedEventFragment extends Fragment {
             eventDescription.setText(selectedEvent.getDescription());
         }
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
+        ImageView eventPoster = view.findViewById(R.id.created_event_image_view_clickable);
+        TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
+        if (selectedEvent.getEventPoster() == null) {
+            eventPoster.setVisibility(View.GONE);
+            editEventPoster.setVisibility(View.GONE);
+
+        } else{
+            addEventImage.setVisibility(View.GONE);
+            Blob eventPosterBlob = selectedEvent.getEventPoster();
+            Bitmap eventPosterBitmap = convertBlobToBitmap(eventPosterBlob);
+            eventPoster.setImageBitmap(eventPosterBitmap);
+        }
 
         ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
         ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
@@ -153,10 +194,44 @@ public class CreatedEventFragment extends Fragment {
         EditText eventDateText = view.findViewById(R.id.event_date_text);
         EditText eventDescriptionText = view.findViewById(R.id.event_description_text);
         Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
-
-        ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
-        ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
-
+        addEventImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+                if (eventPosterByteArray != null){
+                    selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
+                }
+                selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
+                CreatedEventFragment createdEventFragment = new CreatedEventFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("selected_event", selectedEvent);
+                createdEventFragment.setArguments(args);
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                    helper.replaceFragment(createdEventFragment);
+                }
+            }
+        });
+        TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
+        editEventPoster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+                if (eventPosterByteArray != null){
+                    selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
+                    CreatedEventFragment createdEventFragment = new CreatedEventFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("selected_event", selectedEvent);
+                    createdEventFragment.setArguments(args);
+                    if (getActivity() instanceof MainActivity) {
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                        helper.replaceFragment(createdEventFragment);
+                    }
+                }
+            }
+        });
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
         Button saveChangesButton = view.findViewById(R.id.save_the_event);
         manageEventButton.setOnClickListener(new View.OnClickListener() {
@@ -207,5 +282,8 @@ public class CreatedEventFragment extends Fragment {
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+    }
+    private void getEventPosterImage() {
+        getContentLauncher.launch("image/*");
     }
 }
