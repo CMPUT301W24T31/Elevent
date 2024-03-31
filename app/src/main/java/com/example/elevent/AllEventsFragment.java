@@ -22,12 +22,16 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
     Outstanding issues: n/a
@@ -49,6 +53,7 @@ public class AllEventsFragment extends Fragment {
 
     // Define a listener member variable
     private OnEventClickListener eventClickListener;
+    List<String> signedUpEvents;
 
     /**
      * Required empty constructor
@@ -163,10 +168,9 @@ public class AllEventsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
-                if (Objects.equals(selection, "signed up")) {
-                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                    String userID = sharedPreferences.getString("userID", null);
-                    fetchSignedUpEvents(userID);
+                if (Objects.equals(selection, "signed-up")) {
+                    fetchSignedUpEventsList();
+                    displaySignedUpEvents();
                 } else if (Objects.equals(selection, "all")){
                     fetchEvents();
                 }
@@ -231,9 +235,44 @@ public class AllEventsFragment extends Fragment {
         });
     }
 
-    private void fetchSignedUpEvents(String userID){
-        EventDBConnector connector = new EventDBConnector();
+    private void fetchSignedUpEventsList(){
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString("userID", null);
+        UserDBConnector userDBConnector = new UserDBConnector();
+        FirebaseFirestore userDB = userDBConnector.getDb();
+        if(userID != null) {
+            userDB.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            signedUpEvents = user.getSignedUpEvents();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void displaySignedUpEvents(){
+        EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
         FirebaseFirestore db = connector.getDb();
+
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> eventsList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    if (signedUpEvents.contains(event.getEventID())) {
+                        eventsList.add(event);
+                    }
+                }
+                updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
+            } else {
+                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+            }
+        });
     }
 
     /**

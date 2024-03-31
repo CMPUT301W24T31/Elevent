@@ -115,23 +115,38 @@
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="20dp"/>
+
+
             <TextView
                 android:id="@+id/edit_event_poster_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit event poster"
-                android:clickable="true"
                 android:layout_below="@+id/created_event_image_view_clickable"
                 android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="1dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Edit event poster"
+                android:textColor="@color/text_white"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/delete_event_poster_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/created_event_image_view_clickable"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="1dp"
+                android:clickable="true"
+                android:text="Delete event poster"
                 android:textColor="@color/text_white"
                 android:textSize="18sp"
-                android:layout_marginLeft="115dp"
                 android:focusable="true" />
-
 
             <TextView
                 android:id="@+id/promotion_label"
-                android:layout_width="171dp"
+                android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentLeft="true"
@@ -147,7 +162,7 @@
 
             <TextView
                 android:id="@+id/checkin_label"
-                android:layout_width="163dp"
+                android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentRight="true"
@@ -163,22 +178,22 @@
 
             <ImageView
                 android:id="@+id/promotionalQR_image"
-                android:layout_width="166dp"
-                android:layout_height="165dp"
+                android:layout_width="170dp"
+                android:layout_height="155dp"
                 android:layout_below="@id/promotion_label"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="5dp"/>
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"/>
 
             <ImageView
                 android:id="@+id/checkinQR_image"
-                android:layout_width="166dp"
-                android:layout_height="165dp"
+                android:layout_width="170dp"
+                android:layout_height="155dp"
                 android:layout_below="@id/checkin_label"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="25dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
                 android:layout_marginStart="5dp"/>
 
             <Button

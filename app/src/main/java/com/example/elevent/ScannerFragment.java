@@ -145,14 +145,17 @@ public class ScannerFragment extends Fragment {
                     Event event = documentSnapshot.toObject(Event.class);
                     if(event != null) {
                         Map<String, Integer> checkedInAttendees = event.getCheckedInAttendees();
+                        int attendeeCount = event.getAttendeesCount();
                         if (checkedInAttendees.containsKey(userID)) {
                             int checkInCount = checkedInAttendees.get(userID);
                             checkInCount++;
                             checkedInAttendees.put(userID, checkInCount);
                         } else {
                             checkedInAttendees.put(userID, 1);
+                            attendeeCount++;
                         }
                         event.setCheckedInAttendees(checkedInAttendees);
+                        event.setAttendeesCount(attendeeCount);
                         EventDB eventDB = new EventDB(eventDBConnector);
                         eventDB.updateEvent(event);
                         /*
