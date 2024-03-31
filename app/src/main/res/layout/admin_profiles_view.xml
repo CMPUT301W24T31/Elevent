@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="Admin.AdminImageFragment"
+    tools:context="Admin.AdminProfilesFragment"
     android:background="@color/background_blue">
 
     <LinearLayout
@@ -15,13 +15,13 @@
         android:padding="8dp">
 
         <ImageView
-            android:id="@+id/admin_event_image_view"
+            android:id="@+id/admin_profile_image_view"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:src="@mipmap/ic_launcher" />
 
         <TextView
-            android:id="@+id/admin_event_text_view"
+            android:id="@+id/admin_profile_text_view"
             android:layout_width="210dp"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
