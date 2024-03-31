@@ -195,6 +195,7 @@ public class CreatedEventFragment extends Fragment {
         EditText eventTimeText = view.findViewById(R.id.event_time_text);
         EditText eventDateText = view.findViewById(R.id.event_date_text);
         EditText eventDescriptionText = view.findViewById(R.id.event_description_text);
+        ImageView eventPoster = view.findViewById(R.id.created_event_image_view_clickable);
         Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
         addEventImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,18 +203,7 @@ public class CreatedEventFragment extends Fragment {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
                 if (eventPosterByteArray != null){
                     selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
-                    EventDBConnector connector = new EventDBConnector();
-                    EventDB db = new EventDB(connector);
-                    db.updateEvent(selectedEvent);
-                    CreatedEventFragment createdEventFragment = new CreatedEventFragment();
-                    Bundle args = new Bundle();
-                    args.putSerializable("selected_event", selectedEvent);
-                    createdEventFragment.setArguments(args);
-                    if (getActivity() instanceof MainActivity) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                        helper.replaceFragment(createdEventFragment);
-                    }
+                    eventPoster.setImageBitmap(convertBlobToBitmap(selectedEvent.getEventPoster()));
                 }
             }
         });
@@ -226,18 +216,7 @@ public class CreatedEventFragment extends Fragment {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
                 if (eventPosterByteArray != null){
                     selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
-                    EventDBConnector connector = new EventDBConnector();
-                    EventDB db = new EventDB(connector);
-                    db.updateEvent(selectedEvent);
-                    CreatedEventFragment createdEventFragment = new CreatedEventFragment();
-                    Bundle args = new Bundle();
-                    args.putSerializable("selected_event", selectedEvent);
-                    createdEventFragment.setArguments(args);
-                    if (getActivity() instanceof MainActivity) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                        helper.replaceFragment(createdEventFragment);
-                    }
+                    eventPoster.setImageBitmap(convertBlobToBitmap(selectedEvent.getEventPoster()));
                 } else{
                     selectedEvent.setEventPoster(currentPoster);
                 }
@@ -248,18 +227,10 @@ public class CreatedEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 selectedEvent.setEventPoster(null);
-                EventDBConnector connector = new EventDBConnector();
-                EventDB db = new EventDB(connector);
-                db.updateEvent(selectedEvent);
-                CreatedEventFragment createdEventFragment = new CreatedEventFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("selected_event", selectedEvent);
-                createdEventFragment.setArguments(args);
-                if (getActivity() instanceof MainActivity) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(createdEventFragment);
-                }
+                eventPoster.setVisibility(View.INVISIBLE);
+                editEventPoster.setVisibility(View.INVISIBLE);
+                deleteEventPoster.setVisibility(View.INVISIBLE);
+                addEventImageButton.setVisibility(View.VISIBLE);
             }
         });
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
@@ -298,6 +269,9 @@ public class CreatedEventFragment extends Fragment {
                 selectedEvent.setTime(updatedEventTime);
                 selectedEvent.setDate(updatedEventDate);
                 selectedEvent.setDescription(updatedEventDescription);
+                EventDBConnector connector = new EventDBConnector();
+                EventDB db = new EventDB(connector);
+                db.updateEvent(selectedEvent);
 
                 // Notify the listener about the positive action with the updated selectedEvent
                 if (listener != null) {
