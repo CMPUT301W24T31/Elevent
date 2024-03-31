@@ -6,28 +6,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.FirebaseApiNotAvailableException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
@@ -111,6 +105,15 @@ public class ManageEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Spinner filterStatus = view.findViewById(R.id.attendee_spinner);
+
+        ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.attendee_filter_spinner_array,
+                android.R.layout.simple_spinner_item
+        );
+        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterStatus.setAdapter(filterAdapter);
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         notifCentreButton.setOnClickListener(new View.OnClickListener() {
             @Override

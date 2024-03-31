@@ -29,6 +29,12 @@
         <item>signed-up</item>
     </string-array>
 
+    <!-- options for attendee filter spinner -->
+    <string-array name="attendee_filter_spinner_array">
+        <item>checked-in</item>
+        <item>signed-up</item>
+    </string-array>
+
 
 
     <string name="appbar_fragment_name" />
