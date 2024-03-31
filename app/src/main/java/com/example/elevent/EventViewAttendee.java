@@ -74,6 +74,7 @@ public class EventViewAttendee extends Fragment {
         ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
         TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
         // Extracting event details from arguments
+        assert getArguments() != null;
         Event event = (Event) getArguments().getSerializable("event");
         Button signUpButton = view.findViewById(R.id.sign_up_event_button);
 
@@ -94,7 +95,7 @@ public class EventViewAttendee extends Fragment {
                         args.putSerializable("event", event);
                         args.putString("userID", userID);
                         eventSignUpDialogFragment.setArguments(args);
-                        eventSignUpDialogFragment.show(getActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
                         String signedUpText = "Signing up...";
                         signUpButton.setText(signedUpText);
                     }

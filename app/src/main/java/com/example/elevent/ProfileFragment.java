@@ -38,7 +38,7 @@ public class ProfileFragment extends Fragment {
     private ImageView profileImage;
     private Button saveProfileButton;
     private String getUserIdFromPreferences() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PreferenceManager.getDefaultSharedPreferencesName(getActivity()), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getString("userID", null);
     }
 
@@ -114,7 +114,7 @@ public class ProfileFragment extends Fragment {
 
             byte[] profilePic = null; // placeholder for the actual conversion logic we have to do
 
-            User updatedUser = new User(name, new String[]{contact}, profilePic, homepage, userID); // Adjust according to your User constructor
+            User updatedUser = new User(name, new String[]{contact}, null, homepage, userID); // Adjust according to your User constructor
             db.updateUser(updatedUser).thenRun(() -> {
                 Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
             }).exceptionally(e -> {

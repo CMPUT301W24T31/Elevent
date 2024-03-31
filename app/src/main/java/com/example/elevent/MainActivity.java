@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,12 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
-import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Arrays;
-import java.util.List;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.Objects;
 import java.util.UUID;
 /*
@@ -51,11 +52,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private static final String PREF_NAME = "MyPrefs";
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
-    private List<String> adminUserIds = Arrays.asList(
-            "b5334c2f-4faf-441b-9151-3de5ce92339b",
-            "da58ae40-1501-410d-9d27-a87e2c81c445",
-            "0b046a02-4a9d-4727-9522-ec3223b48e21"
-    );
 
     /**
      * Called when the activity is starting
@@ -69,54 +65,26 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String userID = sharedPreferences.getString(KEY_USER_ID, "");
+        setContentView(R.layout.activity_main);
         fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
 
-
-        if (adminUserIds.contains(userID)) { // check if user is admin
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            navigationView = findViewById(R.id.activity_main_navigation_bar);
-            navigationView.setVisibility(View.GONE);
-            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
-
-        } else { // if user is NOT admin
-            setContentView(R.layout.activity_main);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            navigationView = findViewById(R.id.activity_main_navigation_bar);
-            createNotificationChannel();
-            // setup bottom navbar for non admin users
-            navigationView.setVisibility(View.VISIBLE);
-            initNavView();
-        }
+        // Find the Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        // Set the Toolbar to act as the ActionBar
+        setSupportActionBar(toolbar);
+        createNotificationChannel();
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        userID = sharedPreferences.getString(KEY_USER_ID, null);
-        if (userID == null){
-            userID = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(KEY_USER_ID, userID);
-            editor.apply();
-        }
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getByteArrayExtra("qrCode");
-                }
-            }
-        });
+        createUser();
 
+        initNavView();
         Log.d("DEBUG", "test");
         if (getIntent().hasExtra("OpenNotificationFromFragment")){
             if(Objects.equals(getIntent().getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")){
                 NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                byte[] eventToOpenBA = getIntent().getByteArrayExtra("eventByteArray");
+                Event eventToOpen = (Event) convertByteArrayToObject(eventToOpenBA);
                 Bundle args = new Bundle();
-                Event eventToOpen = (Event) getIntent().getSerializableExtra("event");
                 args.putSerializable("event", eventToOpen);
                 notificationFragmentAttendee.setArguments(args);
                 fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
@@ -249,6 +217,21 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             notificationManager.createNotificationChannel(channel);
         }
     }
+    private void createUser() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        if (userID == null) {
+            userID = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(KEY_USER_ID, userID);
+            editor.apply();
+            User newUser = new User(userID);
+
+            UserDBConnector connector = new UserDBConnector();
+            UserDB userDB = new UserDB(connector);
+            userDB.addUser(newUser);
+        }
+    }
 
     @Override
     public void updateEvent(Event event) {
@@ -256,5 +239,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         if (myEventsFragment != null) {
             myEventsFragment.updateEvent(event);
         }
+    }
+
+    private Object convertByteArrayToObject(byte[] eventBA){
+        InputStream inputStream = new ByteArrayInputStream(eventBA);
+        try (ObjectInputStream in = new ObjectInputStream(inputStream)){
+            return in.readObject();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        throw new RuntimeException();
     }
 }

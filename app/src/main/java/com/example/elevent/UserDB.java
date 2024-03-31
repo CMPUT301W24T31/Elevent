@@ -85,7 +85,7 @@ public class UserDB extends MainActivity {
      */
     public void readUser(String userID, final OnUserReadListener listener) {
 
-        db.collection("User").document(userID).get()
+        db.collection("users").document(userID).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         User user = documentSnapshot.toObject(User.class);

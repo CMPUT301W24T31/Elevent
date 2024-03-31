@@ -1,6 +1,5 @@
 package com.example.elevent;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Tasks;
@@ -11,10 +10,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 //import com.google.firebase.storage.FirebaseStorage;
 //import com.google.firebase.storage.StorageReference;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -71,14 +67,14 @@ public class EventDB {
 
     /**
      * Updates the information of an event in the database
+     *
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
-     * @return Result of the operation
      */
-    public CompletableFuture<Void> updateEvent(Event newEvent) {
+    public void updateEvent(Event newEvent) {
         DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());
 
         // asynchronously update the event document in firestore
-        return CompletableFuture.runAsync(() -> eventRef.update(newEvent.toMap()));
+        CompletableFuture.runAsync(() -> eventRef.update(newEvent.toMap()));
     }
 
 

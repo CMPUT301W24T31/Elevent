@@ -132,18 +132,19 @@ public class ScannerFragment extends Fragment {
         qrScannerLauncher.launch(options);
     }
 
-    private void onAttendeeCheckIn(String eventName){
+    private void onAttendeeCheckIn(String eventID){
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb();
 
-        db.collection("events").document(eventName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        db.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()){
-                    Map<String, Integer> checkedInAttendees = (Map<String, Integer>) documentSnapshot.get("checkedInAttendees");
-                    if (checkedInAttendees != null){
+                    Event event = documentSnapshot.toObject(Event.class);
+                    if(event != null) {
+                        Map<String, Integer> checkedInAttendees = event.getCheckedInAttendees();
                         if (checkedInAttendees.containsKey(userID)) {
                             int checkInCount = checkedInAttendees.get(userID);
                             checkInCount++;
@@ -151,19 +152,19 @@ public class ScannerFragment extends Fragment {
                         } else {
                             checkedInAttendees.put(userID, 1);
                         }
-                        Map<String, Object> updates = new HashMap<>();
-                        updates.put("checkedInAttendees", checkedInAttendees);
+                        event.setCheckedInAttendees(checkedInAttendees);
                         EventDB eventDB = new EventDB(eventDBConnector);
+                        eventDB.updateEvent(event);
                         /*
                               eventDB.updateEvent(eventName, updates);
                               required: Event
                               found:    String,Map<String,Object>
                               reason: actual and formal argument lists differ in length
                               so i tried using gpt's suggestion
-                         */
+
                         Event updatedEvent = new Event(eventName, updates);
                         // Pass the updated Event object to the updateEvent method
-                        eventDB.updateEvent(updatedEvent);
+                        eventDB.updateEvent(updatedEvent);*/
                     }
                 } else{
                     Log.d("onAttendeeCheckIn", "Document does not exist");
@@ -177,11 +178,11 @@ public class ScannerFragment extends Fragment {
             fragmentManager.popBackStack();
         }
     }
-    private void onPromotionScan(String eventName){
+    private void onPromotionScan(String eventID){
         EventDBConnector connector = new EventDBConnector();
         FirebaseFirestore db = connector.getDb();
 
-        db.collection("events").document(eventName).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        db.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {

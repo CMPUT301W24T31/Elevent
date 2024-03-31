@@ -23,6 +23,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,9 +117,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
                             List<String> notifications = event.getNotifications();
                             notifications.add(notificationText);
                             event.setNotifications(notifications);
-                            Map<String, Object> updates = new HashMap<>();
-                            updates.put("notifications", notifications);
-                            updateNotifications(updates);
+                            updateNotifications();
                         }
                     } else {
                         Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
@@ -128,16 +129,16 @@ public class AddNotificationDialogFragment extends DialogFragment {
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
     //suggested by gpt
-    private void updateNotifications(Map<String, Object> updates) {
+    private void updateNotifications() {
         EventDB db = new EventDB(new EventDBConnector());
-        event.setNotifications((List<String>) updates.get("notifications")); // Update notifications of the existing event object
         db.updateEvent(event); // Pass the existing event object to the updateEvent method
     }
 
     private void createNotification() {
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra("OpenNotificationFromFragment", "NotificationFragmentAttendee");
-        intent.putExtra("event", event);
+        byte[] eventByteArray = convertEventToByteArray();
+        intent.putExtra("eventByteArray", eventByteArray);
         PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "EleventChannel")
                 .setContentTitle((CharSequence) event.getEventName())
@@ -162,5 +163,16 @@ public class AddNotificationDialogFragment extends DialogFragment {
         }
         notificationSent = true;
         notificationManagerCompat.notify(1, builder.build());
+    }
+
+    private byte[] convertEventToByteArray() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (ObjectOutputStream out = new ObjectOutputStream(outputStream)){
+            out.writeObject(event);
+            return outputStream.toByteArray();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        throw new RuntimeException();
     }
 }

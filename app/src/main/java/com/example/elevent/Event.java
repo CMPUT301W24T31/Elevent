@@ -1,5 +1,7 @@
 package com.example.elevent;
 
+import androidx.annotation.Keep;
+
 import com.google.firebase.firestore.Blob;
 
 import java.io.Serializable;
@@ -17,8 +19,8 @@ import java.util.Map;
 public class Event implements Serializable {
 
     // attributes for the information of an event
-    private String eventID;
     private String organizerID;
+    private String eventID;
     private String eventName;
     private Blob promotionalQR; //byte array
     private Blob checkinQR; // byte array
@@ -48,8 +50,9 @@ public class Event implements Serializable {
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
      */
-    public Event(String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster) {
+        this.eventID = eventID;
         this.organizerID = organizerID;
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
@@ -60,14 +63,9 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
+        this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkedInAttendees = new HashMap<>();
-        this.notifications = notifications;
-        eventID = String.valueOf(System.currentTimeMillis());
-    }
-
-    //change suggested by gpt with respect to the change made in scannerFragment
-    public Event(String eventName, Map<String, Object> updates) {
     }
 
     /**
@@ -76,6 +74,7 @@ public class Event implements Serializable {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("eventID", eventID);
         eventMap.put("organizerID", organizerID);
         eventMap.put("eventName", eventName);
         eventMap.put("location", location);
