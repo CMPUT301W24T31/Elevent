@@ -54,25 +54,12 @@ public class CreatedEventFragment extends Fragment {
 
     private Event selectedEvent;
     private CreatedEventListener listener;
-    private byte[] eventPosterByteArray;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
         }
     });
-    private final ActivityResultLauncher<String> getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-        if (uri != null) {
-            // OpenAI, 2024, ChatGPT, Convert to byte array
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                eventPosterByteArray = byteArrayOutputStream.toByteArray();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    });
+    private ActivityResultLauncher<String> getContentLauncher;
 
     /**
      * Called when a fragment is first attached to its host activity
@@ -202,32 +189,39 @@ public class CreatedEventFragment extends Fragment {
         EditText eventDescriptionText = view.findViewById(R.id.event_description_text);
         ImageView eventPoster = view.findViewById(R.id.created_event_image_view_clickable);
         Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
+        TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
+        TextView deleteEventPoster = view.findViewById(R.id.delete_event_poster_text);
+        getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                // OpenAI, 2024, ChatGPT, Convert to byte array
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] eventPosterByteArray = byteArrayOutputStream.toByteArray();
+                    selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
+                    eventPoster.setImageBitmap(bitmap);
+                    eventPoster.setVisibility(View.VISIBLE);
+                    editEventPoster.setVisibility(View.VISIBLE);
+                    deleteEventPoster.setVisibility(View.VISIBLE);
+                    addEventImageButton.setVisibility(View.INVISIBLE);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         addEventImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-                if (eventPosterByteArray != null){
-                    selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
-                    eventPoster.setImageBitmap(convertBlobToBitmap(selectedEvent.getEventPoster()));
-                }
             }
         });
-        TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
         editEventPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Blob currentPoster = selectedEvent.getEventPoster();
-                selectedEvent.setEventPoster(null);
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-                if (eventPosterByteArray != null){
-                    selectedEvent.setEventPoster(Blob.fromBytes(eventPosterByteArray));
-                    eventPoster.setImageBitmap(convertBlobToBitmap(selectedEvent.getEventPoster()));
-                } else{
-                    selectedEvent.setEventPoster(currentPoster);
-                }
             }
         });
-        TextView deleteEventPoster = view.findViewById(R.id.delete_event_poster_text);
         deleteEventPoster.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
