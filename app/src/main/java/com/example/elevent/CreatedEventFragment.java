@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,6 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -269,13 +274,35 @@ public class CreatedEventFragment extends Fragment {
                 selectedEvent.setTime(updatedEventTime);
                 selectedEvent.setDate(updatedEventDate);
                 selectedEvent.setDescription(updatedEventDescription);
-                EventDBConnector connector = new EventDBConnector();
-                EventDB db = new EventDB(connector);
-                db.updateEvent(selectedEvent);
 
-                // Notify the listener about the positive action with the updated selectedEvent
-                if (listener != null) {
-                    listener.updateEvent(selectedEvent);
+                // Update event in Firebase Firestore
+                EventDB eventDB = new EventDB();
+                Task<Void> updateTask = eventDB.updateEvent(selectedEvent);
+
+                // Handle the completion of the update operation
+                updateTask.addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Notify the listener about the positive action with the updated selectedEvent
+                        if (listener != null) {
+                            listener.updateEvent(selectedEvent);
+                        }
+                        // Display a toast message indicating that changes have been saved
+                        Toast.makeText(getContext(), "The changes have been saved", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle error if the update operation fails
+                        Log.e("CreatedEventFragment", "Failed to update event in Firestore: ", e);
+                    }
+                });
+
+                // Replace the fragment
+                if (getActivity() instanceof MainActivity) {
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                    helper.replaceFragment(new MyEventsFragment()); // Instantiate MyEventsFragment properly
                 }
             }
         });

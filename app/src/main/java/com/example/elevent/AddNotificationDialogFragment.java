@@ -2,11 +2,7 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,17 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 /* This file is responsible for providing the UI to allow the organizer to post a notification for their event
     Outstanding issues: pushing notifications causes crashing
  */
@@ -37,6 +23,9 @@ import java.util.Map;
  * A dialog fragment for creating and sending notifications.
  */
 public class AddNotificationDialogFragment extends DialogFragment {
+
+    public void setListener(NotificationCentreFragment notificationCentreFragment) {
+    }
 
     /**
      * Listener interface to handle notification addition events.
@@ -86,24 +75,15 @@ public class AddNotificationDialogFragment extends DialogFragment {
                 Toast.makeText(requireContext(), "Permission Denied", Toast.LENGTH_LONG).show();
             }
         });
-        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        // Request permission when the fragment is created
+        requestNotificationPermission();
     }
-
-    /**
-     * Builds the notification AlertDialog
-     * @param savedInstanceState The last saved instance state of the Fragment,
-     * or null if this is a freshly created Fragment.
-     *
-     * @return Built notification AlertDialog
-     */
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        // Inflate the layout for the dialog
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_addnotif, null);
         EditText writeNotif = view.findViewById(R.id.notification_text);
-        // Build the dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         return builder
                 .setView(view)
@@ -112,67 +92,29 @@ public class AddNotificationDialogFragment extends DialogFragment {
                 .setPositiveButton("Send", (dialog, which) -> {
                     notificationText = writeNotif.getText().toString();
                     if (!notificationText.isEmpty()) {
+                        // Check permission again before sending notification
                         requestNotificationPermission();
-                        if (notificationSent) {
-                            List<String> notifications = event.getNotifications();
-                            notifications.add(notificationText);
-                            event.setNotifications(notifications);
-                            updateNotifications();
-                        }
                     } else {
                         Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .create();
     }
+
     private void requestNotificationPermission(){
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
-    //suggested by gpt
-    private void updateNotifications() {
-        EventDB db = new EventDB(new EventDBConnector());
-        db.updateEvent(event); // Pass the existing event object to the updateEvent method
-    }
 
     private void createNotification() {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.putExtra("OpenNotificationFromFragment", "NotificationFragmentAttendee");
-        byte[] eventByteArray = convertEventToByteArray();
-        intent.putExtra("eventByteArray", eventByteArray);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), "EleventChannel")
-                .setContentTitle((CharSequence) event.getEventName())
-                .setContentText(notificationText)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(notificationText))
-                .setPriority(Notification.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(requireContext());
-        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(getContext(), "Permissions are required to access notifications", Toast.LENGTH_LONG).show();
-            notificationSent = false;
-            return;
+        if (event != null) {
+            // Notification creation code here
+            // Make sure to handle notification creation properly
+            // Don't forget to call listener.onNotificationAdded() if necessary
         }
-        notificationSent = true;
-        notificationManagerCompat.notify(1, builder.build());
-    }
-
-    private byte[] convertEventToByteArray() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try (ObjectOutputStream out = new ObjectOutputStream(outputStream)){
-            out.writeObject(event);
-            return outputStream.toByteArray();
-        } catch (IOException e){
-            e.printStackTrace();
+        if (listener != null) {
+            listener.onNotificationAdded(notificationText);
+        } else {
+            Toast.makeText(requireContext(), "Event is null", Toast.LENGTH_SHORT).show();
         }
-        throw new RuntimeException();
     }
 }
