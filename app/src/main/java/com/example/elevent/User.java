@@ -14,7 +14,7 @@ public class User {
     // attributes for User class
     // (what information a user has)
     private String name;
-    private String[] contact;
+    private String contact;
     private byte[] profilePic;
     private String homePage;
 
@@ -24,7 +24,7 @@ public class User {
     public User() {
     }
 
-    public User(String name, String[] contact, byte[] profilePic, String homePage, String userID) {
+    public User(String name, String contact, byte[] profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;
@@ -58,9 +58,10 @@ public class User {
 
     /**
      * Getter for the contact information of the user
+     *
      * @return Contact information of the user
      */
-    public String[] getContact() {
+    public String getContact() {
         return contact;
     }
 
@@ -68,7 +69,7 @@ public class User {
      * Setter for the contact information of the user
      * @param contact Contact information of the user
      */
-    public void setContact(String[] contact) {
+    public void setContact(String contact) {
         this.contact = contact;
     }
 

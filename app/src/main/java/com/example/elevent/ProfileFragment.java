@@ -18,27 +18,29 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.util.Arrays;
+import java.util.Objects;
 /*
     This file contains the implementation for the ProfileFragment that is responsible for displaying the UI
-    that allows a user to view and edit their personal profile
-    Outstanding issues: needs to be implemented
+    that allows a user to view their personal profile
  */
 /**
- * This fragment provides UI for the user to customize their profile
+ * This fragment provides UI for the user to view their profile
  */
 public class ProfileFragment extends Fragment {
 
     // attributes used in the profile fragment
-    private EditText profileName;
-    private EditText profileHomepage;
-    private EditText profileContact;
+    private TextView profileName;
+    private TextView profileHomepage;
+    private TextView profileContact;
     private ImageView profileImage;
-    private Button saveProfileButton;
     private String getUserIdFromPreferences() {
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(PreferenceManager.getDefaultSharedPreferencesName(getActivity()), Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences(PreferenceManager.getDefaultSharedPreferencesName(getActivity()), Context.MODE_PRIVATE);
         return sharedPreferences.getString("userID", null);
     }
 
@@ -71,7 +73,6 @@ public class ProfileFragment extends Fragment {
         profileHomepage = view.findViewById(R.id.profile_homepage);
         profileContact = view.findViewById(R.id.profile_contact);
         profileImage = view.findViewById(R.id.profile_image);
-        saveProfileButton = view.findViewById(R.id.save_profile_button);
 
         return view;
 
@@ -82,22 +83,24 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // get the UserID and instantiate an instance
-        // of the user database
         String userID = getUserIdFromPreferences();
         UserDB db = new UserDB(new UserDBConnector());
-
 
         db.readUser(userID, new UserDB.OnUserReadListener() {
             @Override
             public void onSuccess(User user) {
-                // update with user data in the UI
                 if (getActivity() == null) return;
                 getActivity().runOnUiThread(() -> {
-                    profileName.setText(user.getName()); //update the profile name with
+                    profileName.setText(user.getName());
                     profileHomepage.setText(user.getHomePage());
-                    profileContact.setText(Arrays.toString(user.getContact()));
-                    // i don't know how to handle the profile picture yet
+                    profileContact.setText(user.getContact());
+
+                    if (user.getProfilePic() != null) {
+                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(user.getProfilePic(), 0, user.getProfilePic().length);
+                        profileImage.setImageBitmap(profileBitmap);
+                    } else {
+                        profileImage.setImageResource(R.drawable.default_profile_pic);
+                    }
                 });
             }
 
@@ -107,23 +110,18 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        saveProfileButton.setOnClickListener(v -> {
-            String name = profileName.getText().toString();
-            String homepage = profileHomepage.getText().toString();
-            String contact = profileContact.getText().toString();
-
-            byte[] profilePic = null; // placeholder for the actual conversion logic we have to do
-
-            User updatedUser = new User(name, new String[]{contact}, profilePic, homepage, userID); // Adjust according to your User constructor
-            db.updateUser(updatedUser).thenRun(() -> {
-                Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
-            }).exceptionally(e -> {
-                Toast.makeText(getActivity(), "Failed to update profile", Toast.LENGTH_SHORT).show();
-                return null;
-            });
+        view.findViewById(R.id.edit_profile_button).setOnClickListener(v -> {
+            // navigate to EditProfileFragment
+            MainActivity mainActivity = (MainActivity)getActivity();
+            assert mainActivity != null;
+            FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+            EditProfileFragment editProfileFragment = new EditProfileFragment();
+            helper.replaceFragment(editProfileFragment);
         });
     }
 
+
+    /*
     public void displayProfilePicture(byte[] profilePic) {
         if (profilePic != null) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(profilePic, 0, profilePic.length);
@@ -133,6 +131,7 @@ public class ProfileFragment extends Fragment {
             profileImage.setImageResource(R.drawable.default_profile_pic);
         }
     }
+     */
 
 
 }

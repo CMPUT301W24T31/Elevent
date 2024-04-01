@@ -61,5 +61,6 @@
     <string name="home_page">Home Page\n</string>
     <string name="contact">Contact Info</string>
     <string name="save">Save</string>
+    <string name="edit_profile">Edit Profile\n</string>
 
 </resources>
