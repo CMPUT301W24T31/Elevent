@@ -89,6 +89,44 @@
                 android:inputType="text"
                 android:theme="@style/FontTheme" />
 
+            <ImageView
+                android:id="@+id/create_event_image_view"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_below="@+id/event_location_input"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="20dp"/>
+
+
+            <TextView
+                android:id="@+id/change_event_poster_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/create_event_image_view"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Edit event poster"
+                android:textColor="@color/text_white"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/remove_event_poster_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/create_event_image_view"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:text="Delete event poster"
+                android:textColor="@color/text_white"
+                android:textSize="18sp"
+                android:focusable="true" />
+
 
             <Button
                 android:id="@+id/eventPoster_create"

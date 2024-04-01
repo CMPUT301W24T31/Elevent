@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -45,26 +47,13 @@ import java.util.UUID;
 public class CreateEventFragment extends Fragment {
 
 
-    private byte[] eventPosterByteArray = null;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
         }
     });
     // OpenAI, 2024, ChatGPT, Allow user to upload image file
-    private final ActivityResultLauncher<String> getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-        if (uri != null) {
-            // OpenAI, 2024, ChatGPT, Convert to byte array
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                eventPosterByteArray = byteArrayOutputStream.toByteArray();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    });
+    private ActivityResultLauncher<String> getContentLauncher;
 
     /**
      * Interface for listener that handles event creation
@@ -77,6 +66,7 @@ public class CreateEventFragment extends Fragment {
     }
 
     private CreateEventListener listener;
+    byte[] eventPosterByteArray;
 
     private void createEvent(Event event) {
         EventDB eventDB = new EventDB(new EventDBConnector());
@@ -142,14 +132,56 @@ public class CreateEventFragment extends Fragment {
         EditText eventDate = view.findViewById(R.id.event_date_input);
         EditText eventDescription = view.findViewById(R.id.event_description_input);
         Button addEventImage = view.findViewById(R.id.eventPoster_create);
+        ImageView eventPosterView = view.findViewById(R.id.create_event_image_view);
+        TextView editEventPoster = view.findViewById(R.id.change_event_poster_text);
+        TextView deleteEventPoster = view.findViewById(R.id.remove_event_poster_text);
+
+        eventPosterView.setVisibility(View.INVISIBLE);
+        editEventPoster.setVisibility(View.INVISIBLE);
+        deleteEventPoster.setVisibility(View.INVISIBLE);
 
         eventDate.setInputType(InputType.TYPE_NULL);
         eventTime.setInputType(InputType.TYPE_NULL);
+        getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                // OpenAI, 2024, ChatGPT, Convert to byte array
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    eventPosterByteArray = byteArrayOutputStream.toByteArray();
+                    eventPosterView.setImageBitmap(bitmap);
+                    eventPosterView.setVisibility(View.VISIBLE);
+                    addEventImage.setVisibility(View.INVISIBLE);
+                    editEventPoster.setVisibility(View.VISIBLE);
+                    deleteEventPoster.setVisibility(View.VISIBLE);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         
         addEventImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+            }
+        });
+
+        editEventPoster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+            }
+        });
+        deleteEventPoster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventPosterByteArray = null;
+                eventPosterView.setVisibility(View.INVISIBLE);
+                deleteEventPoster.setVisibility(View.INVISIBLE);
+                editEventPoster.setVisibility(View.INVISIBLE);
+                addEventImage.setVisibility(View.VISIBLE);
             }
         });
 
@@ -179,13 +211,13 @@ public class CreateEventFragment extends Fragment {
                     return; // Add return to exit early if validation fails
                 }
                 String eventID = String.valueOf(System.currentTimeMillis());
-                // Arguments for event constructor to be passed into addEvent
-                byte[] promotionalQR = generateQRCode("Promotion," + eventID);
-                byte[] checkInQR = generateQRCode("Check In," + eventID);
                 Blob eventPoster = null;
                 if (eventPosterByteArray != null){
                     eventPoster = Blob.fromBytes(eventPosterByteArray);
                 }
+                // Arguments for event constructor to be passed into addEvent
+                byte[] promotionalQR = generateQRCode("Promotion," + eventID);
+                byte[] checkInQR = generateQRCode("Check In," + eventID);
                 String event_date = eventDate.getText().toString();
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();
