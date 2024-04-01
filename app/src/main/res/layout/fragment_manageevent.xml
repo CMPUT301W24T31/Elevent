@@ -33,11 +33,22 @@
         android:theme="@style/FontTheme"
         />
 
+    <Spinner
+        android:id="@+id/attendee_spinner"
+        android:layout_width="339dp"
+        android:layout_height="35dp"
+        android:layout_below="@id/attendee_list_textview"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_blue"
+        android:padding="30dp" />
+
     <ListView
         android:id="@+id/list_of_attendees"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/attendee_list_textview"
+        android:layout_below="@id/attendee_spinner"
         android:layout_marginTop="10dp"
         android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
