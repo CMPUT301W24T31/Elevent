@@ -22,6 +22,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -162,6 +164,9 @@ public class ManageEventFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putSerializable("user", selectedUser);
                 args.putSerializable("event", event);
+                InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
+                inspectAttendeeInformationFragment.setArguments(args);
+                inspectAttendeeInformationFragment.show(requireActivity().getSupportFragmentManager(), "InspectAttendeeInformationDialogFragment");
             }
         });
     }
@@ -181,7 +186,7 @@ public class ManageEventFragment extends Fragment {
                     // gotta figure out the firebase cuz idk how that works rn
                     ArrayList<String> signedUpAttendees = (ArrayList<String>) documentSnapshot.get("signedUpAttendees");
                     if (signedUpAttendees != null) {
-                        getAttendeeInformation(signedUpAttendees);
+                        fetchUserObjects(signedUpAttendees);
                     }
                 } else{
                     Log.d("fetchAttendees", "No such document");
@@ -200,7 +205,7 @@ public class ManageEventFragment extends Fragment {
                     Map<String, Integer> checkedInAttendees = (Map<String, Integer>) documentSnapshot.get("checkedInAttendees");
                     if (checkedInAttendees != null){
                         List<String> checkedInAttendeesIDs = new ArrayList<>(checkedInAttendees.keySet());
-                        getAttendeeInformation(checkedInAttendeesIDs);
+                        fetchUserObjects(checkedInAttendeesIDs);
                     }
                 } else {
                     Log.d("fetchCheckedInAttendees", "Document does not exist");
@@ -208,38 +213,35 @@ public class ManageEventFragment extends Fragment {
             }
         });
     }
-    private void updateListView(List<String> attendeeInformation){
-        AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), (ArrayList<String>) attendeeInformation);
-        listOfAttendees = getView().findViewById(R.id.list_of_attendees);
-        listOfAttendees.setAdapter(attendeeArrayAdapter);
-    }
-    private void getAttendeeInformation(List<String> attendees){
-        EventDBConnector connector = new EventDBConnector();
+    private void fetchUserObjects(List<String> attendeeIDs){
+        UserDBConnector connector = new UserDBConnector();
         FirebaseFirestore db = connector.getDb();
-        List<String> attendeeInformation = new ArrayList<>();
-        AtomicInteger count = new AtomicInteger(attendees.size());  // OpenAI, 2024, ChatGPT, Filling list in Firestore call returns empty list
-        if (attendees.size() == 0){
-            updateListView(attendeeInformation);
+
+        ArrayList<User> attendees = new ArrayList<>();
+        if (attendeeIDs.size() == 0){
+            updateListView(attendees);
         }
-        for (String userID : attendees){
+        AtomicInteger count = new AtomicInteger(attendeeIDs.size());
+        for (String userID : attendeeIDs){
             db.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if (documentSnapshot.exists()){
-                        String name = (String) documentSnapshot.get("name");
-                        if (name != null){
-                            attendeeInformation.add(name);
-                        } else if ((String) documentSnapshot.get("userID") != null){
-                            attendeeInformation.add((String) documentSnapshot.get("userID"));
-                        }
+                        User user = documentSnapshot.toObject(User.class);
+                        attendees.add(user);
                     } else {
-                        Log.d("getAttendeeInformation", "Document does not exist");
+                        Log.d("fetchUserObjects", "Document does not exist");
                     }
                     if (count.decrementAndGet() == 0){
-                        updateListView(attendeeInformation);
+                        updateListView(attendees);
                     }
                 }
             });
         }
+    }
+    private void updateListView(ArrayList<User> attendees){
+        AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), attendees);
+        listOfAttendees = getView().findViewById(R.id.list_of_attendees);
+        listOfAttendees.setAdapter(attendeeArrayAdapter);
     }
 }

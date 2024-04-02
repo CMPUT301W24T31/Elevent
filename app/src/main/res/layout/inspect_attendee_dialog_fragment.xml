@@ -15,16 +15,22 @@
         android:id="@+id/attendee_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="15dp"
+        android:textSize="20dp"/>
     <TextView
         android:id="@+id/attendee_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="15dp"
+        android:textSize="20dp"/>
     <TextView
         android:id="@+id/check_in_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="15dp"
+        android:textSize="20dp"/>
 
 </LinearLayout>

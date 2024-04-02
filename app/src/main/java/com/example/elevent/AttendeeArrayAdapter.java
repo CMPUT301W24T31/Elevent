@@ -13,10 +13,10 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttendeeArrayAdapter extends ArrayAdapter<String> {
+public class AttendeeArrayAdapter extends ArrayAdapter<User> {
 
-    public AttendeeArrayAdapter(Context context, ArrayList<String> attendees ) {
-        super(context,0,attendees);
+    public AttendeeArrayAdapter(Context context, ArrayList<User> attendees ) {
+        super(context,0, attendees);
     }
 
     @NonNull
@@ -29,10 +29,16 @@ public class AttendeeArrayAdapter extends ArrayAdapter<String> {
             view = convertView;
         }
 
-        String attendee = getItem(position);
+        User attendee = getItem(position);
         TextView attendeeName = view.findViewById(R.id.attendee_array_adapter_attendee_name);
 
-        attendeeName.setText(attendee);
+        if (attendee != null) {
+            if (attendee.getName() == null) {
+                attendeeName.setText(attendee.getUserID());
+            } else {
+                attendeeName.setText(attendee.getName());
+            }
+        }
 
         return view;
     }

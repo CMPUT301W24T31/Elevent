@@ -55,7 +55,7 @@ public class User implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -72,7 +72,7 @@ public class User implements Serializable {
      * @return Contact information of the user
      */
     public String getContact() {
-        return contact;
+        return this.contact;
     }
 
     /**
@@ -88,7 +88,7 @@ public class User implements Serializable {
      * @return Profile picture of the user
      */
     public byte[] getProfilePic() {
-        return profilePic;
+        return this.profilePic;
     }
 
     /**
@@ -100,7 +100,7 @@ public class User implements Serializable {
     }
 
     public List<String> getSignedUpEvents() {
-        return signedUpEvents;
+        return this.signedUpEvents;
     }
 
     public void setSignedUpEvents(List<String> signedUpEvents) {
@@ -112,7 +112,7 @@ public class User implements Serializable {
      * @return Key for the homepage of the user
      */
     public String getHomePage() {
-        return homePage;
+        return this.homePage;
     }
 
     /**

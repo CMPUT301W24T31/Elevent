@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,12 +43,12 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
                 attendeeImage.setImageBitmap(convertBlobToBitmap(user.getProfilePic()));
             }
             if (user.getName() == null) {
-                attendeeName.setText(user.getUserID());
+                attendeeName.setVisibility(View.GONE);
             } else {
                 attendeeName.setText(user.getName());
             }
             if (user.getContact() == null) {
-                attendeeContact.setVisibility(View.INVISIBLE);
+                attendeeContact.setVisibility(View.GONE);
             } else {
                 attendeeContact.setText(user.getContact());
             }
@@ -57,14 +58,18 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
                     checkInCount.setText(notCheckedIn);
                 } else {
                     int checkIns = event.getCheckedInAttendees().get(user.getUserID());
-                    checkInCount.setText(String.format("Checked in %d times", event.getCheckedInAttendees().get(user.getUserID())));
+                    checkInCount.setText(String.format("Checked in %d time(s)", event.getCheckedInAttendees().get(user.getUserID())));
                 }
+            } else {
+                Log.d("Inspect Attendee", "Event is null");
             }
+        } else{
+            Log.d("Inspect Attendee", "User is null");
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         return builder
                 .setView(view)
-                .setPositiveButton("Close", null)
+                .setNegativeButton("Close", null)
                 .create();
     }
     private Bitmap convertBlobToBitmap(byte[] bytes){
