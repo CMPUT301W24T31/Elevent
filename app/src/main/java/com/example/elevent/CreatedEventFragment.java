@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -268,6 +269,7 @@ public class CreatedEventFragment extends Fragment {
                 selectedEvent.setTime(updatedEventTime);
                 selectedEvent.setDate(updatedEventDate);
                 selectedEvent.setDescription(updatedEventDescription);
+
 
                 // Update event in Firebase Firestore
                 EventDB eventDB = new EventDB();

@@ -94,58 +94,6 @@ public class EventDB {
         return CompletableFuture.runAsync(eventRef::delete);
     }
 
-    /**
-     * Queries the Firebase for a list of all events
-     * @return Event ArrayList of all events in the Firebase
-     */
-
-    public ArrayList<Event> getAllEvents() {
-        ArrayList<Event> allEvents = new ArrayList<Event>();
-
-        db.collection("events").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
-                    allEvents.add(event);
-                }
-            } else {
-                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
-            }
-        });
-
-        return allEvents;
-    }
-
-    /**
-     * Queries the Firebase for a list of events organized by a user with a specified userID
-     * @param userID Takes in a UserID string to query the firebase
-     * @return Event ArrayList of all events organized by the user with the userID
-     */
-    // TODO: 2024-03-15 give Event organizer param and complete function
-    public ArrayList<Event> getMyOrganizedEvents(String userID) {
-        ArrayList<Event> myEvents = new ArrayList<Event>();
-
-
-        return myEvents;
-    }
-
-    /**
-     * Queries the Firebase for a list of events a user with a specified userID has signed up for
-     * @param userID Takes in a UserID string to query the firebase
-     * @return Event ArrayList of all events the user with the userID has signed up for
-     */
-
-    // TODO: 2024-03-15 give Event signedUpUsers param and complete function
-    public ArrayList<Event> getMySignedUpEvents(String userID) {
-        ArrayList<Event> myEvents = new ArrayList<Event>();
-
-
-        return myEvents;
-    }
-
-
-
-
     // remaining methods for events to be implemented
     // -----------
     // -----------

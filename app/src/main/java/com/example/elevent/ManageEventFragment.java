@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApiNotAvailableException;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -112,6 +113,7 @@ public class ManageEventFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
+        Button mapButton = view.findViewById(R.id.map_button);
         notifCentreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,6 +131,24 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
+                //(same implementation as the random floating button in all events :))
+                if (getActivity() instanceof MainActivity) {
+                    MapFragment mapFragment = new MapFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("event", event);
+                    mapFragment.setArguments(args);
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                    helper.replaceFragment(mapFragment);
+                }
+                //return null;
+            }
+        });
+
         fetchAttendees();
     }
 

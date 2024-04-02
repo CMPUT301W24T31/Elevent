@@ -18,20 +18,36 @@
 
         />
 
+    <Button
+        android:id="@+id/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_below="@+id/notif_centre_button"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentEnd="false"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="30dp"
+
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:backgroundTint="@color/item_grey"
+        android:text="Map"
+        android:textColor="@color/text_white"
+        android:theme="@style/FontTheme" />
+
     <TextView
         android:id="@+id/attendee_list_textview"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_below="@+id/map_button"
+        android:layout_marginLeft="30dp"
         android:layout_marginTop="10dp"
         android:layout_marginRight="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_below="@id/notif_centre_button"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="@color/primary_blue"
         android:text="@string/attendees"
         android:textColor="@color/text_white"
-        android:theme="@style/FontTheme"
-        />
+        android:theme="@style/FontTheme" />
 
     <ListView
         android:id="@+id/list_of_attendees"
