@@ -1,5 +1,6 @@
 package com.example.elevent;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * This class represents a user of the app
  */
-public class User {
+public class User implements Serializable {
 
     // attributes for User class
     // (what information a user has)

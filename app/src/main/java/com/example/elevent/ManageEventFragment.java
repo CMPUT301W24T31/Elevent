@@ -154,6 +154,16 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
+
+        listOfAttendees.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                User selectedUser = (User) parent.getItemAtPosition(position);
+                Bundle args = new Bundle();
+                args.putSerializable("user", selectedUser);
+                args.putSerializable("event", event);
+            }
+        });
     }
 
         // You can also set data to your TextView and ListView

@@ -169,17 +169,22 @@ public class ScannerFragment extends Fragment {
                         // Pass the updated Event object to the updateEvent method
                         eventDB.updateEvent(updatedEvent);*/
                     }
+                    Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_LONG).show();
+                    if (getActivity() instanceof MainActivity){
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+                        Bundle args = new Bundle();
+                        args.putSerializable("event", event);
+                        eventViewAttendeeFragment.setArguments(args);
+                        helper.replaceFragment(eventViewAttendeeFragment);
+
+                    }
                 } else{
                     Log.d("onAttendeeCheckIn", "Document does not exist");
                 }
             }
         });
-        Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_LONG).show();
-        if (getActivity() instanceof MainActivity){
-            MainActivity mainActivity = (MainActivity) getActivity();
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            fragmentManager.popBackStack();
-        }
     }
     private void onPromotionScan(String eventID){
         EventDBConnector connector = new EventDBConnector();

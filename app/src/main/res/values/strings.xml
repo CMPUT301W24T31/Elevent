@@ -54,7 +54,7 @@
     <string name="event_name">event name</string>
     <string name="location">location</string>
     <string name="date">date</string>
-    <string name="name">name</string>
+    <string name="name">Name</string>
     <string name="time">time</string>
     <string name="description">description</string>
     <string name="share">share</string>
