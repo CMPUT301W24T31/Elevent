@@ -21,8 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-
 import java.util.Arrays;
 import java.util.Objects;
 /*
@@ -91,6 +89,8 @@ public class ProfileFragment extends Fragment {
             public void onSuccess(User user) {
                 if (getActivity() == null) return;
                 getActivity().runOnUiThread(() -> {
+
+                    // set the user info in the text views
                     profileName.setText(user.getName());
                     profileHomepage.setText(user.getHomePage());
                     profileContact.setText(user.getContact());
