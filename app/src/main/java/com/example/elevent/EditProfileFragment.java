@@ -2,6 +2,8 @@ package com.example.elevent;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -15,8 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.bumptech.glide.Glide;
 
 import java.util.Arrays;
 
@@ -59,10 +59,8 @@ public class EditProfileFragment extends Fragment {
                     editProfileContact.setText(user.getContact());
 
                     if ((user.getProfilePic() != null)) {
-                        Glide.with(EditProfileFragment.this)
-                                .load(user.getProfilePic())
-                                .placeholder(R.drawable.default_profile_pic)
-                                .into(editProfileImage);
+                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(user.getProfilePic(), 0, user.getProfilePic().length);
+                        editProfileImage.setImageBitmap(profileBitmap);
                     } else {
                         editProfileImage.setImageResource(R.drawable.default_profile_pic);
                     }
