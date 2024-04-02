@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_blue"
-    tools:context=".ProfileFragment">
+    tools:context=".EditProfileFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,47 +19,49 @@
             android:padding="16dp">
 
             <ImageView
-                android:id="@+id/profile_image"
+                android:id="@+id/edit_profile_image"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
                 android:src="@drawable/default_profile_pic" />
 
-            <TextView
-                android:id="@+id/profile_name"
+            <EditText
+                android:id="@+id/edit_profile_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/name"
-                android:textColorHint="#1E88E5" />
+                android:inputType="textPersonName"
+                android:minHeight="48dp" />
 
-            <TextView
-                android:id="@+id/profile_homepage"
+            <EditText
+                android:id="@+id/edit_profile_homepage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@string/home_page"
-                android:textColorHint="#1E88E5" />
+                android:inputType="textWebEmailAddress"
+                android:minHeight="48dp" />
 
-            <TextView
-                android:id="@+id/profile_contact"
+            <EditText
+                android:id="@+id/edit_profile_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@string/contact"
-                android:textColorHint="#1E88E5" />
+                android:inputType="text"
+                android:minHeight="48dp" />
 
             <Button
-                android:id="@+id/edit_profile_button"
+                android:id="@+id/save_edited_profile_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/edit_profile"
+                android:text="@string/save"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"/>
 
         </LinearLayout>
     </ScrollView>
-
 
 </FrameLayout>

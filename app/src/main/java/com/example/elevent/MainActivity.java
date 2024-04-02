@@ -1,7 +1,11 @@
 package com.example.elevent;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -16,6 +20,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.util.Objects;
 import java.util.UUID;
 /*
     This file is responsible for being the host activity of all fragments in the app
@@ -39,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private ActivityResultLauncher<Intent> generateQRLauncher;
     private byte[] checkinQR;
     private byte[] promotionQR;
+    private static final String PREF_NAME = "MyPrefs";
+    private static final String KEY_USER_ID = "userID";
+    private static final String CHANNEL_ID = "EleventChannel";
 
     /**
      * Called when the activity is starting
@@ -59,15 +67,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         Toolbar toolbar = findViewById(R.id.toolbar);
         // Set the Toolbar to act as the ActionBar
         setSupportActionBar(toolbar);
+        createNotificationChannel();
 
         // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
-        if (isFirstLaunch){
-            String userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        if (userID == null){
+            userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirstLaunch", false);
-            editor.putString("userID", userID);
+            editor.putString(KEY_USER_ID, userID);
             editor.apply();
         }
         generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -80,7 +88,16 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
         initNavView();
         Log.d("DEBUG", "test");
-
+        if (getIntent().hasExtra("OpenNotificationFromFragment")){
+            if(Objects.equals(getIntent().getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")){
+                NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                Bundle args = new Bundle();
+                Event eventToOpen = (Event) getIntent().getSerializableExtra("event");
+                args.putSerializable("event", eventToOpen);
+                notificationFragmentAttendee.setArguments(args);
+                fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
+            }
+        }
     }
 
     /**
@@ -172,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
      * @return User ID
      */
     public String getUserIDForUserDB() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
 
@@ -197,5 +214,23 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
         fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
         updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
+    }
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "Event Announcements";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @Override
+    public void updateEvent(Event event) {
+        MyEventsFragment myEventsFragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
+        if (myEventsFragment != null) {
+            myEventsFragment.updateEvent(event);
+        }
     }
 }

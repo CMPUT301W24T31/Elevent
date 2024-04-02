@@ -1,9 +1,8 @@
 package com.example.elevent;
 
-import android.Manifest;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,16 +10,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.Blob;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
@@ -39,11 +34,10 @@ public class CreatedEventFragment extends Fragment {
     interface CreatedEventListener {
         //void onCreateEvent(Event event);
 
-        void onPositiveClick(Event event);
+        void updateEvent(Event event);
     }
-    //comment random. 
 
-    private Event event;
+    private Event selectedEvent;
     private CreatedEventListener listener;
 
     /**
@@ -70,9 +64,10 @@ public class CreatedEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            event = (Event) getArguments().getSerializable("selected_event");
+            selectedEvent = (Event) getArguments().getSerializable("selected_event");
         }
     }
+
 
     /**
      * Called to have the fragment instantiate its user interface view.
@@ -92,14 +87,55 @@ public class CreatedEventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_createdevent, container, false);
         EditText eventName = view.findViewById(R.id.event_name_text);
+        eventName.setText(selectedEvent.getEventName());
         EditText eventAddress = view.findViewById(R.id.event_location_text);
+        if (selectedEvent.getLocation() != null){
+            eventAddress.setText(selectedEvent.getLocation());
+        }
         EditText eventTime = view.findViewById(R.id.event_time_text);
+        if (selectedEvent.getTime() != null){
+            eventTime.setText(selectedEvent.getTime());
+        }
         EditText eventDate = view.findViewById(R.id.event_date_text);
+        if (selectedEvent.getDate() != null){
+            eventDate.setText(selectedEvent.getDate());
+        }
         EditText eventDescription = view.findViewById(R.id.event_description_text);
+        if (selectedEvent.getDescription() != null){
+            eventDescription.setText(selectedEvent.getDescription());
+        }
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
-        ImageView checkInQR = view.findViewById(R.id.checkinQR_image);
+
+        ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
+        ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
+
+        if (selectedEvent != null) {
+            eventName.setText(selectedEvent.getEventName());
+            eventAddress.setText(selectedEvent.getLocation());
+            eventTime.setText(selectedEvent.getTime());
+            eventDate.setText(selectedEvent.getDate());
+            eventDescription.setText(selectedEvent.getDescription());
+
+            Blob checkinQRBlob = selectedEvent.getCheckinQR();
+            if (checkinQRBlob != null) {
+                Bitmap checkinQRBitmap = convertBlobToBitmap(checkinQRBlob);
+                if (checkinQRBitmap != null) {
+                    checkInQRImageView.setImageBitmap(checkinQRBitmap);
+                }
+            }
+
+            Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
+            if (promotionalQRBlob != null) {
+                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
+                if (promotionalQRBitmap != null) {
+                    promotionalQRImageView.setImageBitmap(promotionalQRBitmap);
+                }
+            }
+        }
+
         return view;
     }
+
 
     /**
      * Called immediately after onCreateView has returned
@@ -111,19 +147,65 @@ public class CreatedEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EditText eventNameText = view.findViewById(R.id.event_name_text);
+        EditText eventLocationText = view.findViewById(R.id.event_location_text);
+        EditText eventTimeText = view.findViewById(R.id.event_time_text);
+        EditText eventDateText = view.findViewById(R.id.event_date_text);
+        EditText eventDescriptionText = view.findViewById(R.id.event_description_text);
+        Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
+
+        ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
+        ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
+
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
+        Button saveChangesButton = view.findViewById(R.id.save_the_event);
         manageEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ManageEventFragment manageEventFragment = new ManageEventFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("event", selectedEvent);
+                manageEventFragment.setArguments(args);
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))
                 if (getActivity() instanceof MainActivity) {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                    helper.replaceFragment(new ManageEventFragment());
+                    helper.replaceFragment(manageEventFragment);
                 }
                 //return null;
             }
         });
+
+        saveChangesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Retrieve updated data from UI fields
+                String updatedEventName = eventNameText.getText().toString();
+                String updatedEventLocation = eventLocationText.getText().toString();
+                String updatedEventTime = eventTimeText.getText().toString();
+                String updatedEventDate = eventDateText.getText().toString();
+                String updatedEventDescription = eventDescriptionText.getText().toString();
+
+                // Update selectedEvent object with the retrieved data
+                selectedEvent.setEventName(updatedEventName);
+                selectedEvent.setLocation(updatedEventLocation);
+                selectedEvent.setTime(updatedEventTime);
+                selectedEvent.setDate(updatedEventDate);
+                selectedEvent.setDescription(updatedEventDescription);
+
+                // Notify the listener about the positive action with the updated selectedEvent
+                if (listener != null) {
+                    listener.updateEvent(selectedEvent);
+                }
+            }
+        });
+    }
+
+    // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()
+    // OpenAI, 2024, ChatGPT, Display QR code from byte array
+    private Bitmap convertBlobToBitmap(Blob blob){
+        byte[] byteArray = blob.toBytes();
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 }

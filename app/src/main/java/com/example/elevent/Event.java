@@ -1,7 +1,11 @@
 package com.example.elevent;
 
+import com.google.firebase.firestore.Blob;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of an Event object
@@ -13,17 +17,20 @@ import java.util.Map;
 public class Event implements Serializable {
 
     // attributes for the information of an event
-    private static final String eventID = "test";
+    private String eventID;
+    private String organizerID;
     private String eventName;
-    private byte[] promotionalQR; //byte array
-    private byte[] checkinQR; // byte array
+    private Blob promotionalQR; //byte array
+    private Blob checkinQR; // byte array
     private int attendeesCount;
-    private byte[] eventPoster; //byte array
+    private Blob eventPoster; //byte array
     private String date;
     private String time;
     private String description;
     private String location;
-    private String[] notifications;
+    private List<String> notifications;
+    private List<String> signedUpAttendees;
+    private Map<String, Integer> checkedInAttendees;
 
     // No-argument constructor
     public Event() {
@@ -40,11 +47,10 @@ public class Event implements Serializable {
      * @param description Description of the event
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
-     * @param notifications Notifications for the event
      */
-    public Event(String eventName, byte[] promotionalQR, byte[] checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, byte[] eventPoster,
-                 String[] notifications) {
+    public Event(String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+                 String date, String time, String description, String location, Blob eventPoster) {
+        this.organizerID = organizerID;
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
         this.checkinQR = checkinQR;
@@ -54,7 +60,14 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
+        this.signedUpAttendees = new ArrayList<>();
+        this.checkedInAttendees = new HashMap<>();
         this.notifications = notifications;
+        eventID = String.valueOf(System.currentTimeMillis());
+    }
+
+    //change suggested by gpt with respect to the change made in scannerFragment
+    public Event(String eventName, Map<String, Object> updates) {
     }
 
     /**
@@ -63,6 +76,7 @@ public class Event implements Serializable {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("organizerID", organizerID);
         eventMap.put("eventName", eventName);
         eventMap.put("location", location);
         eventMap.put("date", date);
@@ -73,12 +87,20 @@ public class Event implements Serializable {
         eventMap.put("attendeesCount", attendeesCount);
         eventMap.put("eventPoster", eventPoster); // store as byte array
         eventMap.put("notifications", notifications);
+        eventMap.put("signedUpAttendees", signedUpAttendees);
+        eventMap.put("checkedInAttendees", checkedInAttendees);
 
         return eventMap;
     }
 
+    public String getOrganizerID() {
+        return organizerID;
+    }
+
+
     /**
      * Getter for the event name
+     *
      * @return Name of the event
      */
     public String getEventName() {
@@ -121,7 +143,7 @@ public class Event implements Serializable {
      * Getter for the promotional QR code
      * @return Promotional QR code for the event
      */
-    public byte[] getPromotionalQR() {
+    public Blob getPromotionalQR() {
         return promotionalQR;
     }
 
@@ -129,7 +151,7 @@ public class Event implements Serializable {
      * Getter for the check in QR code
      * @return Check in QR code for the event
      */
-    public byte[] getCheckinQR() {
+    public Blob getCheckinQR() {
         return checkinQR;
     }
 
@@ -145,8 +167,20 @@ public class Event implements Serializable {
      * Getter for the event poster
      * @return Poster for the event
      */
-    public byte[] getEventPoster() {
+    public Blob getEventPoster() {
         return eventPoster;
+    }
+
+    public Map<String, Integer> getCheckedInAttendees() {
+        return checkedInAttendees;
+    }
+
+    public List<String> getSignedUpAttendees() {
+        return signedUpAttendees;
+    }
+
+    public void setOrganizerID(String organizerID) {
+        this.organizerID = organizerID;
     }
 
     /**
@@ -161,7 +195,7 @@ public class Event implements Serializable {
      * Setter for the promotional QR code
      * @param promotionalQR Promotional QR code for the event
      */
-    public void setPromotionalQR(byte[] promotionalQR) {
+    public void setPromotionalQR(Blob promotionalQR) {
         this.promotionalQR = promotionalQR;
     }
 
@@ -169,7 +203,7 @@ public class Event implements Serializable {
      * Setter for the check in QR code
      * @param checkinQR Check in QR code for the event
      */
-    public void setCheckinQR(byte[] checkinQR) {
+    public void setCheckinQR(Blob checkinQR) {
         this.checkinQR = checkinQR;
     }
 
@@ -185,7 +219,7 @@ public class Event implements Serializable {
      * Setter for the event poster
      * @param eventPoster Poster for the event
      */
-    public void setEventPoster(byte[] eventPoster) {
+    public void setEventPoster(Blob eventPoster) {
         this.eventPoster = eventPoster;
     }
 
@@ -225,7 +259,7 @@ public class Event implements Serializable {
      * Getter for the notifications for the event
      * @return Notifications for the event
      */
-    public String[] getNotifications() {
+    public List<String> getNotifications() {
         return notifications;
     }
 
@@ -233,11 +267,20 @@ public class Event implements Serializable {
      * Setter for the notifications of the event
      * @param notifications Notifications for the event
      */
-    public void setNotifications(String[] notifications) {
+    public void setNotifications(List<String> notifications) {
         this.notifications = notifications;
     }
 
+    public void setSignedUpAttendees(List<String> signedUpAttendees) {
+        this.signedUpAttendees = signedUpAttendees;
+    }
+    public void setCheckedInAttendees(Map<String, Integer> checkedInAttendees){this.checkedInAttendees = checkedInAttendees;}
+
     public void addNotification(String newNotificationMessage) {
 
+    }
+
+    public String getEventID() {
+        return eventID;
     }
 }
