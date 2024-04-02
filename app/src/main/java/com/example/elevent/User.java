@@ -1,8 +1,5 @@
 package com.example.elevent;
 
-
-import java.io.Serializable;
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,23 +11,27 @@ import java.util.Map;
 /**
  * This class represents a user of the app
  */
-public class User implements Serializable {
+public class User {
 
     // attributes for User class
     // (what information a user has)
     private String name;
-    private String[] contact;
-    private Blob profilePic;
+    private String contact;
+    private byte[] profilePic;
     private String homePage;
+
     private String userID;
     private List<String> signedUpEvents;
 
-    public User(){}  // no argument constructor
+    // no argument constructor
+    public User() {}
+
     public User(String userID){
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
     }
-    public User(String name, String[] contact, Blob profilePic, String homePage, String userID) {
+
+    public User(String name, String contact, byte[] profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;
@@ -66,9 +67,10 @@ public class User implements Serializable {
 
     /**
      * Getter for the contact information of the user
+     *
      * @return Contact information of the user
      */
-    public String[] getContact() {
+    public String getContact() {
         return contact;
     }
 
@@ -76,7 +78,7 @@ public class User implements Serializable {
      * Setter for the contact information of the user
      * @param contact Contact information of the user
      */
-    public void setContact(String[] contact) {
+    public void setContact(String contact) {
         this.contact = contact;
     }
 
@@ -84,7 +86,7 @@ public class User implements Serializable {
      * Getter for the profile picture of the user
      * @return Profile picture of the user
      */
-    public Blob getProfilePic() {
+    public byte[] getProfilePic() {
         return profilePic;
     }
 
@@ -92,7 +94,7 @@ public class User implements Serializable {
      * Setter for the profile picture of the user
      * @param profilePic Profile picture of the user
      */
-    public void setProfilePic(Blob profilePic) {
+    public void setProfilePic(byte[] profilePic) {
         this.profilePic = profilePic;
     }
 
@@ -134,20 +136,5 @@ public class User implements Serializable {
      */
     public void setUserID(String userID) {
         this.userID = userID;
-    }
-
-
-    /**
-     * Create the map to be put into the user database
-     * @return Map that contains the user information
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("name", name);
-        userMap.put("contact", contact);
-        // profile picture stored as a download link string
-        userMap.put("profilePic", profilePic);
-        userMap.put("homePage", homePage);
-        return userMap;
     }
 }

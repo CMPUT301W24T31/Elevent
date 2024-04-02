@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -17,11 +18,16 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
@@ -114,6 +120,22 @@ public class ManageEventFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+        filterStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selection = (String) parent.getItemAtPosition(position);
+                if (Objects.equals(selection, "checked-in")){
+                    fetchCheckedInAttendees();
+                } else if (Objects.equals(selection, "signed-up")){
+                    fetchSignedUpAttendees();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                fetchSignedUpAttendees();
+            }
+        });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         notifCentreButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,14 +154,13 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
-        fetchAttendees();
     }
 
         // You can also set data to your TextView and ListView
         // attendeeListTextView.setText("Attendees List");
         // Set adapter to ListView
         // Example: listOfAttendees.setAdapter(yourAdapter);
-    private void fetchAttendees(){
+    private void fetchSignedUpAttendees(){
         EventDBConnector connector = new EventDBConnector();
         FirebaseFirestore db = connector.getDb();
 
@@ -158,17 +179,39 @@ public class ManageEventFragment extends Fragment {
             }
         });
     }
+    private void fetchCheckedInAttendees(){
+        EventDBConnector connector = new EventDBConnector();
+        FirebaseFirestore db = connector.getDb();
+
+        db.collection("events").document(event.getEventID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    Map<String, Integer> checkedInAttendees = (Map<String, Integer>) documentSnapshot.get("checkedInAttendees");
+                    if (checkedInAttendees != null){
+                        List<String> checkedInAttendeesIDs = new ArrayList<>(checkedInAttendees.keySet());
+                        getAttendeeInformation(checkedInAttendeesIDs);
+                    }
+                } else {
+                    Log.d("fetchCheckedInAttendees", "Document does not exist");
+                }
+            }
+        });
+    }
     private void updateListView(List<String> attendeeInformation){
         AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), (ArrayList<String>) attendeeInformation);
         listOfAttendees = getView().findViewById(R.id.list_of_attendees);
         listOfAttendees.setAdapter(attendeeArrayAdapter);
     }
-    private void getAttendeeInformation(List<String> signedUpAttendees){
+    private void getAttendeeInformation(List<String> attendees){
         EventDBConnector connector = new EventDBConnector();
         FirebaseFirestore db = connector.getDb();
         List<String> attendeeInformation = new ArrayList<>();
-        AtomicInteger count = new AtomicInteger(signedUpAttendees.size());  // OpenAI, 2024, ChatGPT, Filling list in Firestore call returns empty list
-        for (String userID : signedUpAttendees){
+        AtomicInteger count = new AtomicInteger(attendees.size());  // OpenAI, 2024, ChatGPT, Filling list in Firestore call returns empty list
+        if (attendees.size() == 0){
+            updateListView(attendeeInformation);
+        }
+        for (String userID : attendees){
             db.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
