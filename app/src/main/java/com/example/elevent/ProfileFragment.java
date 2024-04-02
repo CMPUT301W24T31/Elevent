@@ -5,24 +5,16 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.Arrays;
-import java.util.Objects;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 /*
     This file contains the implementation for the ProfileFragment that is responsible for displaying the UI
     that allows a user to view their personal profile
@@ -96,7 +88,8 @@ public class ProfileFragment extends Fragment {
                     profileContact.setText(user.getContact());
 
                     if (user.getProfilePic() != null) {
-                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(user.getProfilePic(), 0, user.getProfilePic().length);
+                        byte[] profileBA = user.getProfilePic().toBytes();
+                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
                         profileImage.setImageBitmap(profileBitmap);
                     } else {
                         profileImage.setImageResource(R.drawable.default_profile_pic);

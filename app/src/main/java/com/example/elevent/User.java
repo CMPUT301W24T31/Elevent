@@ -1,5 +1,7 @@
 package com.example.elevent;
 
+import com.google.firebase.firestore.Blob;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +88,7 @@ public class User implements Serializable {
      * Getter for the profile picture of the user
      * @return Profile picture of the user
      */
-    public byte[] getProfilePic() {
+    public Blob getProfilePic() {
         return this.profilePic;
     }
 
@@ -94,7 +96,7 @@ public class User implements Serializable {
      * Setter for the profile picture of the user
      * @param profilePic Profile picture of the user
      */
-    public void setProfilePic(byte[] profilePic) {
+    public void setProfilePic(Blob profilePic) {
         this.profilePic = profilePic;
     }
 

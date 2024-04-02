@@ -7,13 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
@@ -21,9 +19,7 @@ import androidx.preference.PreferenceManager;
 import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -57,9 +53,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
     private List<String> adminUserIds = Arrays.asList(
-            "b5334c2f-4faf-441b-9151-3de5ce92339b",
-            "da58ae40-1501-410d-9d27-a87e2c81c445",
-            "0b046a02-4a9d-4727-9522-ec3223b48e21",
             "c297401a-6d7a-4f09-823d-626234226e16"
     );
 

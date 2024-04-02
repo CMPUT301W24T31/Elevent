@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.util.Arrays;
+import com.google.firebase.firestore.Blob;
 
 public class EditProfileFragment extends Fragment {
 
@@ -59,7 +58,8 @@ public class EditProfileFragment extends Fragment {
                     editProfileContact.setText(user.getContact());
 
                     if ((user.getProfilePic() != null)) {
-                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(user.getProfilePic(), 0, user.getProfilePic().length);
+                        byte[] profileBA = user.getProfilePic().toBytes();
+                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
                         editProfileImage.setImageBitmap(profileBitmap);
                     } else {
                         editProfileImage.setImageResource(R.drawable.default_profile_pic);
@@ -79,7 +79,7 @@ public class EditProfileFragment extends Fragment {
             String name = editProfileName.getText().toString();
             String homepage = editProfileHomepage.getText().toString();
             String contactInputted = editProfileContact.getText().toString();
-            byte[] profilePic = null;
+            Blob profilePic = null;
             User updatedUser = new User(name, contactInputted, profilePic, homepage, userID);
 
             db.updateUser(updatedUser).thenRun(() -> {
