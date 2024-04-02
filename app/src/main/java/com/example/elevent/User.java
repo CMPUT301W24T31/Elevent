@@ -19,7 +19,7 @@ public class User implements Serializable {
     // attributes for User class
     // (what information a user has)
     private String name;
-    private String[] contact;
+    private String contact;
     private Blob profilePic;
     private String homePage;
     private String userID;
@@ -30,7 +30,7 @@ public class User implements Serializable {
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
     }
-    public User(String name, String[] contact, Blob profilePic, String homePage, String userID) {
+    public User(String name, String contact, Blob profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;
@@ -68,7 +68,7 @@ public class User implements Serializable {
      * Getter for the contact information of the user
      * @return Contact information of the user
      */
-    public String[] getContact() {
+    public String getContact() {
         return contact;
     }
 
@@ -76,7 +76,7 @@ public class User implements Serializable {
      * Setter for the contact information of the user
      * @param contact Contact information of the user
      */
-    public void setContact(String[] contact) {
+    public void setContact(String contact) {
         this.contact = contact;
     }
 

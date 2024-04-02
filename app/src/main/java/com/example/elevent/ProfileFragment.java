@@ -96,7 +96,7 @@ public class ProfileFragment extends Fragment {
                 getActivity().runOnUiThread(() -> {
                     profileName.setText(user.getName()); //update the profile name with
                     profileHomepage.setText(user.getHomePage());
-                    profileContact.setText(Arrays.toString(user.getContact()));
+                    profileContact.setText(user.getContact());
                     // i don't know how to handle the profile picture yet
                 });
             }
@@ -114,7 +114,7 @@ public class ProfileFragment extends Fragment {
 
             byte[] profilePic = null; // placeholder for the actual conversion logic we have to do
 
-            User updatedUser = new User(name, new String[]{contact}, null, homepage, userID); // Adjust according to your User constructor
+            User updatedUser = new User(name, contact, null, homepage, userID); // Adjust according to your User constructor
             db.updateUser(updatedUser).thenRun(() -> {
                 Toast.makeText(getActivity(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
             }).exceptionally(e -> {
