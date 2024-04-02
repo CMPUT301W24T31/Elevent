@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Admin.AdminEventFragment"
+    android:background="@color/background_blue">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <ListView
+            android:id="@+id/admin_event_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:cacheColorHint="#B59D9D"
+            android:background="@drawable/rounded_corner"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="10dp"
+            />
+    </LinearLayout>
+</FrameLayout>
+
+

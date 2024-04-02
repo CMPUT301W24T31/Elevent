@@ -101,6 +101,7 @@ public class ProfileFragment extends Fragment {
                     } else {
                         profileImage.setImageResource(R.drawable.default_profile_pic);
                     }
+                    // i don't know how to handle the profile picture yet
                 });
             }
 

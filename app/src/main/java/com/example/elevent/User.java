@@ -18,7 +18,7 @@ public class User implements Serializable {
     // (what information a user has)
     private String name;
     private String contact;
-    private byte[] profilePic;
+    private Blob profilePic;
     private String homePage;
 
     private String userID;
@@ -31,8 +31,7 @@ public class User implements Serializable {
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
     }
-
-    public User(String name, String contact, byte[] profilePic, String homePage, String userID) {
+    public User(String name, String contact, Blob profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;

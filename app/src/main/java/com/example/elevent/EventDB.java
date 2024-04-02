@@ -2,16 +2,20 @@ package com.example.elevent;
 
 import android.util.Log;
 
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 //import com.google.firebase.storage.FirebaseStorage;
 //import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 /*
     This file contains the implementation for the Event Database, which stores event objects in a firebase
     Outstanding issues: n/a
@@ -88,10 +92,14 @@ public class EventDB {
      * @return Result of the operation
      */
     public CompletableFuture<Void> deleteEvent(String eventID) {
-        DocumentReference eventRef = db.collection("events").document(eventID); // Reference to the event document
-
-        // after getting a reference of the document, delete the document
-        return CompletableFuture.runAsync(eventRef::delete);
+        DocumentReference eventRef = db.collection("events").document(eventID);
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Tasks.await(eventRef.delete());
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
@@ -99,21 +107,19 @@ public class EventDB {
      * @return Event ArrayList of all events in the Firebase
      */
 
-    public ArrayList<Event> getAllEvents() {
-        ArrayList<Event> allEvents = new ArrayList<Event>();
-
+    public void getAllEvents(final Consumer<List<Event>> callback) {
         db.collection("events").get().addOnCompleteListener(task -> {
+            ArrayList<Event> allEvents = new ArrayList<>();
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     Event event = document.toObject(Event.class);
                     allEvents.add(event);
                 }
+                callback.accept(allEvents); // Use the callback to return the list of events
             } else {
-                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+                Log.d("EventDB", "Error getting documents: ", task.getException());
             }
         });
-
-        return allEvents;
     }
 
     /**
