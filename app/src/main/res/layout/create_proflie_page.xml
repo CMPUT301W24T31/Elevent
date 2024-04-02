@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#001F3F">
+
+    <EditText
+        android:id="@+id/last_name"
+        android:layout_width="330dp"
+        android:layout_height="38dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="last name"
+        android:textAlignment="center"
+        android:textColor="#F3EBEB"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="32dp"
+        tools:layout_editor_absoluteY="349dp" />
+
+    <EditText
+        android:id="@+id/phone"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:ems="10"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:inputType="phone"
+        android:text="phone"
+        android:textAlignment="center"
+        android:textColor="#F3EFEF"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="31dp"
+        tools:layout_editor_absoluteY="461dp" />
+
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:ems="10"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:inputType="textEmailAddress"
+        android:text="email"
+        android:textAlignment="center"
+        android:textColor="#FDFDFD"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="32dp"
+        tools:layout_editor_absoluteY="407dp" />
+
+    <EditText
+        android:id="@+id/first_name"
+        android:layout_width="328dp"
+        android:layout_height="36dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="first name"
+        android:textAlignment="center"
+        android:textColor="#F3EBEB"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="31dp"
+        tools:layout_editor_absoluteY="293dp" />
+
+    <TextView
+        android:id="@+id/location_question"
+        android:layout_width="328dp"
+        android:layout_height="72dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:padding="10dp"
+        android:text="do you want to enable location ?"
+        android:textAlignment="viewStart"
+        android:textColor="#F6F4F4"
+        android:textSize="18dp"
+        tools:layout_editor_absoluteX="32dp"
+        tools:layout_editor_absoluteY="515dp" />
+
+    <Switch
+        android:id="@+id/location_switch"
+        android:layout_width="59dp"
+        android:layout_height="35dp"
+        tools:layout_editor_absoluteX="288dp"
+        tools:layout_editor_absoluteY="525dp" />
+
+    <TextView
+        android:id="@+id/create_prof_edit"
+        android:layout_width="74dp"
+        android:layout_height="38dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="edit"
+        android:textAlignment="center"
+        android:textColor="#F6F4F4"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="288dp"
+        tools:layout_editor_absoluteY="667dp" />
+
+    <TextView
+        android:id="@+id/create_prof_save"
+        android:layout_width="74dp"
+        android:layout_height="38dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="save"
+        android:textAlignment="center"
+        android:textColor="#F6F4F4"
+        android:textSize="25dp"
+        tools:layout_editor_absoluteX="289dp"
+        tools:layout_editor_absoluteY="718dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="169dp"
+        android:layout_height="157dp"
+        tools:layout_editor_absoluteX="112dp"
+        tools:layout_editor_absoluteY="99dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/generated_id_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="GENERATED ID:"
+        android:textColor="#F6F2F2"
+        android:textSize="18sp"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="600dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
