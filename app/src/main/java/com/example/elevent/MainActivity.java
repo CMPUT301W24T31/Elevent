@@ -53,7 +53,17 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
     private List<String> adminUserIds = Arrays.asList(
-            "c297401a-6d7a-4f09-823d-626234226e16"
+//            "c297401a-6d7a-4f09-823d-626234226e16",
+//            "3d4016d4-82dd-4c0a-9ad1-fc7d59b21c91",
+//            "45753e1e-bf94-4bd6-9dd6-cfd83fc34037",
+//            "6adb224d-b778-4efa-ba56-b46f35001d71",
+//            "78224f09-89f6-469d-836b-4c5c6525f020",
+//            "7af64ff1-3ec9-45be-af83-842dbea5e8b8",
+//            "9656bfbf-7dad-4dcf-8b01-b4fcc051905e",
+//            "a51328ca-5ee3-4903-990b-01ef1ed2eb3e",
+//            "b80bcd3c-f6be-4cab-b2e0-a62673a625a3",
+//            "da58ae40-1501-410d-9d27-a87e2c81c445"
+
     );
 
     /**

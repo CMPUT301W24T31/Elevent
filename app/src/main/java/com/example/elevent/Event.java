@@ -2,7 +2,9 @@ package com.example.elevent;
 
 import androidx.annotation.Keep;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ public class Event implements Serializable {
     private String location;
     private List<String> notifications;
     private List<String> signedUpAttendees;
+    private Map<String, GeoPoint> checkInLocations;
     private Map<String, Integer> checkedInAttendees;
 
     // No-argument constructor
@@ -65,6 +68,8 @@ public class Event implements Serializable {
         this.location = location;
         this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
+        this.checkInLocations = new HashMap<>();
+
         this.checkedInAttendees = new HashMap<>();
     }
 
@@ -88,6 +93,7 @@ public class Event implements Serializable {
         eventMap.put("notifications", notifications);
         eventMap.put("signedUpAttendees", signedUpAttendees);
         eventMap.put("checkedInAttendees", checkedInAttendees);
+        eventMap.put("checkInLocations", checkInLocations);
 
         return eventMap;
     }
@@ -281,5 +287,33 @@ public class Event implements Serializable {
 
     public String getEventID() {
         return eventID;
+    }
+
+    public Map<String, GeoPoint> getCheckInLocations() {
+        return checkInLocations;
+    }
+
+    /**
+     * Used when user scans the QR code to update their scanned location.
+     * Locations are Latlngs which are converted to Geopoints.
+     * Locations are stored in a HashMap that maps Geopoints to the UserID key.
+     * @param userID Pass in userID when user scans the QR code
+     * @param location Get location as LatLng when user scans the QR code. Cannot be null.
+     */
+    public void addCheckInLocation(String userID, LatLng location) {
+        GeoPoint geoPointLoc = new GeoPoint(location.latitude, location.longitude);
+        checkInLocations.put(userID, geoPointLoc);
+    }
+
+    /**
+     * Admin only function. Call when admin deletes a user.
+     * @param userID The userID of the user to be removed.
+     */
+
+    // TODO: 2024-04-02 Make Sure Admin Uses This
+    public void removeCheckInLocation(String userID) {
+        if (checkInLocations.containsKey(userID)) {
+            checkInLocations.remove(userID);
+        }
     }
 }

@@ -18,18 +18,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
@@ -139,6 +134,7 @@ public class ManageEventFragment extends Fragment {
             }
         });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
+        Button mapButton = view.findViewById(R.id.map_button);
         notifCentreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,19 +152,25 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
-
-        listOfAttendees.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                User selectedUser = (User) parent.getItemAtPosition(position);
-                Bundle args = new Bundle();
-                args.putSerializable("user", selectedUser);
-                args.putSerializable("event", event);
-                InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
-                inspectAttendeeInformationFragment.setArguments(args);
-                inspectAttendeeInformationFragment.show(requireActivity().getSupportFragmentManager(), "InspectAttendeeInformationDialogFragment");
+            public void onClick(View v) {
+                //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
+                //(same implementation as the random floating button in all events :))
+                if (getActivity() instanceof MainActivity) {
+                    MapFragment mapFragment = new MapFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("event", event);
+                    mapFragment.setArguments(args);
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                    helper.replaceFragment(mapFragment);
+                }
+                //return null;
             }
         });
+
+        fetchSignedUpAttendees();
     }
 
         // You can also set data to your TextView and ListView
