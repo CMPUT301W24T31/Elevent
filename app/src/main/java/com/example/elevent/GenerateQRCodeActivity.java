@@ -1,4 +1,5 @@
-package com.example.elevent;
+// THIS FILE IS USELESS!!!!!!
+/*package com.example.elevent;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,13 +23,10 @@ import java.io.InputStream;
 
 // All of this is from chatgpt lol
 // OpenAI, 2024, ChatGPT, How to use QR code
-/*
     This file is responsible for encoding information into a QR code bitmap and converting it to a byte array
     Outstanding issues: not returning the byte array properly
- */
-/**
- * This activity encodes information into a Bitmap that is converted to byte[]
- */
+
+
 public class GenerateQRCodeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,4 +59,4 @@ public class GenerateQRCodeActivity extends AppCompatActivity {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         return outputStream.toByteArray();
     }
-}
+}*/

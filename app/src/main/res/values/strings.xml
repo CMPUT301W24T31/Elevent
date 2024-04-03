@@ -29,6 +29,12 @@
         <item>signed-up</item>
     </string-array>
 
+    <!-- options for attendee filter spinner -->
+    <string-array name="attendee_filter_spinner_array">
+        <item>checked-in</item>
+        <item>signed-up</item>
+    </string-array>
+
 
 
     <string name="appbar_fragment_name" />
@@ -48,12 +54,19 @@
     <string name="event_name">event name</string>
     <string name="location">location</string>
     <string name="date">date</string>
-    <string name="name">name</string>
+    <string name="name">Name</string>
     <string name="time">time</string>
     <string name="description">description</string>
     <string name="share">share</string>
     <string name="manage">manage</string>
     <string name="create">create</string>
     <string name="edit">edit</string>
+    <string name="check_in_nqr_code">check-in \nQR code</string>
+    <string name="promotional_nqr_code">promotional \nQR code</string>
+    <string name="check_in_and_promotional_qr_codes_will_be_generated_upon_event_creation">  clicking create without reusing QR codes will generate new check-in and promotional QR codes </string>
+    <string name="home_page">Home Page\n</string>
+    <string name="contact">Contact Info</string>
+    <string name="save">Save</string>
+    <string name="edit_profile">Edit Profile\n</string>
 
 </resources>
