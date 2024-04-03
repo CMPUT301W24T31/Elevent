@@ -108,11 +108,11 @@ public class EventDB {
      */
 
     public void getAllEvents(final Consumer<List<Event>> callback) {
-        db.collection("events").get().addOnCompleteListener(task -> {
-            ArrayList<Event> allEvents = new ArrayList<>();
-            if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
+                        db.collection("events").get().addOnCompleteListener(task -> {
+                            ArrayList<Event> allEvents = new ArrayList<>();
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Event event = document.toObject(Event.class);
                     allEvents.add(event);
                 }
                 callback.accept(allEvents); // Use the callback to return the list of events
