@@ -72,7 +72,8 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
                 .setNegativeButton("Close", null)
                 .create();
     }
-    private Bitmap convertBlobToBitmap(byte[] bytes){
+    private Bitmap convertBlobToBitmap(Blob blob){
+        byte[] bytes = blob.toBytes();
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
 }

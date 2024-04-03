@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import java.io.Serializable;
+import com.google.firebase.firestore.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ public class User implements Serializable {
     // (what information a user has)
     private String name;
     private String contact;
-    private byte[] profilePic;
+    private Blob profilePic;
     private String homePage;
 
     private String userID;
@@ -32,7 +33,7 @@ public class User implements Serializable {
         this.signedUpEvents = new ArrayList<>();
     }
 
-    public User(String name, String contact, byte[] profilePic, String homePage, String userID) {
+    public User(String name, String contact, Blob profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;
@@ -46,8 +47,8 @@ public class User implements Serializable {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("name", name);
         userMap.put("contact", contact);
-        userMap.put("profile picture", profilePic);
-        userMap.put("home page", homePage);
+        userMap.put("profilePic", profilePic);
+        userMap.put("homePage", homePage);
         userMap.put("userID", userID);
         userMap.put("signedUpEvents", signedUpEvents);
 
@@ -87,7 +88,7 @@ public class User implements Serializable {
      * Getter for the profile picture of the user
      * @return Profile picture of the user
      */
-    public byte[] getProfilePic() {
+    public Blob getProfilePic() {
         return this.profilePic;
     }
 
@@ -95,7 +96,7 @@ public class User implements Serializable {
      * Setter for the profile picture of the user
      * @param profilePic Profile picture of the user
      */
-    public void setProfilePic(byte[] profilePic) {
+    public void setProfilePic(Blob profilePic) {
         this.profilePic = profilePic;
     }
 

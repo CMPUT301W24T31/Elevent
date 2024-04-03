@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="@color/background_blue">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -24,7 +24,31 @@
                 android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp"
-                android:src="@drawable/default_profile_pic" />
+                android:layout_centerHorizontal="true"/>
+            <TextView
+                android:id="@+id/edit_profile_photo_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit profile photo"
+                android:layout_below="@id/edit_profile_image"
+                android:textColor="@color/item_grey"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginStart="30dp"
+                android:clickable="true"
+                android:focusable="true"/>
+            <TextView
+                android:id="@+id/delete_profile_photo_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete profile photo"
+                android:layout_below="@id/edit_profile_image"
+                android:textColor="@color/item_grey"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="30dp"
+                android:clickable="true"
+                android:focusable="true"/>
 
             <EditText
                 android:id="@+id/edit_profile_name"
@@ -32,8 +56,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:hint="@string/name"
-                android:inputType="textPersonName"
-                android:minHeight="48dp" />
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:layout_below="@id/edit_profile_photo_text" />
 
             <EditText
                 android:id="@+id/edit_profile_homepage"
@@ -41,8 +66,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@string/home_page"
-                android:inputType="textWebEmailAddress"
-                android:minHeight="48dp" />
+                android:inputType="text"
+                android:minHeight="48dp"
+                android:layout_below="@id/edit_profile_name"/>
 
             <EditText
                 android:id="@+id/edit_profile_contact"
@@ -50,8 +76,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@string/contact"
-                android:inputType="text"
-                android:minHeight="48dp" />
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:layout_below="@+id/edit_profile_homepage"/>
 
             <Button
                 android:id="@+id/save_edited_profile_button"
@@ -59,9 +86,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/save"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp"
+                android:layout_below="@+id/edit_profile_contact"
+                android:layout_centerHorizontal="true"/>
 
-        </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
 
 </FrameLayout>
