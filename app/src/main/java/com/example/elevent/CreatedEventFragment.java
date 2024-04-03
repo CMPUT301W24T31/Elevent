@@ -22,12 +22,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
-import com.google.zxing.BarcodeFormat;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -234,6 +233,7 @@ public class CreatedEventFragment extends Fragment {
         });
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
         Button saveChangesButton = view.findViewById(R.id.save_the_event);
+        Button shareEventButton = view.findViewById(R.id.share_the_event);
         manageEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -252,6 +252,67 @@ public class CreatedEventFragment extends Fragment {
             }
         });
 
+
+//        private File saveQRCodeToTempFile(Bitmap qrCodeBitmap) {
+//            try {
+//                // Create a temporary file
+//                File tempFile = File.createTempFile("qr_code", ".png", requireContext().getCacheDir());
+//
+//                // Write the bitmap to the temporary file
+//                FileOutputStream outputStream = new FileOutputStream(tempFile);
+//                qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+//                outputStream.close();
+//
+//                return tempFile;
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+
+//        shareEventButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // Convert promotional QR Blob to Bitmap
+//                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
+//                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
+//
+//                // Save the promotional QR code image to a temporary file
+//                File qrCodeFile = saveQRCodeToTempFile(promotionalQRBitmap);
+//
+//                if (qrCodeFile != null) {
+//                    // Create a share intent
+//                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+//                    shareIntent.setType("image/*");
+//
+//                    // Add event details to the share message
+//                    String shareMessage = "Check out this event: " + selectedEvent.getEventName()
+//                            + "\nLocation: " + selectedEvent.getLocation()
+//                            + "\nDate: " + selectedEvent.getDate()
+//                            + "\nTime: " + selectedEvent.getTime()
+//                            + "\nDescription: " + selectedEvent.getDescription();
+//
+//                    // Set the text message
+//                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+//
+//                    // Set the promotional QR code image file to be shared
+//                    Uri qrCodeUri = FileProvider.getUriForFile(requireContext(),
+//                            "com.example.elevent.fileprovider",
+//                            qrCodeFile);
+//                    shareIntent.putExtra(Intent.EXTRA_STREAM, qrCodeUri);
+//
+//                    // Grant read permission to the sharing app
+//                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//
+//                    // Start the activity with the share intent
+//                    startActivity(Intent.createChooser(shareIntent, "Share Event"));
+//                } else {
+//                    // Handle error if QR code file cannot be saved
+//                    Toast.makeText(getContext(), "Failed to save QR code image", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+
         saveChangesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,6 +329,7 @@ public class CreatedEventFragment extends Fragment {
                 selectedEvent.setTime(updatedEventTime);
                 selectedEvent.setDate(updatedEventDate);
                 selectedEvent.setDescription(updatedEventDescription);
+
 
                 // Update event in Firebase Firestore
                 EventDB eventDB = new EventDB();
