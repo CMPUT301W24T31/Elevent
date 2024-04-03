@@ -175,8 +175,18 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
-
-        fetchSignedUpAttendees();
+        listOfAttendees.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                User selectedUser = (User) parent.getItemAtPosition(position);
+                Bundle args = new Bundle();
+                args.putSerializable("user", selectedUser);
+                args.putSerializable("event", event);
+                InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
+                inspectAttendeeInformationFragment.setArguments(args);
+                inspectAttendeeInformationFragment.show(requireActivity().getSupportFragmentManager(), "InspectAttendeeInformationDialogFragment");
+            }
+        });
     }
 
         // You can also set data to your TextView and ListView

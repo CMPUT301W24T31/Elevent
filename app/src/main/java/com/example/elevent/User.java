@@ -31,6 +31,7 @@ public class User implements Serializable {
     public User(String userID){
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
+        //this.profilePic = profilePic;
     }
 
     public User(String name, String contact, Blob profilePic, String homePage, String userID) {

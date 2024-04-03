@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.Blob;
@@ -29,6 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
 import java.util.Objects;
+
 /*
     This file contains the implementation for the ProfileFragment that is responsible for displaying the UI
     that allows a user to view their personal profile
@@ -81,18 +84,27 @@ public class ProfileFragment extends Fragment {
                 if (documentSnapshot.exists()){
                     User user = documentSnapshot.toObject(User.class);
                     if (user!=null){
-                        profileName.setText(user.getName());
-                        profileHomepage.setText(user.getHomePage());
-                        profileContact.setText(user.getContact());
-
+                        if (user.getName() != null) {
+                            profileName.setText(user.getName());
+                        } else {
+                            profileName.setVisibility(View.GONE);
+                        }
+                        if (user.getHomePage() != null){
+                            profileHomepage.setText(user.getHomePage());
+                        } else {
+                            profileHomepage.setVisibility(View.GONE);
+                        }
+                        if (user.getContact() != null) {
+                            profileContact.setText(user.getContact());
+                        } else {
+                            profileContact.setVisibility(View.GONE);
+                        }
                         Blob profilePic = user.getProfilePic();
                         if (profilePic != null) {
-                            System.out.println("here");
                             byte[] profileBA = user.getProfilePic().toBytes();
                             Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
                             profileImage.setImageBitmap(profileBitmap);
                         } else {
-                            System.out.println("null");
                             profileImage.setImageResource(R.drawable.default_profile_pic);
                         }
                     }

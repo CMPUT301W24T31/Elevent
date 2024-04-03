@@ -96,8 +96,8 @@ public class EventViewAttendee extends Fragment {
                         args.putString("userID", userID);
                         eventSignUpDialogFragment.setArguments(args);
                         eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
-                        String signedUpText = "Signing up...";
-                        signUpButton.setText(signedUpText);
+                        String signingUpText = "Signing up...";
+                        signUpButton.setText(signingUpText);
                     }
                 });
             }

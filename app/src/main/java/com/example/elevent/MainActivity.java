@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -16,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -71,20 +74,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String userID = sharedPreferences.getString(KEY_USER_ID, null);
-        if (userID == null) {
-            userID = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(KEY_USER_ID, userID);
-            editor.apply();
-
-            // Assuming creation of a new user is necessary if no ID is found
-            User newUser = new User(userID);
-            UserDBConnector connector = new UserDBConnector();
-            UserDB userDB = new UserDB(connector);
-            userDB.addUser(newUser);
-        }
+        String userID = createUser();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -232,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             notificationManager.createNotificationChannel(channel);
         }
     }
-    private void createUser() {
+    private String createUser() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         String userID = sharedPreferences.getString(KEY_USER_ID, null);
         if (userID == null) {
@@ -240,12 +230,23 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(KEY_USER_ID, userID);
             editor.apply();
+
+            // TODO: do we make name mandatory to implement this?
+            // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
+            /*Drawable generatedPFP = AvatarGenerator.Companion.avatarImage(
+                    this,
+                    100,
+                    AvatarConstants.Companion.getRECTANGLE(),
+                    String.valueOf(userID.charAt(0))
+            );*/
+
             User newUser = new User(userID);
 
             UserDBConnector connector = new UserDBConnector();
             UserDB userDB = new UserDB(connector);
             userDB.addUser(newUser);
         }
+        return userID;
     }
 
     @Override

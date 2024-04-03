@@ -17,6 +17,10 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.firebase.firestore.Blob;
 
+import org.w3c.dom.Text;
+
+import java.util.Objects;
+
 public class InspectAttendeeInformationFragment extends DialogFragment {
     private User user;
     private Event event;
@@ -36,18 +40,24 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.inspect_attendee_dialog_fragment, null);
         ImageView attendeeImage = view.findViewById(R.id.attendee_image);
         TextView attendeeName = view.findViewById(R.id.attendee_name);
+        TextView attendeeHomepage = view.findViewById(R.id.attendee_homepage);
         TextView attendeeContact = view.findViewById(R.id.attendee_contact);
         TextView checkInCount = view.findViewById(R.id.check_in_number);
         if (user != null) {
             if (user.getProfilePic() != null){
                 attendeeImage.setImageBitmap(convertBlobToBitmap(user.getProfilePic()));
             }
-            if (user.getName() == null) {
+            if (Objects.equals(user.getName(), "")) {
                 attendeeName.setVisibility(View.GONE);
             } else {
                 attendeeName.setText(user.getName());
             }
-            if (user.getContact() == null) {
+            if (Objects.equals(user.getHomePage(), "")){
+                attendeeHomepage.setVisibility(View.GONE);
+            } else {
+                attendeeHomepage.setText(user.getHomePage());
+            }
+            if (Objects.equals(user.getContact(), "")) {
                 attendeeContact.setVisibility(View.GONE);
             } else {
                 attendeeContact.setText(user.getContact());
@@ -57,7 +67,6 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
                     String notCheckedIn = "Not checked in";
                     checkInCount.setText(notCheckedIn);
                 } else {
-                    int checkIns = event.getCheckedInAttendees().get(user.getUserID());
                     checkInCount.setText(String.format("Checked in %d time(s)", event.getCheckedInAttendees().get(user.getUserID())));
                 }
             } else {

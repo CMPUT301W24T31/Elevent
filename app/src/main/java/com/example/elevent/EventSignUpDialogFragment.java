@@ -41,11 +41,28 @@ public class EventSignUpDialogFragment extends DialogFragment {
         return builder
                 .setView(view)
                 .setTitle("Disclaimer")
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancel", ((dialog, which) -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("event", event);
+                    EventViewAttendee eventViewAttendee = new EventViewAttendee();
+                    eventViewAttendee.setArguments(bundle);
+                    if (getActivity() instanceof MainActivity){
+                        FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                        helper.replaceFragment(eventViewAttendee);
+                    }
+                }))
                 .setPositiveButton("Confirm", (dialog, which) -> {
                     addAttendeeSignUpToEvent();
                     addEventSignedUpByAttendee();
                     Toast.makeText(requireContext(), "You are now signed up!", Toast.LENGTH_LONG).show();
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("event", event);
+                    EventViewAttendee eventViewAttendee = new EventViewAttendee();
+                    eventViewAttendee.setArguments(bundle);
+                    if (getActivity() instanceof MainActivity){
+                        FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                        helper.replaceFragment(eventViewAttendee);
+                    }
                 })
                 .create();
     }
