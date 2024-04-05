@@ -1,7 +1,6 @@
 package com.example.elevent;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -76,15 +75,6 @@ public class CreatedEventFragment extends Fragment {
             throw new RuntimeException(context + " must implement CreatedEventListener (tapped on event in myEvents)");
         }
     }
-
-    private final ActivityResultLauncher<Intent> shareActivityResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    // Handle the result if needed
-                    Toast.makeText(getContext(), "QR code shared successfully", Toast.LENGTH_SHORT).show();
-                }
-            });
 
 
     /**
@@ -283,16 +273,13 @@ public class CreatedEventFragment extends Fragment {
                     String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), promotionalQRBitmap, "QR Code", null);
                     Uri imageUri = Uri.parse(path);
                     shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Scan the QR to know all about the event :D");
-                    startActivity(shareIntent);
+                    startActivity(Intent.createChooser(shareIntent, "Share via"));
                 } else {
                     // Handle case where QR code bitmap is null
                     Toast.makeText(getContext(), "Promotional QR code not available", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
 
 
         saveChangesButton.setOnClickListener(new View.OnClickListener() {
