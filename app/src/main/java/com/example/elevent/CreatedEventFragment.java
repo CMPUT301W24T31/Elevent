@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,7 +23,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,8 +31,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
@@ -54,6 +52,7 @@ public class CreatedEventFragment extends Fragment {
 
         void updateEvent(Event event);
     }
+
 
     private Event selectedEvent;
     private CreatedEventListener listener;
@@ -78,32 +77,14 @@ public class CreatedEventFragment extends Fragment {
         }
     }
 
-    private Uri getImageToShare(Bitmap bitmap) {
-        File cachePath = new File(getActivity().getCacheDir(), "images");
-        cachePath.mkdirs(); // Make sure directory exists
-        File imagePath = new File(cachePath, "image.jpg");
-        try {
-            FileOutputStream outputStream = new FileOutputStream(imagePath);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return FileProvider.getUriForFile(requireContext(), requireContext().getPackageName() + ".provider", imagePath);
-    }
-
-
-    private void shareImageAndText(Bitmap bitmap) {
-        Uri uri = getImageToShare(bitmap);
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Scan QR code to know all about the event!");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "QR Code");
-        shareIntent.setType("image/*");
-
-        startActivity(Intent.createChooser(shareIntent, "Share via"));
-    }
+    private final ActivityResultLauncher<Intent> shareActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // Handle the result if needed
+                    Toast.makeText(getContext(), "QR code shared successfully", Toast.LENGTH_SHORT).show();
+                }
+            });
 
 
     /**
@@ -294,14 +275,24 @@ public class CreatedEventFragment extends Fragment {
 
                 // Check if promotionalQRBitmap is not null
                 if (promotionalQRBitmap != null) {
-                    // Share the promotional QR code image
-                    shareImageAndText(promotionalQRBitmap);
+                    // Share the QR code bitmap
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("image/png");
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    promotionalQRBitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), promotionalQRBitmap, "QR Code", null);
+                    Uri imageUri = Uri.parse(path);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Scan the QR to know all about the event :D");
+                    startActivity(shareIntent);
                 } else {
                     // Handle case where QR code bitmap is null
                     Toast.makeText(getContext(), "Promotional QR code not available", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+
 
 
         saveChangesButton.setOnClickListener(new View.OnClickListener() {
