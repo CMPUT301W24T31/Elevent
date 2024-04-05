@@ -33,25 +33,25 @@
                 android:theme="@style/FontTheme" />
 
             <EditText
-                android:id="@+id/event_location_text"
-                android:layout_below="@id/event_name_text"
+                android:id="@+id/event_description_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/event_name_text"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="17dp"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/rounded_corner"
                 android:backgroundTint="@color/item_grey"
-                android:text=""
+                android:hint="@string/description"
                 android:inputType="text"
-                android:hint="@string/location"
+                android:text=""
                 android:theme="@style/FontTheme" />
 
             <EditText
                 android:id="@+id/event_date_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_location_text"
+                android:layout_below="@id/event_description_text"
                 android:layout_alignParentLeft="true"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="17dp"
@@ -78,7 +78,7 @@
                 android:theme="@style/FontTheme" />
 
             <EditText
-                android:id="@+id/event_description_text"
+                android:id="@+id/event_location_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/event_time_text"
@@ -89,7 +89,7 @@
                 android:background="@drawable/rounded_corner"
                 android:text=""
                 android:inputType="text"
-                android:hint="@string/description"
+                android:hint="@string/location"
                 android:theme="@style/FontTheme" />
 
 
@@ -98,7 +98,7 @@
                 android:id="@+id/eventPoster_image"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@id/event_description_text"
+                android:layout_below="@id/event_location_text"
                 android:text="@string/add_image"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
@@ -108,22 +108,93 @@
                 android:layout_marginTop="35dp" />
 
             <ImageView
-                android:id="@+id/promotionalQR_image"
+                android:id="@+id/created_event_image_view_clickable"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
+                android:layout_below="@+id/event_location_text"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="80dp"
+                android:layout_marginTop="20dp"/>
+
+
+            <TextView
+                android:id="@+id/edit_event_poster_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/created_event_image_view_clickable"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="1dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="Edit event poster"
+                android:textColor="@color/text_white"
+                android:textSize="18sp" />
+            <TextView
+                android:id="@+id/delete_event_poster_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/created_event_image_view_clickable"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="1dp"
+                android:clickable="true"
+                android:text="Delete event poster"
+                android:textColor="@color/text_white"
+                android:textSize="18sp"
+                android:focusable="true" />
+
+            <TextView
+                android:id="@+id/promotion_label"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
                 android:layout_below="@id/eventPoster_image"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="1dp"
-                android:layout_marginTop="26dp" />
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_corner"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/promotional_nqr_code"
+                android:textSize="15sp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/checkin_label"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/eventPoster_image"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/rounded_corner"
+                android:fontFamily="monospace"
+                android:gravity="center"
+                android:text="@string/check_in_nqr_code"
+                android:textSize="15sp">
+
+            </TextView>
+
+            <ImageView
+                android:id="@+id/promotionalQR_image"
+                android:layout_width="170dp"
+                android:layout_height="155dp"
+                android:layout_below="@id/promotion_label"
+                android:layout_alignParentLeft="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"/>
 
             <ImageView
                 android:id="@+id/checkinQR_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_below="@id/eventPoster_image"
+                android:layout_width="170dp"
+                android:layout_height="155dp"
+                android:layout_below="@id/checkin_label"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="26dp"
-                android:layout_marginRight="1dp" />
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginStart="5dp"/>
 
             <Button
                 android:id="@+id/manage_the_event"
@@ -150,7 +221,7 @@
                 android:textSize="15sp" />
 
             <Button
-                android:id="@+id/edit_the_event"
+                android:id="@+id/save_the_event"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/promotionalQR_image"
@@ -159,7 +230,7 @@
                 android:layout_toEndOf="@+id/manage_the_event"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
-                android:text="@string/edit"
+                android:text="save"
                 android:textSize="15sp" />
         </RelativeLayout>
     </ScrollView>

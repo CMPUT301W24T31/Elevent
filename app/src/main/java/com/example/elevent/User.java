@@ -1,6 +1,10 @@
 package com.example.elevent;
 
+import java.io.Serializable;
+import com.google.firebase.firestore.Blob;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of a User object
@@ -9,43 +13,50 @@ import java.util.Map;
 /**
  * This class represents a user of the app
  */
-public class User {
+public class User implements Serializable {
 
     // attributes for User class
     // (what information a user has)
     private String name;
-    private String[] contact;
-    private byte[] profilePic;
+    private String contact;
+    private Blob profilePic;
     private String homePage;
 
     private String userID;
+    private List<String> signedUpEvents;
 
     // no argument constructor
-    public User() {
+    public User() {}
+
+    public User(String userID){
+        this.userID = userID;
+        this.signedUpEvents = new ArrayList<>();
     }
 
-    public User(String name, String[] contact, byte[] profilePic, String homePage, String userID) {
+    public User(String name, String contact, Blob profilePic, String homePage, String userID) {
 
         this.name = name;
         this.contact = contact;
         this.profilePic = profilePic;
         this.homePage = homePage;
         this.userID = userID;
+        this.signedUpEvents = new ArrayList<>();
     }
 
     public Map<String, Object> userToMap() {
-        Map<String, Object> eventMap = new HashMap<>();
-        eventMap.put("name", name);
-        eventMap.put("contact", contact);
-        eventMap.put("profile picture", profilePic);
-        eventMap.put("home page", homePage);
-        eventMap.put("userID", userID);
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("name", name);
+        userMap.put("contact", contact);
+        userMap.put("profilePic", profilePic);
+        userMap.put("homePage", homePage);
+        userMap.put("userID", userID);
+        userMap.put("signedUpEvents", signedUpEvents);
 
-        return eventMap;
+        return userMap;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -58,17 +69,18 @@ public class User {
 
     /**
      * Getter for the contact information of the user
+     *
      * @return Contact information of the user
      */
-    public String[] getContact() {
-        return contact;
+    public String getContact() {
+        return this.contact;
     }
 
     /**
      * Setter for the contact information of the user
      * @param contact Contact information of the user
      */
-    public void setContact(String[] contact) {
+    public void setContact(String contact) {
         this.contact = contact;
     }
 
@@ -76,16 +88,24 @@ public class User {
      * Getter for the profile picture of the user
      * @return Profile picture of the user
      */
-    public byte[] getProfilePic() {
-        return profilePic;
+    public Blob getProfilePic() {
+        return this.profilePic;
     }
 
     /**
      * Setter for the profile picture of the user
      * @param profilePic Profile picture of the user
      */
-    public void setProfilePic(byte[] profilePic) {
+    public void setProfilePic(Blob profilePic) {
         this.profilePic = profilePic;
+    }
+
+    public List<String> getSignedUpEvents() {
+        return this.signedUpEvents;
+    }
+
+    public void setSignedUpEvents(List<String> signedUpEvents) {
+        this.signedUpEvents = signedUpEvents;
     }
 
     /**
@@ -93,7 +113,7 @@ public class User {
      * @return Key for the homepage of the user
      */
     public String getHomePage() {
-        return homePage;
+        return this.homePage;
     }
 
     /**
@@ -109,7 +129,7 @@ public class User {
      * @return Unique user ID
      */
     public String getUserID() {
-        return userID;
+        return this.userID;
     }
 
     /**
@@ -117,20 +137,6 @@ public class User {
      * @param userID Unique user ID
      */
     public void setUserID(String userID) {
-        userID = userID;
-    }
-
-    /**
-     * Create the map to be put into the user database
-     * @return Map that contains the user information
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("name", name);
-        userMap.put("contact", contact);
-        // profile picture stored as a download link string
-        userMap.put("profilePic", profilePic);
-        userMap.put("homePage", homePage);
-        return userMap;
+        this.userID = userID;
     }
 }

@@ -1,21 +1,31 @@
 package com.example.elevent;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
+import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 /*
     This file is responsible for being the host activity of all fragments in the app
@@ -39,6 +49,15 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private ActivityResultLauncher<Intent> generateQRLauncher;
     private byte[] checkinQR;
     private byte[] promotionQR;
+    private static final String PREF_NAME = "MyPrefs";
+    private static final String KEY_USER_ID = "userID";
+    private static final String CHANNEL_ID = "EleventChannel";
+    private List<String> adminUserIds = Arrays.asList(
+            "c297401a-6d7a-4f09-823d-626234226e16",
+            "4f553d28-6261-49e3-8b15-186a89d01faf",
+            "a51328ca-5ee3-4903-990b-01ef1ed2eb3e"
+//            ,"45753e1e-bf94-4bd6-9dd6-cfd83fc34037"
+    );
 
     /**
      * Called when the activity is starting
@@ -52,35 +71,40 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
-
-        // Find the Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        // Set the Toolbar to act as the ActionBar
-        setSupportActionBar(toolbar);
-
-        // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        boolean isFirstLaunch = sharedPreferences.getBoolean("isFirstLaunch", true);
-        if (isFirstLaunch){
-            String userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        if (userID == null) {
+            userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("isFirstLaunch", false);
-            editor.putString("userID", userID);
+            editor.putString(KEY_USER_ID, userID);
             editor.apply();
+
+            // Assuming creation of a new user is necessary if no ID is found
+            User newUser = new User(userID);
+            UserDBConnector connector = new UserDBConnector();
+            UserDB userDB = new UserDB(connector);
+            userDB.addUser(newUser);
         }
-        generateQRLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                if (result.getData() != null && result.getData().hasExtra("qrCode")) {
-                    checkinQR = result.getData().getByteArrayExtra("qrCode");
-                }
-            }
-        });
 
-        initNavView();
-        Log.d("DEBUG", "test");
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+        navigationView = findViewById(R.id.activity_main_navigation_bar);
 
+        // Check if the user ID belongs to an admin
+        if (adminUserIds.contains(userID)) {
+            // Admin user logic
+            navigationView.setVisibility(View.GONE);
+            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
+        } else {
+            // Regular user logic
+            navigationView.setVisibility(View.VISIBLE);
+            createNotificationChannel();
+            initNavView();
+        }
+
+        handleIntent(getIntent());
     }
 
     /**
@@ -172,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
      * @return User ID
      */
     public String getUserIDForUserDB() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         return sharedPreferences.getString("userID", null); // Return null or a default value if not found
     }
 
@@ -197,5 +221,61 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
         fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
         updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
+    }
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            CharSequence name = "Event Announcements";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+    private void createUser() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
+        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        if (userID == null) {
+            userID = UUID.randomUUID().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(KEY_USER_ID, userID);
+            editor.apply();
+            User newUser = new User(userID);
+
+            UserDBConnector connector = new UserDBConnector();
+            UserDB userDB = new UserDB(connector);
+            userDB.addUser(newUser);
+        }
+    }
+
+    @Override
+    public void updateEvent(Event event) {
+        MyEventsFragment myEventsFragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
+        if (myEventsFragment != null) {
+            myEventsFragment.updateEvent(event);
+        }
+    }
+
+    private Object convertByteArrayToObject(byte[] eventBA){
+        InputStream inputStream = new ByteArrayInputStream(eventBA);
+        try (ObjectInputStream in = new ObjectInputStream(inputStream)){
+            return in.readObject();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        throw new RuntimeException();
+    }
+    private void handleIntent(Intent intent) {
+        if (intent.hasExtra("OpenNotificationFromFragment")) {
+            if (Objects.equals(intent.getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")) {
+                NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                byte[] eventToOpenBA = intent.getByteArrayExtra("eventByteArray");
+                Event eventToOpen = (Event) convertByteArrayToObject(eventToOpenBA);
+                Bundle args = new Bundle();
+                args.putSerializable("event", eventToOpen);
+                notificationFragmentAttendee.setArguments(args);
+                fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.elevent;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 /*
     This file implements the MyEventsFragment that is responsible for displaying the list of events that the organizer
     has created. As well, is responsible for displaying the UI to allow a user to create an event.
@@ -25,7 +28,7 @@ import java.util.ArrayList;
 /**
  * This fragment displays the events that an organizer has created
  */
-public class MyEventsFragment extends Fragment {
+public class MyEventsFragment extends Fragment implements CreatedEventFragment.CreatedEventListener{
 
     CreateEventFragment createEventFragment;
     private ArrayList<Event> myEvents;
@@ -115,7 +118,7 @@ public class MyEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(new CreateEventFragment());
-                    mainActivity.updateAppBarTitle("Creating Event...");
+                    mainActivity.updateAppBarTitle("Creating Event");
                 }
                 //return null;
             }
@@ -172,6 +175,8 @@ public class MyEventsFragment extends Fragment {
      * Get the organizer's events from the events database
      */
     private void fetchEvents() {
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String organizerID = sharedPreferences.getString("userID", null);
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb(); //
 
@@ -179,8 +184,10 @@ public class MyEventsFragment extends Fragment {
             if (task.isSuccessful()) {
                 myEvents.clear(); // Clear existing events before adding new ones
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                    Event event = document.toObject(Event.class);
-                    myEvents.add(event); // Add the fetched event to the list
+                    if (Objects.equals(document.getString("organizerID"), organizerID)) {
+                        Event event = document.toObject(Event.class);
+                        myEvents.add(event); // Add the fetched event to the list
+                    }
                 }
                 myEventsArrayAdapter.notifyDataSetChanged(); // Notify the adapter to refresh the ListView
             } else {
@@ -188,4 +195,21 @@ public class MyEventsFragment extends Fragment {
             }
         });
     }
+
+    // MyEventsFragment.java
+
+    public void updateEvent(Event updatedEvent) {
+        if (updatedEvent == null || updatedEvent.getEventID() == null) {
+            return; // Ensure updatedEvent or its ID is not null
+        }
+        for (int i = 0; i < myEvents.size(); i++) {
+            Event event = myEvents.get(i);
+            if (event != null && event.getEventID() != null && event.getEventID().equals(updatedEvent.getEventID())) {
+                myEvents.set(i, updatedEvent);
+                myEventsArrayAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
+
 }

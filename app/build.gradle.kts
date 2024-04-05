@@ -4,6 +4,8 @@ plugins {
 
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+    //Add the Secrets Gradle Plugin to hide API key from version control
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 
 }
 
@@ -33,6 +35,11 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    //adding BuildConfig Class for Google Map Integration
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -72,6 +79,7 @@ dependencies {
     implementation("androidx.tracing:tracing:1.2.0")
     implementation("androidx.navigation:navigation-runtime:2.7.7")
     implementation("com.google.firebase:firebase-storage:20.3.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.0-alpha03")
 
@@ -81,4 +89,22 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.5.2")
     androidTestImplementation("androidx.test:rules:1.5.0")
 
+    //Maps SDK
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+}
+
+secrets {
+    // Optionally specify a different file name containing your secrets.
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. If in use, open up the file and follow the comment instructions.
+    // This file can be checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
+
+    // Configure which keys should be ignored by the plugin by providing regular expressions.
+    // "sdk.dir" is ignored by default.
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
