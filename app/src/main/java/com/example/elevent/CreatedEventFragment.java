@@ -2,8 +2,10 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -20,15 +22,17 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
@@ -73,6 +77,34 @@ public class CreatedEventFragment extends Fragment {
             throw new RuntimeException(context + " must implement CreatedEventListener (tapped on event in myEvents)");
         }
     }
+
+    private Uri getImageToShare(Bitmap bitmap) {
+        File cachePath = new File(getActivity().getCacheDir(), "images");
+        cachePath.mkdirs(); // Make sure directory exists
+        File imagePath = new File(cachePath, "image.jpg");
+        try {
+            FileOutputStream outputStream = new FileOutputStream(imagePath);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return FileProvider.getUriForFile(requireContext(), requireContext().getPackageName() + ".provider", imagePath);
+    }
+
+
+    private void shareImageAndText(Bitmap bitmap) {
+        Uri uri = getImageToShare(bitmap);
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Scan QR code to know all about the event!");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "QR Code");
+        shareIntent.setType("image/*");
+
+        startActivity(Intent.createChooser(shareIntent, "Share via"));
+    }
+
 
     /**
      * Called to do initial creation of a fragment.
@@ -231,6 +263,7 @@ public class CreatedEventFragment extends Fragment {
                 addEventImageButton.setVisibility(View.VISIBLE);
             }
         });
+
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
         Button saveChangesButton = view.findViewById(R.id.save_the_event);
         Button shareEventButton = view.findViewById(R.id.share_the_event);
@@ -252,66 +285,24 @@ public class CreatedEventFragment extends Fragment {
             }
         });
 
+        shareEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Convert promotional QR Blob to Bitmap
+                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
+                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
 
-//        private File saveQRCodeToTempFile(Bitmap qrCodeBitmap) {
-//            try {
-//                // Create a temporary file
-//                File tempFile = File.createTempFile("qr_code", ".png", requireContext().getCacheDir());
-//
-//                // Write the bitmap to the temporary file
-//                FileOutputStream outputStream = new FileOutputStream(tempFile);
-//                qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//                outputStream.close();
-//
-//                return tempFile;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
+                // Check if promotionalQRBitmap is not null
+                if (promotionalQRBitmap != null) {
+                    // Share the promotional QR code image
+                    shareImageAndText(promotionalQRBitmap);
+                } else {
+                    // Handle case where QR code bitmap is null
+                    Toast.makeText(getContext(), "Promotional QR code not available", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
-//        shareEventButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Convert promotional QR Blob to Bitmap
-//                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
-//                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
-//
-//                // Save the promotional QR code image to a temporary file
-//                File qrCodeFile = saveQRCodeToTempFile(promotionalQRBitmap);
-//
-//                if (qrCodeFile != null) {
-//                    // Create a share intent
-//                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//                    shareIntent.setType("image/*");
-//
-//                    // Add event details to the share message
-//                    String shareMessage = "Check out this event: " + selectedEvent.getEventName()
-//                            + "\nLocation: " + selectedEvent.getLocation()
-//                            + "\nDate: " + selectedEvent.getDate()
-//                            + "\nTime: " + selectedEvent.getTime()
-//                            + "\nDescription: " + selectedEvent.getDescription();
-//
-//                    // Set the text message
-//                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-//
-//                    // Set the promotional QR code image file to be shared
-//                    Uri qrCodeUri = FileProvider.getUriForFile(requireContext(),
-//                            "com.example.elevent.fileprovider",
-//                            qrCodeFile);
-//                    shareIntent.putExtra(Intent.EXTRA_STREAM, qrCodeUri);
-//
-//                    // Grant read permission to the sharing app
-//                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//                    // Start the activity with the share intent
-//                    startActivity(Intent.createChooser(shareIntent, "Share Event"));
-//                } else {
-//                    // Handle error if QR code file cannot be saved
-//                    Toast.makeText(getContext(), "Failed to save QR code image", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
 
         saveChangesButton.setOnClickListener(new View.OnClickListener() {
             @Override
