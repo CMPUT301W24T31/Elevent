@@ -5,16 +5,17 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MyEventsFragment"
-    android:id="@+id/my_events_frame_layout">
+    android:id="@+id/my_events_frame_layout"
+    android:background="@color/background_blue">
 
     <ListView
         android:id="@+id/my_events_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:cacheColorHint="#B59D9D"
-        android:background="@drawable/rounded_corner"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10dp"
+        android:cacheColorHint="@color/background_blue"
+
+        android:divider="@color/background_blue"
+        android:dividerHeight="5dp"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

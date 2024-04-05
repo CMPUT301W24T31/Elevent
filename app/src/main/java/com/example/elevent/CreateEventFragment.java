@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,19 +27,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.UUID;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
     to allow an organizer to input event information and create the event.
-    Outstanding issues: encoding and creating QR code for activities needs work
  */
 /**
  * This fragment displays the UI for allowing a user to input event information
@@ -54,19 +63,15 @@ public class CreateEventFragment extends Fragment {
     });
     // OpenAI, 2024, ChatGPT, Allow user to upload image file
     private ActivityResultLauncher<String> getContentLauncher;
+    private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
+
+    byte[] eventPosterByteArray;
+    byte[] reusedQRBA;
+    String sha256ReusedQRContent;
 
     /**
-     * Interface for listener that handles event creation
-     * Implemented by MainActivity
+     * Stores the event in the db
      */
-    //create event listener to be implemented by main activity
-    interface CreateEventListener {
-        void onPositiveClick(Event event);
-        //void onCloseCreateEventFragment();
-    }
-
-    private CreateEventListener listener;
-    byte[] eventPosterByteArray;
 
     private void createEvent(Event event) {
         EventDB eventDB = new EventDB(new EventDBConnector());
@@ -86,6 +91,9 @@ public class CreateEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Handle navigation to MyEventsFragment
+     */
     private void navigateToMyEventsFragment() {
         // Ensure this operation is also considered to be executed on the main thread
         if (isAdded() && getActivity() != null && getFragmentManager() != null) {
@@ -94,17 +102,6 @@ public class CreateEventFragment extends Fragment {
                     .beginTransaction()
                     .replace(R.id.activity_main_framelayout, myEventsFragment)
                     .commit();
-        }
-    }
-
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof CreateEventListener) {
-            listener = (CreateEventListener) context;
-        } else {
-            throw new RuntimeException(context + " must implement CreateEventListener");
         }
     }
 
@@ -160,6 +157,15 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         });
+        qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+            if (result.getContents() != null){
+                Log.d("ScanQRCodeActivity", "Scanned");
+                String resultContents = result.getContents();
+                reusedQRBA = generateQRCode(resultContents);
+                sha256ReusedQRContent = sha256Hash(resultContents);
+                checkQRInUse(sha256ReusedQRContent);
+            }
+        });
         
         addEventImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -199,6 +205,14 @@ public class CreateEventFragment extends Fragment {
             }
         });
 
+        Button reuseQRButton = view.findViewById(R.id.reuse_qr_button);
+        reuseQRButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                scanQR();
+            }
+        });
+
         Button createEventButton = view.findViewById(R.id.create_the_event);
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,15 +230,22 @@ public class CreateEventFragment extends Fragment {
                     eventPoster = Blob.fromBytes(eventPosterByteArray);
                 }
                 // Arguments for event constructor to be passed into addEvent
-                byte[] promotionalQR = generateQRCode("Promotion," + eventID);
-                byte[] checkInQR = generateQRCode("Check In," + eventID);
+                byte[] promotionalQR = generateQRCode("Promotion:" + eventID);
                 String event_date = eventDate.getText().toString();
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();
                 String event_location = eventAddress.getText().toString();
+                Event event;
+                if (reusedQRBA == null){
+                    byte[] checkInQR = generateQRCode("Check In:" + eventID);
+                    event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
+                            event_date, event_time, event_desc, event_location, eventPoster);
+                } else {
+                    event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(reusedQRBA), 0,
+                            event_date, event_time, event_desc, event_location, eventPoster, sha256ReusedQRContent);
+                }
 
-                Event event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                        event_date, event_time, event_desc, event_location, eventPoster);
+
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
 
@@ -240,6 +261,10 @@ public class CreateEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Show dialog that allows user to input date of the event
+     * @param eventDate date of the event
+     */
     private void showDateDialog(final EditText eventDate) {
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -256,6 +281,10 @@ public class CreateEventFragment extends Fragment {
         new DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+    /**
+     * Shows the dialog that allows the user to input a time
+     * @param eventTime time of the event
+     */
     private void showTimeDialog(final EditText eventTime) {
         final Calendar calendar = Calendar.getInstance();
 
@@ -273,7 +302,6 @@ public class CreateEventFragment extends Fragment {
     }
 
 
-
     /**
      * Launches the content launcher that allows the user to upload an event poster
      */
@@ -281,6 +309,11 @@ public class CreateEventFragment extends Fragment {
         getContentLauncher.launch("image/*");
     }
 
+    /**
+     * Generates a QR code
+     * @param data data to be encoded
+     * @return byte array of the QR code
+     */
     private byte[] generateQRCode(String data) {
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
@@ -292,5 +325,65 @@ public class CreateEventFragment extends Fragment {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Launch the QR scanner
+     */
+    private void scanQR(){
+        ScanOptions options = new ScanOptions();
+        options.setOrientationLocked(true);
+        options.setPrompt("Scan the QR code you would like to reuse");
+        options.setCaptureActivity(CaptureAct.class);
+        qrScannerLauncher.launch(options);
+    }
+
+    /**
+     * Convert reused QR data to SHA-256
+     * @param input data of the reused QR
+     * @return SHA-256 encrypted data
+     */
+    // Open AI, 2024, ChatGPT, How to use SHA-256 hashing
+    private String sha256Hash(String input){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for(byte hashByte : hashBytes){
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1){
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Checks if reused QR is already in use by another activity
+     * @param sha256 encrypted SHA-256 data
+     */
+    private void checkQRInUse(String sha256){
+        FirebaseFirestore db = new EventDBConnector().getDb();
+
+        db.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                    if (documentSnapshot.exists()){
+                        String thisSHA256 = (String) documentSnapshot.get("sha256ReusedQRContent");
+                        if (Objects.equals(thisSHA256, sha256)){
+                            reusedQRBA = null;
+                            Toast.makeText(requireContext(), "Cannot reuse QR: already in use by another event", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+                }
+            }
+        });
     }
 }

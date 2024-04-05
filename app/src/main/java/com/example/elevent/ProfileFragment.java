@@ -104,8 +104,6 @@ public class ProfileFragment extends Fragment {
                             byte[] profileBA = user.getProfilePic().toBytes();
                             Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
                             profileImage.setImageBitmap(profileBitmap);
-                        } else {
-                            profileImage.setImageResource(R.drawable.default_profile_pic);
                         }
                     }
                 }

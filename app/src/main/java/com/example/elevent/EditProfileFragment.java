@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -24,6 +25,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -35,7 +38,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+/*
+    This file contains the implementation for the UI that allows a user to edit their profile
+ */
 
+/**
+ * This fragment provides the functionalities for allowing a user to edit their profile
+ */
 public class EditProfileFragment extends Fragment {
     private User user;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -45,6 +54,12 @@ public class EditProfileFragment extends Fragment {
     });
     private ActivityResultLauncher<String> getContentLauncher;
 
+    /**
+     * Called to do initial creation of a fragment
+     * Gets the user object to be edited
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +68,19 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * Instantiates the UI features that accept user input for editing their profile
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View for the UI
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -68,16 +96,18 @@ public class EditProfileFragment extends Fragment {
         editProfileName.setText(user.getName());
         editProfileHomepage.setText(user.getHomePage());
         editProfileContact.setText(user.getContact());
-        if (user.getProfilePic() != null){
-            editProfileImage.setImageBitmap(convertBlobToBitmap(user.getProfilePic()));
-        } else {
-            editProfileImage.setImageResource(R.drawable.default_profile_pic);
-            deleteProfileImageText.setVisibility(View.INVISIBLE);
-        }
+        editProfileImage.setImageBitmap(convertBlobToBitmap(user.getProfilePic()));
 
         return view;
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * Initialize UI to allow user to edit their profile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -114,8 +144,29 @@ public class EditProfileFragment extends Fragment {
         deleteProfileImageText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                user.setProfilePic(null);
-                editProfileImage.setImageResource(R.drawable.default_profile_pic);
+                BitmapDrawable generatedPFP;
+                if (user.getName()!= null){
+                    generatedPFP = AvatarGenerator.Companion.avatarImage(
+                            requireContext(),
+                            200,
+                            AvatarConstants.Companion.getRECTANGLE(),
+                            String.valueOf(user.getName().charAt(0))
+                    );
+                } else {
+                    generatedPFP = AvatarGenerator.Companion.avatarImage(
+                            requireContext(),
+                            200,
+                            AvatarConstants.Companion.getRECTANGLE(),
+                            String.valueOf(user.getUserID().charAt(0))
+                    );
+                }
+                Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                byte[] generatedPFPBA = outputStream.toByteArray();
+                Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+                user.setProfilePic(generatedPFPBlob);
+                editProfileImage.setImageBitmap(generatedPFPBitmap);
                 deleteProfileImageText.setVisibility(View.INVISIBLE);
             }
         });
@@ -137,10 +188,18 @@ public class EditProfileFragment extends Fragment {
         });
     }
 
-    // get the userID from preferences
+    /**
+     * Get the userID from preferences
+     * @param blob blob ot be converted
+     * @return the resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] bytes = blob.toBytes();
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
     }
+
+    /**
+     * Launches the content launcher to allow users to upload profile photos
+     */
     private void getProfilePhotoImage(){getContentLauncher.launch("image/*");}
 }

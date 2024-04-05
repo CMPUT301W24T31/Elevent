@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
@@ -20,10 +23,16 @@ import androidx.preference.PreferenceManager;
 import com.avatarfirst.avatargenlib.AvatarConstants;
 import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.example.elevent.Admin.AdminHomeFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
@@ -32,14 +41,13 @@ import java.util.Objects;
 import java.util.UUID;
 /*
     This file is responsible for being the host activity of all fragments in the app
-    Outstanding issues: some listeners that are implemented through MainActivity must be refined
  */
 
 /**
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
+public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, AddNotificationDialogFragment.AddNotificationDialogListener {
 
 
     private FragmentManagerHelper fragmentManagerHelper;
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private static final String PREF_NAME = "MyPrefs";
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
+    String userID;
     private List<String> adminUserIds = Arrays.asList(
             "c297401a-6d7a-4f09-823d-626234226e16",
             "4f553d28-6261-49e3-8b15-186a89d01faf",
@@ -74,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String userID = createUser();
+        checkUserExists();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -104,8 +113,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
-
-    // Implement the interface method
 
     /**
      * Initializes the navigation bar
@@ -143,30 +150,6 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     }
 
-    //to implement the fragment to create event fragment
-    /*@Override
-    public void onCreateEvent(Event event) {
-
-    }*/
-
-    /**
-     * Implementation of the CreateEventListener
-     * @param event The created event
-     */
-    public void onPositiveClick(Event event) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String eventID = UUID.randomUUID().toString();
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("eventID", eventID);
-        editor.apply();
-        MyEventsFragment fragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
-        if (fragment != null){
-            fragment.addEvent(event);
-            fragmentManagerHelper.replaceFragment(fragment);
-            updateAppBarTitle("My Events");
-        }
-    }
-
     /**
      * Updates the title of the app bar at the top of the screen
      * @param title Title to be updated to
@@ -176,41 +159,12 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         appBarTitle.setText(title);
     }
 
-
-    // use this method to get the UUID give to a user at
-    // first launch in the UserDB to be used as the document
-    // name in the firestore database collection 'User'
-
-    /**
-     * Gets the user ID to store into the user database
-     * @return User ID
-     */
-    public String getUserIDForUserDB() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        return sharedPreferences.getString("userID", null); // Return null or a default value if not found
-    }
-
     /**
      * Handles when a notification is created
      * @param notification The notification text.
      */
     @Override
     public void onNotificationAdded(String notification) {
-    }
-
-    /**
-     * Implements onEventClickListener
-     * @param event the event that has been clicked on
-     */
-    @Override
-    public void onEventClicked(Event event) {
-        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
-        Bundle args = new Bundle();
-        args.putSerializable("event", event); // Ensure Event class implements Serializable
-        eventViewAttendeeFragment.setArguments(args);
-
-        fragmentManagerHelper.replaceFragment(eventViewAttendeeFragment);
-        updateAppBarTitle(event.getEventName()); // This will set the app bar title as soon as the event is clicked
     }
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
@@ -222,33 +176,62 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             notificationManager.createNotificationChannel(channel);
         }
     }
-    private String createUser() {
+
+    /**
+     * Check if this user exists already
+     */
+    private void checkUserExists() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
-        String userID = sharedPreferences.getString(KEY_USER_ID, null);
+        userID = sharedPreferences.getString(KEY_USER_ID, null);
         if (userID == null) {
-            userID = UUID.randomUUID().toString();
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(KEY_USER_ID, userID);
-            editor.apply();
-
-            // TODO: do we make name mandatory to implement this?
-            // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
-            /*Drawable generatedPFP = AvatarGenerator.Companion.avatarImage(
-                    this,
-                    100,
-                    AvatarConstants.Companion.getRECTANGLE(),
-                    String.valueOf(userID.charAt(0))
-            );*/
-
-            User newUser = new User(userID);
-
-            UserDBConnector connector = new UserDBConnector();
-            UserDB userDB = new UserDB(connector);
-            userDB.addUser(newUser);
+            createUser();
+        } else {
+            FirebaseFirestore db = new UserDBConnector().getDb();
+            db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()){
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        if (!documentSnapshot.exists()){
+                            createUser();
+                        }
+                    }
+                }
+            });
         }
-        return userID;
+    }
+    private void createUser(){
+        userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_USER_ID, userID);
+        editor.apply();
+
+        // TODO: do we make name mandatory to implement this?
+        // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
+        BitmapDrawable generatedPFP = AvatarGenerator.Companion.avatarImage(
+                this,
+                200,
+                AvatarConstants.Companion.getRECTANGLE(),
+                String.valueOf(userID.charAt(0))
+        );
+        Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] generatedPFPBA = outputStream.toByteArray();
+        Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+
+        User newUser = new User(userID, generatedPFPBlob);
+
+        UserDBConnector connector = new UserDBConnector();
+        UserDB userDB = new UserDB(connector);
+        userDB.addUser(newUser);
     }
 
+    /**
+     * Implements updateEvent in interface CreatedEventListener
+     * @param event Event to be updated
+     */
     @Override
     public void updateEvent(Event event) {
         MyEventsFragment myEventsFragment = (MyEventsFragment) getSupportFragmentManager().findFragmentByTag("MY_EVENTS_FRAGMENT_TAG");
@@ -257,6 +240,11 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         }
     }
 
+    /**
+     * Convert a byte[] to a specific object
+     * @param eventBA byte[] to be converted
+     * @return The resulting object
+     */
     private Object convertByteArrayToObject(byte[] eventBA){
         InputStream inputStream = new ByteArrayInputStream(eventBA);
         try (ObjectInputStream in = new ObjectInputStream(inputStream)){
@@ -266,6 +254,11 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         }
         throw new RuntimeException();
     }
+
+    /**
+     * Handles a notification's intent
+     * @param intent The intent to be handled
+     */
     private void handleIntent(Intent intent) {
         if (intent.hasExtra("OpenNotificationFromFragment")) {
             if (Objects.equals(intent.getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")) {

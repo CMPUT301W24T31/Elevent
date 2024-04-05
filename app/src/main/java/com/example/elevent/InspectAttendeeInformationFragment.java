@@ -20,11 +20,20 @@ import com.google.firebase.firestore.Blob;
 import org.w3c.dom.Text;
 
 import java.util.Objects;
-
+/*
+    This file contains the implementation for displaying a dialog fragment to the organizer that contains an
+    attendee's profile information and how many times they have checked in
+ */
 public class InspectAttendeeInformationFragment extends DialogFragment {
     private User user;
     private Event event;
 
+    /**
+     * Called to do initial creation of a fragment
+     * Gets the attendee whose information is to be displayed and the event to which the attendee is signed up/checked in
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +43,13 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Build the dialog fragment to display the attendee's information
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Builder of the dialog fragment
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -81,6 +97,12 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
                 .setNegativeButton("Close", null)
                 .create();
     }
+
+    /**
+     * Convert blob to bitmap to be displayed
+     * @param blob Blob to be converted
+     * @return The resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] bytes = blob.toBytes();
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

@@ -28,9 +28,7 @@ import java.util.Objects;
 /**
  * This fragment displays the events that an organizer has created
  */
-public class MyEventsFragment extends Fragment implements CreatedEventFragment.CreatedEventListener{
-
-    CreateEventFragment createEventFragment;
+public class MyEventsFragment extends Fragment{
     private ArrayList<Event> myEvents;
     private ListView myEventList;
     private EventArrayAdapter myEventsArrayAdapter;
@@ -84,19 +82,6 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
         return view;
     }
 
-//andrew/s implementation still here for reference needed
-    /*@Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        FloatingActionButton createEventButton = view.findViewById(R.id.create_my_event_button);
-        createEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new CreateEventFragment().show(requireActivity().getSupportFragmentManager(), "Create an event");
-            }
-        });
-    }*/
-
     /**
      * Called after the view has been created
      * Initialize UI to allow organizer to finialize creation
@@ -120,21 +105,6 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
                     helper.replaceFragment(new CreateEventFragment());
                     mainActivity.updateAppBarTitle("Creating Event");
                 }
-                //return null;
-            }
-        });
-
-        myEventList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the selected event
-                Event selectedEvent = myEvents.get(position);
-
-                // Add a notification to the selected event
-                selectedEvent.addNotification("New notification message");
-
-                // Update the UI to reflect the added notification
-                myEventsArrayAdapter.notifyDataSetChanged();
             }
         });
 
@@ -160,15 +130,6 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
             }
         });
         fetchEvents();
-    }
-
-    /**
-     * Add an event to the array adapter and notify
-     * @param event Created event
-     */
-    public void addEvent(Event event){
-        myEventsArrayAdapter.add(event);
-        myEventsArrayAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -198,6 +159,10 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
 
     // MyEventsFragment.java
 
+    /**
+     * updates the event and notifies the array adapter
+     * @param updatedEvent
+     */
     public void updateEvent(Event updatedEvent) {
         if (updatedEvent == null || updatedEvent.getEventID() == null) {
             return; // Ensure updatedEvent or its ID is not null

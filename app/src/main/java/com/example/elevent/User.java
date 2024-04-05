@@ -28,10 +28,10 @@ public class User implements Serializable {
     // no argument constructor
     public User() {}
 
-    public User(String userID){
+    public User(String userID, Blob profilePic){
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
-        //this.profilePic = profilePic;
+        this.profilePic = profilePic;
     }
 
     public User(String name, String contact, Blob profilePic, String homePage, String userID) {

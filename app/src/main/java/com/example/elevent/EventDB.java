@@ -18,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 /*
     This file contains the implementation for the Event Database, which stores event objects in a firebase
-    Outstanding issues: n/a
  */
 
 /**
@@ -37,6 +36,9 @@ public class EventDB {
         this.db = connector.getDb();
     }
 
+    /**
+     * Class constructor without arguments
+     */
     public EventDB() {
         EventDBConnector connector = new EventDBConnector();
         this.db = connector.getDb();

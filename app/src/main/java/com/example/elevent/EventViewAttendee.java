@@ -134,6 +134,12 @@ public class EventViewAttendee extends Fragment {
 
 
     }
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return The resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
