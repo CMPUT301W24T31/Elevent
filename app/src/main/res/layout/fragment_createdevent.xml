@@ -29,7 +29,7 @@
                 android:backgroundTint="@color/item_grey"
                 android:text=""
                 android:inputType="text"
-                android:hint="@string/name"
+                android:hint="@string/namee"
                 android:theme="@style/FontTheme" />
 
             <EditText
@@ -102,10 +102,12 @@
                 android:text="@string/add_image"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
+                android:textColor="@color/background_blue"
                 android:textSize="25sp"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="35dp" />
+
 
             <ImageView
                 android:id="@+id/created_event_image_view_clickable"
@@ -114,8 +116,7 @@
                 android:layout_below="@+id/event_location_text"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="80dp"
-                android:layout_marginTop="20dp"/>
-
+                android:layout_marginTop="24dp" />
 
             <TextView
                 android:id="@+id/edit_event_poster_text"
@@ -207,6 +208,7 @@
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
                 android:text="@string/manage"
+                android:textColor="@color/background_blue"
                 android:textSize="15sp" />
 
             <Button
@@ -218,6 +220,7 @@
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
                 android:text="@string/share"
+                android:textColor="@color/background_blue"
                 android:textSize="15sp" />
 
             <Button
@@ -231,6 +234,7 @@
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
                 android:text="save"
+                android:textColor="@color/background_blue"
                 android:textSize="15sp" />
         </RelativeLayout>
     </ScrollView>

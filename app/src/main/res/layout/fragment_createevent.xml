@@ -139,6 +139,7 @@
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
                 android:text="@string/add_image"
+                android:textColor="@color/background_blue"
                 android:textSize="25sp" />
 
             <TextView
