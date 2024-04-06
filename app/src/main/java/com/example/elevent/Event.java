@@ -1,7 +1,5 @@
 package com.example.elevent;
 
-import androidx.annotation.Keep;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.GeoPoint;
@@ -37,6 +35,8 @@ public class Event implements Serializable {
     private Map<String, GeoPoint> checkInLocations;
     private Map<String, Integer> checkedInAttendees;
 
+    private int maxAttendance;
+
     // No-argument constructor
     public Event() {
     }
@@ -54,7 +54,7 @@ public class Event implements Serializable {
      * @param eventPoster Uploaded poster of the event
      */
     public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, Blob eventPoster) {
+                 String date, String time, String description, String location, Blob eventPoster, int maxAttendance) {
         this.eventID = eventID;
         this.organizerID = organizerID;
         this.eventName = eventName;
@@ -69,8 +69,8 @@ public class Event implements Serializable {
         this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkInLocations = new HashMap<>();
-
         this.checkedInAttendees = new HashMap<>();
+        this.maxAttendance = maxAttendance;
     }
 
     /**
@@ -94,6 +94,7 @@ public class Event implements Serializable {
         eventMap.put("signedUpAttendees", signedUpAttendees);
         eventMap.put("checkedInAttendees", checkedInAttendees);
         eventMap.put("checkInLocations", checkInLocations);
+        eventMap.put("maxAttendance", maxAttendance);
 
         return eventMap;
     }
@@ -188,6 +189,8 @@ public class Event implements Serializable {
         this.organizerID = organizerID;
     }
 
+    public int getMaxAttendance() {return maxAttendance;}
+
     /**
      * Setter for the event name
      * @param eventName Name of the event
@@ -280,6 +283,8 @@ public class Event implements Serializable {
         this.signedUpAttendees = signedUpAttendees;
     }
     public void setCheckedInAttendees(Map<String, Integer> checkedInAttendees){this.checkedInAttendees = checkedInAttendees;}
+
+    public void setMaxAttendance(int maxAttendance) {this.maxAttendance = maxAttendance;}
 
     public void addNotification(String newNotificationMessage) {
 
