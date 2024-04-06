@@ -109,6 +109,7 @@ public class CreatedEventFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_createdevent, container, false);
+
         EditText eventName = view.findViewById(R.id.event_name_text);
         eventName.setText(selectedEvent.getEventName());
         EditText eventAddress = view.findViewById(R.id.event_location_text);
