@@ -10,66 +10,77 @@
         android:id="@+id/last_name"
         android:layout_width="330dp"
         android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:fontFamily="@font/jetbrainsmono_bold"
-        android:text="last name"
+        android:hint="last name"
         android:textAlignment="center"
         android:textColor="#F3EBEB"
         android:textSize="25dp"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="349dp" />
+        app:layout_constraintBottom_toTopOf="@+id/email"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/phone"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:ems="10"
         android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="phone"
         android:inputType="phone"
-        android:text="phone"
         android:textAlignment="center"
         android:textColor="#F3EFEF"
         android:textSize="25dp"
-        tools:layout_editor_absoluteX="31dp"
-        tools:layout_editor_absoluteY="461dp" />
+        app:layout_constraintBottom_toTopOf="@+id/location_question"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:ems="10"
         android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="email"
         android:inputType="textEmailAddress"
-        android:text="email"
         android:textAlignment="center"
         android:textColor="#FDFDFD"
         android:textSize="25dp"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="407dp" />
+        app:layout_constraintBottom_toTopOf="@+id/phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/first_name"
         android:layout_width="328dp"
         android:layout_height="36dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:fontFamily="@font/jetbrainsmono_bold"
-        android:text="first name"
+        android:hint="first name"
         android:textAlignment="center"
         android:textColor="#F3EBEB"
         android:textSize="25dp"
-        tools:layout_editor_absoluteX="31dp"
-        tools:layout_editor_absoluteY="293dp" />
+        app:layout_constraintBottom_toTopOf="@+id/last_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/location_question"
         android:layout_width="328dp"
         android:layout_height="72dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:fontFamily="@font/jetbrainsmono_bold"
@@ -78,61 +89,58 @@
         android:textAlignment="viewStart"
         android:textColor="#F6F4F4"
         android:textSize="18dp"
-        tools:layout_editor_absoluteX="32dp"
-        tools:layout_editor_absoluteY="515dp" />
+        app:layout_constraintBottom_toTopOf="@+id/generated_id_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Switch
         android:id="@+id/location_switch"
         android:layout_width="59dp"
         android:layout_height="35dp"
-        tools:layout_editor_absoluteX="288dp"
-        tools:layout_editor_absoluteY="525dp" />
-
-    <TextView
-        android:id="@+id/create_prof_edit"
-        android:layout_width="74dp"
-        android:layout_height="38dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="#B2C2D2"
-        android:fontFamily="@font/jetbrainsmono_bold"
-        android:text="edit"
-        android:textAlignment="center"
-        android:textColor="#F6F4F4"
-        android:textSize="25dp"
-        tools:layout_editor_absoluteX="288dp"
-        tools:layout_editor_absoluteY="667dp" />
-
-    <TextView
-        android:id="@+id/create_prof_save"
-        android:layout_width="74dp"
-        android:layout_height="38dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="#B2C2D2"
-        android:fontFamily="@font/jetbrainsmono_bold"
-        android:text="save"
-        android:textAlignment="center"
-        android:textColor="#F6F4F4"
-        android:textSize="25dp"
-        tools:layout_editor_absoluteX="289dp"
-        tools:layout_editor_absoluteY="718dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/location_question"
+        app:layout_constraintEnd_toEndOf="@+id/location_question"
+        app:layout_constraintHorizontal_bias="0.923"
+        app:layout_constraintStart_toStartOf="@+id/location_question"
+        app:layout_constraintTop_toTopOf="@+id/location_question"
+        app:layout_constraintVertical_bias="0.411" />
 
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="169dp"
         android:layout_height="157dp"
-        tools:layout_editor_absoluteX="112dp"
-        tools:layout_editor_absoluteY="99dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/first_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/default_profile_pic" />
 
     <TextView
         android:id="@+id/generated_id_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="180dp"
         android:fontFamily="@font/jetbrainsmono_bold"
         android:text="GENERATED ID:"
         android:textColor="#F6F2F2"
         android:textSize="18sp"
-        tools:layout_editor_absoluteX="38dp"
-        tools:layout_editor_absoluteY="600dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.195"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="58dp"
+        android:layout_height="59dp"
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="#001F3F"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.898"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_send" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
