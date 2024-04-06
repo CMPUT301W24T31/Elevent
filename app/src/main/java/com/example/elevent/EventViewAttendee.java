@@ -73,7 +73,6 @@ public class EventViewAttendee extends Fragment {
         TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
         ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
         TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
-        TextView eventAttendanceTextView = view.findViewById(R.id.event_attendance_textview);
         // Extracting event details from arguments
         assert getArguments() != null;
         Event event = (Event) getArguments().getSerializable("event");
@@ -86,6 +85,7 @@ public class EventViewAttendee extends Fragment {
             if (signedUp.contains(userID)){
                 String signedUpText = "Signed up!";
                 signUpButton.setText(signedUpText);
+                signUpButton.setBackgroundColor(getResources().getColor(R.color.background_green));
             } else{
                 signUpButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -113,37 +113,6 @@ public class EventViewAttendee extends Fragment {
             }
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
-            }
-
-            // display attendance information
-            int currentAttendees = event.getSignedUpAttendees().size();
-            int maxAttendees = event.getMaxAttendance();
-            eventAttendanceTextView.setText(String.format("Attendees: %d%d", currentAttendees, maxAttendees));
-
-            // adjust sign up button based on attendance
-            List<String> signedUp = event.getSignedUpAttendees();
-
-            if (signedUp.contains(userID)) {
-                signUpButton.setText("Already Signed Up");
-                signUpButton.setEnabled(false);
-                signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-            } else {
-                if (currentAttendees >= maxAttendees) {
-                    signUpButton.setText("Event Full");
-                    signUpButton.setEnabled(false);
-                    signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-                } else {
-                    signUpButton.setText("Sign Up");
-                    signUpButton.setEnabled(true);
-                    signUpButton.setOnClickListener(v -> {
-                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
-                        Bundle args = new Bundle();
-                        args.putSerializable("Event", event);
-                        args.putString("userID", userID);
-                        eventSignUpDialogFragment.setArguments(args);
-                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
-                    });
-                }
             }
         }
 

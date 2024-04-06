@@ -38,42 +38,23 @@ public class EventSignUpDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_add_attendee_sign_up, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-        // check if the event has reached max capacity
-        boolean isFull = event.getSignedUpAttendees().size() >= event.getMaxAttendance();
-
-        builder.setView(view)
-                .setTitle(isFull ? "Event Full" : "Confirm Sign-Up")
-                .setNegativeButton("Cancel", null);
-
-        // changes to dialog depending on full event or not
-        if (!isFull) {
-            builder.setPositiveButton("Confirm", (dialog, which) -> {
-                if (addAttendeeSignUpToEvent()) {
+        return builder
+                .setView(view)
+                .setTitle("Disclaimer")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    addAttendeeSignUpToEvent();
                     addEventSignedUpByAttendee();
                     Toast.makeText(requireContext(), "You are now signed up!", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(requireContext(), "Sorry, the event is now full.", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            builder.setMessage("This event has reached its capacity and no additional sign-ups are possible.");
-        }
-
-
-        return builder.create();
+                })
+                .create();
     }
-
-    private boolean addAttendeeSignUpToEvent() {
+    private void addAttendeeSignUpToEvent() {
         List<String> newSignUp = event.getSignedUpAttendees();
-        if (newSignUp.size() < event.getMaxAttendance()) {
-            newSignUp.add(userID);
-            event.setSignedUpAttendees(newSignUp);
-            EventDB eventDB = new EventDB(new EventDBConnector());
-            eventDB.updateEvent(event);
-            return true;
-        }
-        return false;
+        newSignUp.add(userID);
+        event.setSignedUpAttendees(newSignUp);
+        EventDB eventDB = new EventDB(new EventDBConnector());
+        eventDB.updateEvent(event);
     }
 
     private void addEventSignedUpByAttendee() {
