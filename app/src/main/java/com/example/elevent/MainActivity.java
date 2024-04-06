@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 
 import com.example.elevent.Admin.AdminHomeFragment;
@@ -36,7 +37,7 @@ import java.util.UUID;
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener {
+public class MainActivity extends AppCompatActivity implements AllEventsFragment.OnEventClickListener, CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, AddNotificationDialogFragment.AddNotificationDialogListener, WelcomePageFragment.OnCreateProfileListener{
 
 
     private FragmentManagerHelper fragmentManagerHelper;
@@ -66,6 +67,20 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 
     );
 
+
+    @Override
+    public void onCreateProfile() {
+        // Replace WelcomeFragment with CreateProfileFragment
+        fragmentManagerHelper.replaceFragment(new CreateProfileFragment());
+    }
+
+    @Override
+    public void onSkipStart() {
+        // This is the existing functionality that skips profile creation
+        showNavigationAndToolbar();
+        fragmentManagerHelper.replaceFragment(new AllEventsFragment());
+    }
+
     /**
      * Called when the activity is starting
      * Initializes the tool bar
@@ -78,9 +93,44 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        setContentView(R.layout.activity_main);
+        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+
+
+        // Initialize the navigationView right after setContentView
+        navigationView = findViewById(R.id.activity_main_navigation_bar);
+        // Find the Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        // Set the Toolbar to act as the ActionBar
+        setSupportActionBar(toolbar);
+        createNotificationChannel();
+
+        // OpenAI, 2024, ChatGPT, Generate unique user ID when opening app for first time
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         String userID = sharedPreferences.getString(KEY_USER_ID, null);
-        if (userID == null) {
+        boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
+
+        if (isFirstRun) {
+            // Hide the Toolbar and NavigationView for the WelcomePage
+            if (toolbar != null) {
+                toolbar.setVisibility(View.GONE);
+            }
+            if (navigationView != null) {
+                navigationView.setVisibility(View.GONE);
+            }
+
+            // Show WelcomeFragment without adding to back stack
+            fragmentManagerHelper.replaceFragment(new WelcomePageFragment());
+
+            // After showing the WelcomeFragment, set 'isFirstRun' to false
+            sharedPreferences.edit().putBoolean("isFirstRun", false).apply();
+        } else {
+            // If not the first run, proceed to load the initial fragment
+            initNavView();
+
+        }
+
+        if (userID == null){
             userID = UUID.randomUUID().toString();
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(KEY_USER_ID, userID);
@@ -91,6 +141,17 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
             UserDBConnector connector = new UserDBConnector();
             UserDB userDB = new UserDB(connector);
             userDB.addUser(newUser);
+        //initNavView();
+        Log.d("DEBUG", "test");
+        if (getIntent().hasExtra("OpenNotificationFromFragment")){
+            if(Objects.equals(getIntent().getStringExtra("OpenNotificationFromFragment"), "NotificationFragmentAttendee")){
+                NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                Bundle args = new Bundle();
+                Event eventToOpen = (Event) getIntent().getSerializableExtra("event");
+                args.putSerializable("event", eventToOpen);
+                notificationFragmentAttendee.setArguments(args);
+                fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
+            }
         }
 
         setContentView(R.layout.activity_main);
@@ -114,6 +175,17 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         handleIntent(getIntent());
     }
 
+    public void showNavigationAndToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        BottomNavigationView navigationView = findViewById(R.id.activity_main_navigation_bar);
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
+        if (navigationView != null) {
+            navigationView.setVisibility(View.VISIBLE);
+        }
+    }
+
     /**
      * Gets a fragment manager helper
      * @return FragmentManagerHelper object
@@ -127,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     /**
      * Initializes the navigation bar
      */
-    private void initNavView() {
+    public void initNavView() {
         navigationView = findViewById(R.id.activity_main_navigation_bar);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.activity_main_framelayout,allEventsFragment).commit();
