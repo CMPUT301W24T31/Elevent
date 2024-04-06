@@ -68,5 +68,6 @@
     <string name="contact">Contact Info</string>
     <string name="save">Save</string>
     <string name="edit_profile">Edit Profile\n</string>
+    <string name="max_attendees">Max Attendees</string>
 
 </resources>
