@@ -1,8 +1,7 @@
 package com.example.elevent;
 
-import com.google.firebase.firestore.Blob;
-
 import java.io.Serializable;
+import com.google.firebase.firestore.Blob;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,7 @@ public class User implements Serializable {
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
     }
+
     public User(String name, String contact, Blob profilePic, String homePage, String userID) {
 
         this.name = name;
@@ -47,8 +47,8 @@ public class User implements Serializable {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("name", name);
         userMap.put("contact", contact);
-        userMap.put("profile picture", profilePic);
-        userMap.put("home page", homePage);
+        userMap.put("profilePic", profilePic);
+        userMap.put("homePage", homePage);
         userMap.put("userID", userID);
         userMap.put("signedUpEvents", signedUpEvents);
 
