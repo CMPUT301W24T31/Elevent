@@ -33,6 +33,7 @@
             android:backgroundTint="@color/item_blue"
             android:fontFamily="@font/jetbrainsmono_bold"
             android:text="events"
+            android:textColor="@color/background_blue"
             android:textSize="24dp" />
 
         <Button
@@ -43,6 +44,7 @@
             android:backgroundTint="@color/item_blue"
             android:fontFamily="@font/jetbrainsmono_bold"
             android:text="profiles"
+            android:textColor="@color/background_blue"
             android:textSize="24dp" />
 
         <Button
@@ -52,6 +54,7 @@
             android:backgroundTint="@color/item_blue"
             android:fontFamily="@font/jetbrainsmono_bold"
             android:text="images"
+            android:textColor="@color/background_blue"
             android:textSize="24dp" />
     </LinearLayout>
 

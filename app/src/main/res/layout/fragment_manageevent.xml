@@ -12,27 +12,25 @@
         android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
         android:backgroundTint="@color/item_grey"
-        android:textColor="@color/text_white"
+        android:textColor="@color/background_blue"
         android:text="@string/notification_centre"
         android:theme="@style/FontTheme"
-
         />
 
     <Button
         android:id="@+id/map_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_below="@+id/notif_centre_button"
         android:layout_alignParentStart="false"
         android:layout_alignParentEnd="false"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="30dp"
-
         android:layout_marginTop="10dp"
         android:layout_marginRight="30dp"
         android:backgroundTint="@color/item_grey"
-        android:text="Map"
-        android:textColor="@color/text_white"
+        android:text="map"
+        android:textColor="@color/background_blue"
         android:theme="@style/FontTheme" />
 
     <TextView
