@@ -19,6 +19,7 @@ import com.google.firebase.firestore.GeoPoint;
 import java.util.Map;
 
 public class MapFragment extends Fragment {
+
     private Event event;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {

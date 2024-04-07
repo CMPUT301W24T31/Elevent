@@ -19,8 +19,6 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.firestore.Blob;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
     Outstanding issues: figure out attributes of event, such as QR code and notifications
@@ -95,44 +93,48 @@ public class EventViewAttendee extends Fragment {
                         ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
                     }
 
-            // display attendance information
-            int currentAttendees = event.getSignedUpAttendees().size();
-            int maxAttendees = event.getMaxAttendance();
-            int spotsRemaining = maxAttendees - currentAttendees;
+                    // display attendance information
+                    int currentAttendees = event.getSignedUpAttendees().size();
+                    int maxAttendees = event.getMaxAttendance();
+                    int spotsRemaining = maxAttendees - currentAttendees;
 
-            eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
+                    eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
 
                     List<String> signedUp = event.getSignedUpAttendees();
 
-            if (signedUp.contains(userID)) {
-                signUpButton.setText(R.string.already_signed_up);
-                signUpButton.setEnabled(false);
-                signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-            } else {
-                if (currentAttendees >= maxAttendees) {
-                    signUpButton.setText(R.string.event_full);
-                    signUpButton.setEnabled(false);
-                    signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-                } else {
-                    signUpButton.setText(R.string.sign_up_for_event);
-                    signUpButton.setEnabled(true);
-                    signUpButton.setOnClickListener(v -> {
-                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
-                        Bundle args = new Bundle();
-                        args.putSerializable("Event", event);
-                        args.putString("userID", userID);
-                        eventSignUpDialogFragment.setArguments(args);
-                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
-                    });
+                    if (signedUp.contains(userID)) {
+                        signUpButton.setText(R.string.already_signed_up);
+                        signUpButton.setEnabled(false);
+                        signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                    } else {
+                        if (currentAttendees >= maxAttendees) {
+                            signUpButton.setText(R.string.event_full);
+                            signUpButton.setEnabled(false);
+                            signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                        } else {
+                            signUpButton.setText(R.string.sign_up_for_event);
+                            signUpButton.setEnabled(true);
+                            signUpButton.setOnClickListener(v -> {
+                                EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                                args.putSerializable("Event", event);
+                                args.putString("userID", userID);
+                                eventSignUpDialogFragment.setArguments(args);
+                                eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                            });
+                        }
+                    }
                 }
             }
-        } catch(Exception e){
-            // If an error occurs, replace the fragment with the error fragment
+        } catch (Exception e) {
+                showErrorFragment();
+            }
+        }
+
+        private void showErrorFragment() {
             requireActivity().getSupportFragmentManager().beginTransaction()
                     .replace(R.id.activity_main_framelayout, new ErrorFragment())
                     .commit();
         }
-    }
 
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();

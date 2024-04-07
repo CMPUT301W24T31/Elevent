@@ -52,6 +52,15 @@
                 android:theme="@style/FontTheme"
                 android:textColorHint="@color/text_white" />
 
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/geolocation_switch"
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:text="location"
+                android:textColor="@color/text_white"
+                android:theme="@style/FontTheme" />
+
             <Button
                 android:id="@+id/edit_profile_button"
                 android:layout_width="wrap_content"

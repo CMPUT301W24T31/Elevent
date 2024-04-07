@@ -70,69 +70,59 @@ public class EditProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        try {
-
-            // Load existing user data
-            EditText editProfileName = view.findViewById(R.id.edit_profile_name);
-            EditText editProfileHomepage = view.findViewById(R.id.edit_profile_homepage);
-            EditText editProfileContact = view.findViewById(R.id.edit_profile_contact);
-            ImageView editProfileImage = view.findViewById(R.id.edit_profile_image);
-            TextView editProfileImageText = view.findViewById(R.id.edit_profile_photo_text);
-            TextView deleteProfileImageText = view.findViewById(R.id.delete_profile_photo_text);
-            getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                if (uri != null) {
-                    // OpenAI, 2024, ChatGPT, Convert to byte array
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                        byte[] profilePhotoByteArray = byteArrayOutputStream.toByteArray();
-                        user.setProfilePic(Blob.fromBytes(profilePhotoByteArray));
-                        editProfileImage.setImageBitmap(bitmap);
-                        deleteProfileImageText.setVisibility(View.VISIBLE);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
-            editProfileImageText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-                }
-            });
-            deleteProfileImageText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    user.setProfilePic(null);
-                    editProfileImage.setImageResource(R.drawable.default_profile_pic);
-                    deleteProfileImageText.setVisibility(View.INVISIBLE);
-                }
-            });
-            view.findViewById(R.id.save_edited_profile_button).setOnClickListener(v -> {
-
-                user.setName(editProfileName.getText().toString());
-                user.setHomePage(editProfileHomepage.getText().toString());
-                user.setContact(editProfileContact.getText().toString());
-
-                UserDB userDB = new UserDB();
-                userDB.updateUser(user);
+        // Load existing user data
+        EditText editProfileName = view.findViewById(R.id.edit_profile_name);
+        EditText editProfileHomepage = view.findViewById(R.id.edit_profile_homepage);
+        EditText editProfileContact = view.findViewById(R.id.edit_profile_contact);
+        ImageView editProfileImage = view.findViewById(R.id.edit_profile_image);
+        TextView editProfileImageText = view.findViewById(R.id.edit_profile_photo_text);
+        TextView deleteProfileImageText = view.findViewById(R.id.delete_profile_photo_text);
+        getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+            if (uri != null) {
+                // OpenAI, 2024, ChatGPT, Convert to byte array
                 try {
-                    userDB.updateUser(user);
-                    Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(requireContext(), "Profile could not be updated", Toast.LENGTH_SHORT).show();
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] profilePhotoByteArray = byteArrayOutputStream.toByteArray();
+                    user.setProfilePic(Blob.fromBytes(profilePhotoByteArray));
+                    editProfileImage.setImageBitmap(bitmap);
+                    deleteProfileImageText.setVisibility(View.VISIBLE);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            });
-        } catch (Exception e) {
-            showErrorFragment();
-        }
-    }
+            }
+        });
+        editProfileImageText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+            }
+        });
+        deleteProfileImageText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.setProfilePic(null);
+                editProfileImage.setImageResource(R.drawable.default_profile_pic);
+                deleteProfileImageText.setVisibility(View.INVISIBLE);
+            }
+        });
+        view.findViewById(R.id.save_edited_profile_button).setOnClickListener(v -> {
 
-    private void showErrorFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_main_framelayout, new ErrorFragment())
-                .commit();
+            user.setName(editProfileName.getText().toString());
+            user.setHomePage(editProfileHomepage.getText().toString());
+            user.setContact(editProfileContact.getText().toString());
+
+            UserDB userDB = new UserDB();
+            userDB.updateUser(user);
+
+            try {
+                userDB.updateUser(user);
+                Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+            } catch (Exception e){
+                Toast.makeText(requireContext(), "Profile could not be updated", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // get the userID from preferences

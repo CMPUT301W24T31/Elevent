@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
 //            ,"45753e1e-bf94-4bd6-9dd6-cfd83fc34037"
     );
 
+
     /**
      * Called when the activity is starting
      * Initializes the tool bar

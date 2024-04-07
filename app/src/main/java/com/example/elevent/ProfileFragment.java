@@ -99,7 +99,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        try{
         String userID = getUserIdFromPreferences();
         FirebaseFirestore userDB = new UserDBConnector().getDb();
         view.findViewById(R.id.edit_profile_button).setOnClickListener(v -> {
@@ -121,15 +120,6 @@ public class ProfileFragment extends Fragment {
                 }
             });
         });
-        } catch (Exception e) {
-            showErrorFragment();
-        }
-    }
-
-    private void showErrorFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_main_framelayout, new ErrorFragment())
-                .commit();
     }
 
 
