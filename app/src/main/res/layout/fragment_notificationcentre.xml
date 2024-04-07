@@ -27,7 +27,6 @@
         android:layout_marginTop="100dp"
         android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
-
         android:backgroundTint="@color/primary_blue"
         android:text="@string/post_new_notification"
         android:fontFamily="monospace"
