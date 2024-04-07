@@ -66,27 +66,26 @@ public class EventViewAttendee extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        try {
-            // Initialize UI components
-            TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
-            ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
-            TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
-            TextView eventAttendanceTextView = view.findViewById(R.id.event_attendance_textview);
-            Button signUpButton = view.findViewById(R.id.sign_up_event_button);
-
-            SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-            String userID = sharedPreferences.getString("userID", null);
-
-            Bundle args = getArguments();
-            if (args != null) {
-                Event event = (Event) args.getSerializable("event");
-                if (event != null) {
-                    eventDescriptionTextView.setText(event.getDescription());
-
-                    if (event.getEventPoster() != null) {
-                        Blob eventPosterBlob = event.getEventPoster();
-                        Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
-                        eventPosterImageView.setImageBitmap(eventPoster);
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString("userID", null);
+        if(event!=null){
+            List<String> signedUp = event.getSignedUpAttendees();
+            if (signedUp.contains(userID)){
+                String signedUpText = "Signed up!";
+                signUpButton.setText(signedUpText);
+                signUpButton.setBackgroundColor(getResources().getColor(R.color.background_green));
+            } else{
+                signUpButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                        Bundle args = new Bundle();
+                        args.putSerializable("event", event);
+                        args.putString("userID", userID);
+                        eventSignUpDialogFragment.setArguments(args);
+                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                        String signingUpText = "Signing up...";
+                        signUpButton.setText(signingUpText);
                     }
 
                     if (getActivity() instanceof MainActivity) {
@@ -136,6 +135,14 @@ public class EventViewAttendee extends Fragment {
                     .commit();
         }
 
+
+    }
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return The resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);

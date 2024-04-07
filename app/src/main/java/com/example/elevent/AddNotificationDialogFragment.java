@@ -62,6 +62,11 @@ public class AddNotificationDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Called to do initial creation of a fragment. Gets event that is sending notification and initializes permission requester
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +84,13 @@ public class AddNotificationDialogFragment extends DialogFragment {
         requestNotificationPermission();
     }
 
+    /**
+     * Builds notification dialog fragment.
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return The dialog fragment builder
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -107,17 +119,16 @@ public class AddNotificationDialogFragment extends DialogFragment {
         }
     }
 
-    private void showErrorFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_main_framelayout, new ErrorFragment())
-                .commit();
-    }
-
-
+    /**
+     * Launches permission requester
+     */
     private void requestNotificationPermission(){
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
     }
 
+    /**
+     * Creates notification and adds to listener
+     */
     private void createNotification() {
         if (event != null) {
             // Notification creation code here

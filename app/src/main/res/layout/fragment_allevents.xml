@@ -39,11 +39,10 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginTop="20dp"
-            android:cacheColorHint="#B59D9D"
-            android:background="@drawable/rounded_corner"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="10dp"
+
+            android:cacheColorHint="@color/background_blue"
+            android:divider="@color/background_blue"
+            android:dividerHeight="5dp"
             />
         <!--
    <ExpandableListView

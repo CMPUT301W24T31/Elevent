@@ -34,6 +34,7 @@ public class Event implements Serializable {
     private List<String> signedUpAttendees;
     private Map<String, GeoPoint> checkInLocations;
     private Map<String, Integer> checkedInAttendees;
+    private String sha256ReusedQRContent;
 
     private int maxAttendance;
 
@@ -42,7 +43,7 @@ public class Event implements Serializable {
     }
 
     /**
-     * Class constructor
+     * Class constructor without reused QR
      * @param eventName Name of the event
      * @param promotionalQR QR code linked to event poster an description
      * @param checkinQR QR code for checking in to the event
@@ -66,6 +67,38 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
+        this.notifications = new ArrayList<>();
+        this.signedUpAttendees = new ArrayList<>();
+        this.checkInLocations = new HashMap<>();
+        this.checkedInAttendees = new HashMap<>();
+    }
+    /**
+     * Class constructor with reused QR
+     * @param eventName Name of the event
+     * @param promotionalQR QR code linked to event poster an description
+     * @param checkinQR QR code for checking in to the event
+     * @param attendeesCount Number of attendees checked in
+     * @param date Date of the event
+     * @param time Time of the event
+     * @param description Description of the event
+     * @param location Location of the event
+     * @param eventPoster Uploaded poster of the event
+     * @param sha256ReusedQRContent Content of the reused QR code converted into SHA-256 encryption
+     */
+    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+                 String date, String time, String description, String location, Blob eventPoster, String sha256ReusedQRContent) {
+        this.eventID = eventID;
+        this.organizerID = organizerID;
+        this.eventName = eventName;
+        this.promotionalQR = promotionalQR;
+        this.checkinQR = checkinQR;
+        this.attendeesCount = attendeesCount;
+        this.date = date;
+        this.time = time;
+        this.description = description;
+        this.eventPoster = eventPoster;
+        this.location = location;
+        this.sha256ReusedQRContent = sha256ReusedQRContent;
         this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
         this.checkInLocations = new HashMap<>();
@@ -94,11 +127,15 @@ public class Event implements Serializable {
         eventMap.put("signedUpAttendees", signedUpAttendees);
         eventMap.put("checkedInAttendees", checkedInAttendees);
         eventMap.put("checkInLocations", checkInLocations);
-        eventMap.put("maxAttendance", maxAttendance);
+        eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
 
         return eventMap;
     }
 
+    /**
+     * Getter for ID of the organizer
+     * @return ID of the organizer
+     */
     public String getOrganizerID() {
         return organizerID;
     }
@@ -177,14 +214,26 @@ public class Event implements Serializable {
         return eventPoster;
     }
 
+    /**
+     * Getter for the checked in attendees
+     * @return Attendees that have checked in
+     */
     public Map<String, Integer> getCheckedInAttendees() {
         return checkedInAttendees;
     }
 
+    /**
+     * Getter for the signed up attendees
+     * @return Attendees that have signed up
+     */
     public List<String> getSignedUpAttendees() {
         return signedUpAttendees;
     }
 
+    /**
+     * Setter for the organizer ID
+     * @param organizerID ID of the organizer
+     */
     public void setOrganizerID(String organizerID) {
         this.organizerID = organizerID;
     }
@@ -279,23 +328,50 @@ public class Event implements Serializable {
         this.notifications = notifications;
     }
 
+    /**
+     * Setter for the signed up attendees
+     * @param signedUpAttendees Attendees that have signed up
+     */
     public void setSignedUpAttendees(List<String> signedUpAttendees) {
         this.signedUpAttendees = signedUpAttendees;
     }
+
+    /**
+     * Setter for the checked in attendees
+     * @param checkedInAttendees Attendees that have checked in
+     */
     public void setCheckedInAttendees(Map<String, Integer> checkedInAttendees){this.checkedInAttendees = checkedInAttendees;}
 
-    public void setMaxAttendance(int maxAttendance) {this.maxAttendance = maxAttendance;}
-
-    public void addNotification(String newNotificationMessage) {
-
-    }
-
+    /**
+     * Getter for the event ID
+     * @return ID of the event
+     */
     public String getEventID() {
         return eventID;
     }
 
+    /**
+     * Getter for the locations of attendee check ins
+     * @return
+     */
     public Map<String, GeoPoint> getCheckInLocations() {
         return checkInLocations;
+    }
+
+    /**
+     * For reused QR codes, getter for the encrypted SHA-256 content
+     * @return SHA-256 encrypted content
+     */
+    public String getSha256ReusedQRContent() {
+        return sha256ReusedQRContent;
+    }
+
+    /**
+     * For reused QR codes, setter for the encrypted SHA-256 content
+     * @param sha256ReusedQRContent SHA-256 encrypted content
+     */
+    public void setSha256ReusedQRContent(String sha256ReusedQRContent) {
+        this.sha256ReusedQRContent = sha256ReusedQRContent;
     }
 
     /**

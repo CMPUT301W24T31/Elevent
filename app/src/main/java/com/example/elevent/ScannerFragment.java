@@ -17,9 +17,22 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.zxing.client.android.Intents;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
+import com.journeyapps.barcodescanner.CompoundBarcodeView;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
+import org.checkerframework.checker.units.qual.C;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 /*
@@ -56,11 +69,14 @@ public class ScannerFragment extends Fragment {
             if (result.getContents() != null){
                 Log.d("ScanQRCodeActivity", "Scanned");
                 String resultContents = result.getContents();
-                String[] data = resultContents.split(",");
+                String[] data = resultContents.split(":");
                 if (Objects.equals(data[0], "Check In")){
                     onAttendeeCheckIn(data[1]);
                 } else if (Objects.equals(data[0], "Promotion")){
                     onPromotionScan(data[1]);
+                } else {
+                    String encryptedContent = sha256Hash(data[0]);
+                    findEventToCheckIn(encryptedContent);
                 }
             }
         });
@@ -196,5 +212,40 @@ public class ScannerFragment extends Fragment {
                 }
             }
         });
+    }
+    private void findEventToCheckIn(String encryptedContent){
+        FirebaseFirestore db = new EventDBConnector().getDb();
+
+        db.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                    String sha256Content = (String) documentSnapshot.get("sha256ReusedQRContent");
+                    if (Objects.equals(encryptedContent, sha256Content)){
+                        String eventID = (String) documentSnapshot.get("eventID");
+                        onAttendeeCheckIn(eventID);
+                    }
+                }
+            }
+        });
+    }
+    // Open AI, 2024, ChatGPT, How to use SHA-256 hashing
+    private String sha256Hash(String input){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for(byte hashByte : hashBytes){
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1){
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

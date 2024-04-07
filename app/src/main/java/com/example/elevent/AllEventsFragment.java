@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Objects;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
-    Outstanding issues: n/a
  */
 /**
  * This fragment displays all events posted to the app
@@ -35,17 +34,6 @@ import java.util.Objects;
 public class AllEventsFragment extends Fragment {
 
     ArrayList<Event> AllEvents;
-    //defaultEvent.add("Sample Event"); // Add your default event details here
-
-    /**
-     * Listener for when user clicks on an event on their screen
-     */
-    public interface OnEventClickListener {
-        void onEventClicked(Event event);
-    }
-
-    // Define a listener member variable
-    private OnEventClickListener eventClickListener;
     List<String> signedUpEvents;
 
     /**
@@ -73,32 +61,6 @@ public class AllEventsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_allevents, container, false);
-    }
-
-    /**
-     * Called when a fragment is first attached to its host activity
-     * @param context Host activity of the fragment
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnEventClickListener) {
-            eventClickListener = (OnEventClickListener) context;
-        } else {
-
-            Log.w("AllEventsFragment", "Parent context does not implement OnEventClickListener");
-        }
-    }
-
-    /**
-     * Called when the fragment is no longer attached to its activity.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        eventClickListener = null;
     }
 
     /**
@@ -170,12 +132,9 @@ public class AllEventsFragment extends Fragment {
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
 
-                }
-            });
-        } catch (Exception e) {
-            showErrorFragment();
-        }
-    }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
     private void showErrorFragment() {
         requireActivity().getSupportFragmentManager().beginTransaction()
@@ -204,6 +163,9 @@ public class AllEventsFragment extends Fragment {
         });
     }
 
+    /**
+     * Fetch signed up events from db
+     */
     private void fetchSignedUpEventsList(){
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
@@ -226,6 +188,9 @@ public class AllEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Convert signed up events to event objects and call updateListView to display
+     */
     private void displaySignedUpEvents(){
         if (signedUpEvents == null) {
             Toast.makeText(requireContext(), "no signed-up events available", Toast.LENGTH_LONG).show();
