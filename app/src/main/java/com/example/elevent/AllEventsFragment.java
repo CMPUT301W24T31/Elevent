@@ -89,13 +89,11 @@ public class AllEventsFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        // Attach your listener interface
+
         if (context instanceof OnEventClickListener) {
             eventClickListener = (OnEventClickListener) context;
         } else {
-            // If you want to enforce the implementation of the interface, you can throw an exception
-            // However, make sure your MainActivity implements OnEventClickListener interface
-            // Otherwise, just log a warning
+
             Log.w("AllEventsFragment", "Parent context does not implement OnEventClickListener");
         }
     }
@@ -106,7 +104,7 @@ public class AllEventsFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        // Detach the listener to avoid memory leaks
+
         eventClickListener = null;
     }
 
@@ -116,7 +114,7 @@ public class AllEventsFragment extends Fragment {
      */
     public void onResume() {
         super.onResume();
-        // Update the app bar title when navigating back to the AllEventsFragment
+        // update the app bar title when navigating back to the AllEventsFragment
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).updateAppBarTitle(getString(R.string.all_events_title));
         }
@@ -153,14 +151,14 @@ public class AllEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
 
-                    // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
+
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
+                    args.putSerializable("event", clickedEvent);
                     eventViewAttendeeFragment.setArguments(args);
 
-                    helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
+                    helper.replaceFragment(eventViewAttendeeFragment);
                 }
             }
         });
