@@ -92,7 +92,6 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/primary_blue"
                 android:text="@string/save"
-                android:backgroundTint="@color/background_blue"
                 android:fontFamily="monospace"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
