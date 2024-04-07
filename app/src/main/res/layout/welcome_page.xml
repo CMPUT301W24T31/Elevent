@@ -39,8 +39,8 @@
 
     <Button
         android:id="@+id/existing_error"
-        android:layout_width="268dp"
-        android:layout_height="41dp"
+        android:layout_width="270dp"
+        android:layout_height="51dp"
         android:layout_marginBottom="68dp"
         android:backgroundTint="#001F3F"
         android:fontFamily="@font/jetbrainsmono_bold"

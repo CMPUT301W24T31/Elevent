@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#001F3F">
+
+    <TextView
+        android:id="@+id/UserIDTitle"
+        android:layout_width="182dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="272dp"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="USER ID: "
+        android:textColor="#FAF9F9"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/typeUserID"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.122"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <EditText
+        android:id="@+id/typeUserID"
+        android:layout_width="318dp"
+        android:layout_height="79dp"
+        android:layout_marginBottom="384dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="Insert here"
+        android:padding="18sp"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.373"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/nextToMain"
+        android:layout_width="76dp"
+        android:layout_height="64dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.851"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.893"
+        app:srcCompat="@android:drawable/ic_media_play" />
+</androidx.constraintlayout.widget.ConstraintLayout>

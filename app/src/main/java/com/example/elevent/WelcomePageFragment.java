@@ -19,6 +19,7 @@ public class WelcomePageFragment extends Fragment {
     public interface OnCreateProfileListener {
         void onCreateProfile();
         void onSkipStart();
+        void onUserIDLogin();
     }
 
     private OnCreateProfileListener mListener;
@@ -51,6 +52,14 @@ public class WelcomePageFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mListener.onCreateProfile();
+            }
+        });
+
+        Button UserIDLoginButton = view.findViewById(R.id.existing_error); // ID for create profile button
+        UserIDLoginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onUserIDLogin();
             }
         });
 

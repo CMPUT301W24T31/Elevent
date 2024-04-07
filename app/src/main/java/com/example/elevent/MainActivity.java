@@ -64,6 +64,12 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         fragmentManagerHelper.replaceFragment(new AllEventsFragment());
     }
 
+    @Override
+    public void onUserIDLogin() {
+
+        fragmentManagerHelper.replaceFragment(new UserIDLoginFragment());
+    }
+
     /**
      * Called when the activity is starting
      * Initializes the tool bar
