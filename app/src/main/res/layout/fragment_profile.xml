@@ -63,6 +63,13 @@
                 android:textColor="@color/background_blue"
                 android:textSize="20sp" />
 
+            <TextView
+                android:id="@+id/admin_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Are you an admin?"
+                android:textColor="@color/white"/>
+
         </LinearLayout>
     </ScrollView>
 
