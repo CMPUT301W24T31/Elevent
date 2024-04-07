@@ -84,22 +84,35 @@ public class AddNotificationDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_addnotif, null);
         EditText writeNotif = view.findViewById(R.id.notification_text);
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        return builder
-                .setView(view)
-                .setTitle("Create Notification")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Send", (dialog, which) -> {
-                    notificationText = writeNotif.getText().toString();
-                    if (!notificationText.isEmpty()) {
-                        // Check permission again before sending notification
-                        requestNotificationPermission();
-                    } else {
-                        Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .create();
+
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            return builder
+                    .setView(view)
+                    .setTitle("Create Notification")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Send", (dialog, which) -> {
+                        notificationText = writeNotif.getText().toString();
+                        if (!notificationText.isEmpty()) {
+                            requestNotificationPermission();
+                        } else {
+                            Toast.makeText(getContext(), "Notification text is empty", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .create();
+        } catch (Exception e) {
+            // If an error occurs, replace the fragment with the error fragment
+            showErrorFragment();
+            return new Dialog(requireContext()); // Return an empty dialog to prevent further execution
+        }
     }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
+    }
+
 
     private void requestNotificationPermission(){
         requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);

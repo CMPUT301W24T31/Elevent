@@ -1,37 +1,29 @@
 package com.example.elevent;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
     Outstanding issues: n/a
@@ -133,6 +125,8 @@ public class AllEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        try{
+
         Spinner filterStatus = view.findViewById(R.id.event_filter_spinner);
 
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
@@ -212,6 +206,15 @@ public class AllEventsFragment extends Fragment {
             }
         });
         fetchEvents();*/
+       } catch (Exception e) {
+        showErrorFragment();
+    }
+}
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     /**
@@ -252,10 +255,16 @@ public class AllEventsFragment extends Fragment {
                     }
                 }
             });
+        } else {
+            showErrorFragment();
         }
     }
 
     private void displaySignedUpEvents(){
+        if (signedUpEvents == null) {
+            showErrorFragment();
+            return;
+        }
         EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
         FirebaseFirestore db = connector.getDb();
 

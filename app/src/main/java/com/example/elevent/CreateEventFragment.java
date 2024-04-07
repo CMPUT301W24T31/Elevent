@@ -34,7 +34,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.UUID;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
     to allow an organizer to input event information and create the event.
@@ -125,132 +124,142 @@ public class CreateEventFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_createevent, container, false);
-        EditText eventName = view.findViewById(R.id.event_name_input);
-        EditText eventAddress = view.findViewById(R.id.event_location_input);
-        EditText eventTime = view.findViewById(R.id.event_time_input);
-        EditText eventDate = view.findViewById(R.id.event_date_input);
-        EditText eventDescription = view.findViewById(R.id.event_description_input);
-        Button addEventImage = view.findViewById(R.id.eventPoster_create);
-        ImageView eventPosterView = view.findViewById(R.id.create_event_image_view);
-        TextView editEventPoster = view.findViewById(R.id.change_event_poster_text);
-        TextView deleteEventPoster = view.findViewById(R.id.remove_event_poster_text);
-        EditText eventMaxAttendees = view.findViewById(R.id.event_max_attendees_input);
 
-        eventMaxAttendees.setInputType(InputType.TYPE_CLASS_NUMBER);
+        try {
+            EditText eventName = view.findViewById(R.id.event_name_input);
+            EditText eventAddress = view.findViewById(R.id.event_location_input);
+            EditText eventTime = view.findViewById(R.id.event_time_input);
+            EditText eventDate = view.findViewById(R.id.event_date_input);
+            EditText eventDescription = view.findViewById(R.id.event_description_input);
+            Button addEventImage = view.findViewById(R.id.eventPoster_create);
+            ImageView eventPosterView = view.findViewById(R.id.create_event_image_view);
+            TextView editEventPoster = view.findViewById(R.id.change_event_poster_text);
+            TextView deleteEventPoster = view.findViewById(R.id.remove_event_poster_text);
+            EditText eventMaxAttendees = view.findViewById(R.id.event_max_attendees_input);
 
-        eventPosterView.setVisibility(View.INVISIBLE);
-        editEventPoster.setVisibility(View.INVISIBLE);
-        deleteEventPoster.setVisibility(View.INVISIBLE);
+            eventMaxAttendees.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-        eventDate.setInputType(InputType.TYPE_NULL);
-        eventTime.setInputType(InputType.TYPE_NULL);
-        getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                // OpenAI, 2024, ChatGPT, Convert to byte array
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    eventPosterByteArray = byteArrayOutputStream.toByteArray();
-                    eventPosterView.setImageBitmap(bitmap);
-                    eventPosterView.setVisibility(View.VISIBLE);
-                    addEventImage.setVisibility(View.INVISIBLE);
-                    editEventPoster.setVisibility(View.VISIBLE);
-                    deleteEventPoster.setVisibility(View.VISIBLE);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+            eventPosterView.setVisibility(View.INVISIBLE);
+            editEventPoster.setVisibility(View.INVISIBLE);
+            deleteEventPoster.setVisibility(View.INVISIBLE);
+
+            eventDate.setInputType(InputType.TYPE_NULL);
+            eventTime.setInputType(InputType.TYPE_NULL);
+            getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    // OpenAI, 2024, ChatGPT, Convert to byte array
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                        eventPosterByteArray = byteArrayOutputStream.toByteArray();
+                        eventPosterView.setImageBitmap(bitmap);
+                        eventPosterView.setVisibility(View.VISIBLE);
+                        addEventImage.setVisibility(View.INVISIBLE);
+                        editEventPoster.setVisibility(View.VISIBLE);
+                        deleteEventPoster.setVisibility(View.VISIBLE);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
-        });
-        
-        addEventImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-            }
-        });
+            });
 
-        editEventPoster.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-            }
-        });
-        deleteEventPoster.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventPosterByteArray = null;
-                eventPosterView.setVisibility(View.INVISIBLE);
-                deleteEventPoster.setVisibility(View.INVISIBLE);
-                editEventPoster.setVisibility(View.INVISIBLE);
-                addEventImage.setVisibility(View.VISIBLE);
-            }
-        });
-
-        eventDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDateDialog(eventDate);
-            }
-        });
-
-        eventTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimeDialog(eventTime);
-            }
-        });
-
-        Button createEventButton = view.findViewById(R.id.create_the_event);
-        createEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                String organizerID = sharedPreferences.getString("userID", null);
-                String name = eventName.getText().toString();
-                if (name.isEmpty()) {
-                    Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
-                    return; // Add return to exit early if validation fails
+            addEventImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
                 }
+            });
 
-                int maxAttendees = 0; // required minimum
-                try {
-                    maxAttendees = Integer.parseInt(eventMaxAttendees.getText().toString());
-                } catch (NumberFormatException e) {
-                    Toast.makeText(getActivity(), "Please enter a valid number for maximum attendees", Toast.LENGTH_SHORT).show();
-                    return;
+            editEventPoster.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
                 }
-
-                String eventID = String.valueOf(System.currentTimeMillis());
-                Blob eventPoster = null;
-                if (eventPosterByteArray != null){
-                    eventPoster = Blob.fromBytes(eventPosterByteArray);
+            });
+            deleteEventPoster.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    eventPosterByteArray = null;
+                    eventPosterView.setVisibility(View.INVISIBLE);
+                    deleteEventPoster.setVisibility(View.INVISIBLE);
+                    editEventPoster.setVisibility(View.INVISIBLE);
+                    addEventImage.setVisibility(View.VISIBLE);
                 }
-                // Arguments for event constructor to be passed into addEvent
-                byte[] promotionalQR = generateQRCode("Promotion," + eventID);
-                byte[] checkInQR = generateQRCode("Check In," + eventID);
-                String event_date = eventDate.getText().toString();
-                String event_time = eventTime.getText().toString();
-                String event_desc = eventDescription.getText().toString();
-                String event_location = eventAddress.getText().toString();
+            });
 
-                Event event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                        event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
-                // Call createEvent method to add the event and handle navigation
-                createEvent(event);
+            eventDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDateDialog(eventDate);
+                }
+            });
+
+            eventTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showTimeDialog(eventTime);
+                }
+            });
+
+            Button createEventButton = view.findViewById(R.id.create_the_event);
+            createEventButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                    String organizerID = sharedPreferences.getString("userID", null);
+                    String name = eventName.getText().toString();
+                    if (name.isEmpty()) {
+                        Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
+                        return; // Add return to exit early if validation fails
+                    }
+
+                    int maxAttendees = 0; // required minimum
+                    try {
+                        maxAttendees = Integer.parseInt(eventMaxAttendees.getText().toString());
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(getActivity(), "Please enter a valid number for maximum attendees", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String eventID = String.valueOf(System.currentTimeMillis());
+                    Blob eventPoster = null;
+                    if (eventPosterByteArray != null) {
+                        eventPoster = Blob.fromBytes(eventPosterByteArray);
+                    }
+                    // Arguments for event constructor to be passed into addEvent
+                    byte[] promotionalQR = generateQRCode("Promotion," + eventID);
+                    byte[] checkInQR = generateQRCode("Check In," + eventID);
+                    String event_date = eventDate.getText().toString();
+                    String event_time = eventTime.getText().toString();
+                    String event_desc = eventDescription.getText().toString();
+                    String event_location = eventAddress.getText().toString();
+
+                    Event event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
+                            event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
+                    // Call createEvent method to add the event and handle navigation
+                    createEvent(event);
 
 
-                // Pass the event object to CreatedEventFragment
-                CreatedEventFragment createdEventFragment = new CreatedEventFragment();
-                Bundle args = new Bundle();
-                args.putSerializable("selected_event", event); // Assuming "event" is your Event object
-                createdEventFragment.setArguments(args);
+                    // Pass the event object to CreatedEventFragment
+                    CreatedEventFragment createdEventFragment = new CreatedEventFragment();
+                    Bundle args = new Bundle();
+                    args.putSerializable("selected_event", event); // Assuming "event" is your Event object
+                    createdEventFragment.setArguments(args);
 
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            showErrorFragment();
+        }
         return view;
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     private void showDateDialog(final EditText eventDate) {

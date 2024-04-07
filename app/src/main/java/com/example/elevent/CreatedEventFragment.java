@@ -185,6 +185,8 @@ public class CreatedEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        try{
         EditText eventNameText = view.findViewById(R.id.event_name_text);
         EditText eventLocationText = view.findViewById(R.id.event_location_text);
         EditText eventTimeText = view.findViewById(R.id.event_time_text);
@@ -332,6 +334,15 @@ public class CreatedEventFragment extends Fragment {
                 }
             }
         });
+     } catch (Exception e) {
+        showErrorFragment();
+    }
+}
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()

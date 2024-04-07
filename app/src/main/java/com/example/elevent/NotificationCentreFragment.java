@@ -68,12 +68,22 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        try{
         Button addNotification = view.findViewById(R.id.add_notif_button);
         if (addNotification != null) {
             addNotification.setOnClickListener(v -> {
                 showAddNotificationDialog();
             });
         }
+        } catch (Exception e) {
+            showErrorFragment();
+        }
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     private void showAddNotificationDialog() {

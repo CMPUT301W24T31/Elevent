@@ -7,6 +7,11 @@
     tools:context=".MyEventsFragment"
     android:id="@+id/my_events_frame_layout">
 
+    <FrameLayout
+        android:id="@+id/myevents_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <ListView
         android:id="@+id/my_events_list"
         android:layout_width="match_parent"

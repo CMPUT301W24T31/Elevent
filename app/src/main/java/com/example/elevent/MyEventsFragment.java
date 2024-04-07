@@ -108,6 +108,8 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        try{
         FloatingActionButton createEventButton = view.findViewById(R.id.create_my_event_button);
         createEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +162,15 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
             }
         });
         fetchEvents();
+        } catch (Exception e) {
+            showErrorFragment();
+        }
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     /**

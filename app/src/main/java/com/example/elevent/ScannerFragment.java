@@ -1,46 +1,25 @@
 package com.example.elevent;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.zxing.client.android.Intents;
-import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CaptureActivity;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
-import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.journeyapps.barcodescanner.camera.CameraSettings;
 
-import org.checkerframework.checker.units.qual.C;
-
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 /*
@@ -106,6 +85,14 @@ public class ScannerFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_scanner, container, false);
+    }
+
+    private void handleException(Exception e) {
+        Log.e("ScannerFragment", "Exception occurred: " + e.getMessage());
+        // Replace current fragment with error fragment
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     /**

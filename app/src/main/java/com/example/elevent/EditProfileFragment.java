@@ -1,15 +1,10 @@
 package com.example.elevent;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,17 +19,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class EditProfileFragment extends Fragment {
     private User user;
@@ -82,59 +70,69 @@ public class EditProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Load existing user data
-        EditText editProfileName = view.findViewById(R.id.edit_profile_name);
-        EditText editProfileHomepage = view.findViewById(R.id.edit_profile_homepage);
-        EditText editProfileContact = view.findViewById(R.id.edit_profile_contact);
-        ImageView editProfileImage = view.findViewById(R.id.edit_profile_image);
-        TextView editProfileImageText = view.findViewById(R.id.edit_profile_photo_text);
-        TextView deleteProfileImageText = view.findViewById(R.id.delete_profile_photo_text);
-        getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                    if (uri != null) {
-                        // OpenAI, 2024, ChatGPT, Convert to byte array
-                        try {
-                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
-                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                            byte[] profilePhotoByteArray = byteArrayOutputStream.toByteArray();
-                            user.setProfilePic(Blob.fromBytes(profilePhotoByteArray));
-                            editProfileImage.setImageBitmap(bitmap);
-                            deleteProfileImageText.setVisibility(View.VISIBLE);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+        try {
+
+            // Load existing user data
+            EditText editProfileName = view.findViewById(R.id.edit_profile_name);
+            EditText editProfileHomepage = view.findViewById(R.id.edit_profile_homepage);
+            EditText editProfileContact = view.findViewById(R.id.edit_profile_contact);
+            ImageView editProfileImage = view.findViewById(R.id.edit_profile_image);
+            TextView editProfileImageText = view.findViewById(R.id.edit_profile_photo_text);
+            TextView deleteProfileImageText = view.findViewById(R.id.delete_profile_photo_text);
+            getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    // OpenAI, 2024, ChatGPT, Convert to byte array
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                        byte[] profilePhotoByteArray = byteArrayOutputStream.toByteArray();
+                        user.setProfilePic(Blob.fromBytes(profilePhotoByteArray));
+                        editProfileImage.setImageBitmap(bitmap);
+                        deleteProfileImageText.setVisibility(View.VISIBLE);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                });
-        editProfileImageText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
-            }
-        });
-        deleteProfileImageText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                user.setProfilePic(null);
-                editProfileImage.setImageResource(R.drawable.default_profile_pic);
-                deleteProfileImageText.setVisibility(View.INVISIBLE);
-            }
-        });
-        view.findViewById(R.id.save_edited_profile_button).setOnClickListener(v -> {
+                }
+            });
+            editProfileImageText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES);
+                }
+            });
+            deleteProfileImageText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    user.setProfilePic(null);
+                    editProfileImage.setImageResource(R.drawable.default_profile_pic);
+                    deleteProfileImageText.setVisibility(View.INVISIBLE);
+                }
+            });
+            view.findViewById(R.id.save_edited_profile_button).setOnClickListener(v -> {
 
-            user.setName(editProfileName.getText().toString());
-            user.setHomePage(editProfileHomepage.getText().toString());
-            user.setContact(editProfileContact.getText().toString());
+                user.setName(editProfileName.getText().toString());
+                user.setHomePage(editProfileHomepage.getText().toString());
+                user.setContact(editProfileContact.getText().toString());
 
-            UserDB userDB = new UserDB();
-            userDB.updateUser(user);
-
-            try {
+                UserDB userDB = new UserDB();
                 userDB.updateUser(user);
-                Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
-            } catch (Exception e){
-                Toast.makeText(requireContext(), "Profile could not be updated", Toast.LENGTH_SHORT).show();
-            }
-        });
+                try {
+                    userDB.updateUser(user);
+                    Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), "Profile could not be updated", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            showErrorFragment();
+        }
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     // get the userID from preferences

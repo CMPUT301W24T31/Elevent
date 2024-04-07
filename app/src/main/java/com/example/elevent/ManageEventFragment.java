@@ -108,6 +108,8 @@ public class ManageEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        try{
         Spinner filterStatus = view.findViewById(R.id.attendee_spinner);
 
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
@@ -171,6 +173,15 @@ public class ManageEventFragment extends Fragment {
         });
 
         fetchSignedUpAttendees();
+        } catch (Exception e) {
+            showErrorFragment();
+        }
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
         // You can also set data to your TextView and ListView

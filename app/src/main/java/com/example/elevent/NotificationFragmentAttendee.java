@@ -1,12 +1,13 @@
 package com.example.elevent;
 
-import androidx.fragment.app.Fragment;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 /*
     This file contains the implementation for the NotificationFragmentAttendee that displays the UI for the attendee's view
     of notifications

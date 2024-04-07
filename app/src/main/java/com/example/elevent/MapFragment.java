@@ -1,14 +1,13 @@
 package com.example.elevent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,7 +17,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MapFragment extends Fragment {
     private Event event;
@@ -54,6 +52,7 @@ public class MapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        try{
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (getArguments() != null){
@@ -62,6 +61,15 @@ public class MapFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        } catch (Exception e) {
+            showErrorFragment();
+        }
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
     }
 
     public void createMarkers(GoogleMap googleMap) {

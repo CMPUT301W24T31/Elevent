@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +12,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import com.google.firebase.firestore.Blob;
+
 import java.util.List;
-import java.util.Map;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
     Outstanding issues: figure out attributes of event, such as QR code and notifications
@@ -69,102 +65,81 @@ public class EventViewAttendee extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Initialize UI components
-        TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
-        ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
-        TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
-        TextView eventAttendanceTextView = view.findViewById(R.id.event_attendance_textview);
-        // Extracting event details from arguments
-        assert getArguments() != null;
-        Event event = (Event) getArguments().getSerializable("event");
-        Button signUpButton = view.findViewById(R.id.sign_up_event_button);
 
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        String userID = sharedPreferences.getString("userID", null);
-        if(event!=null){
-            List<String> signedUp = event.getSignedUpAttendees();
-            if (signedUp.contains(userID)){
-                String signedUpText = "Signed up!";
-                signUpButton.setText(signedUpText);
-            } else{
-                signUpButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
-                        Bundle args = new Bundle();
-                        args.putSerializable("event", event);
-                        args.putString("userID", userID);
-                        eventSignUpDialogFragment.setArguments(args);
-                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
-                        String signedUpText = "Signing up...";
-                        signUpButton.setText(signedUpText);
+        try {
+            // Initialize UI components
+            TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
+            ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
+            TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
+            TextView eventAttendanceTextView = view.findViewById(R.id.event_attendance_textview);
+            Button signUpButton = view.findViewById(R.id.sign_up_event_button);
+
+            SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            String userID = sharedPreferences.getString("userID", null);
+
+            Bundle args = getArguments();
+            if (args != null) {
+                Event event = (Event) args.getSerializable("event");
+                if (event != null) {
+                    eventDescriptionTextView.setText(event.getDescription());
+
+                    if (event.getEventPoster() != null) {
+                        Blob eventPosterBlob = event.getEventPoster();
+                        Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
+                        eventPosterImageView.setImageBitmap(eventPoster);
                     }
-                });
-            }
-        }
 
-        if (event != null) {
-            eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
-            eventDescriptionTextView.setText(event.getDescription()); //after description is implemented
-            if (event.getEventPoster() != null){
-                Blob eventPosterBlob = event.getEventPoster();
-                Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
-                eventPosterImageView.setImageBitmap(eventPoster);
-            }
-            if (getActivity() instanceof MainActivity) {
-                ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
-            }
+                    if (getActivity() instanceof MainActivity) {
+                        ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
+                    }
 
-            // display attendance information
-            int currentAttendees = event.getSignedUpAttendees().size();
-            int maxAttendees = event.getMaxAttendance();
-            eventAttendanceTextView.setText(String.format("Attendees: %d%d", currentAttendees, maxAttendees));
+                    int currentAttendees = event.getSignedUpAttendees().size();
+                    int maxAttendees = event.getMaxAttendance();
+                    eventAttendanceTextView.setText(String.format("Attendees: %d/%d", currentAttendees, maxAttendees));
 
-            // adjust sign up button based on attendance
-            List<String> signedUp = event.getSignedUpAttendees();
+                    List<String> signedUp = event.getSignedUpAttendees();
 
-            if (signedUp.contains(userID)) {
-                signUpButton.setText("Already Signed Up");
-                signUpButton.setEnabled(false);
-                signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-            } else {
-                if (currentAttendees >= maxAttendees) {
-                    signUpButton.setText("Event Full");
-                    signUpButton.setEnabled(false);
-                    signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-                } else {
-                    signUpButton.setText("Sign Up");
-                    signUpButton.setEnabled(true);
-                    signUpButton.setOnClickListener(v -> {
-                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
-                        Bundle args = new Bundle();
-                        args.putSerializable("Event", event);
-                        args.putString("userID", userID);
-                        eventSignUpDialogFragment.setArguments(args);
-                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                    if (signedUp.contains(userID)) {
+                        signUpButton.setText("Already Signed Up");
+                        signUpButton.setEnabled(false);
+                        signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                    } else {
+                        if (currentAttendees >= maxAttendees) {
+                            signUpButton.setText("Event Full");
+                            signUpButton.setEnabled(false);
+                            signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                        } else {
+                            signUpButton.setText("Sign Up");
+                            signUpButton.setEnabled(true);
+                            signUpButton.setOnClickListener(v -> {
+                                EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                                Bundle signUpArgs = new Bundle();
+                                signUpArgs.putSerializable("event", event);
+                                signUpArgs.putString("userID", userID);
+                                eventSignUpDialogFragment.setArguments(signUpArgs);
+                                eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                                signUpButton.setText("Signed Up");
+                            });
+                        }
+                    }
+
+                    mostRecentNotificationTextView.setOnClickListener(v -> {
+                        // Navigate to NotificationFragment
+                        requireActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.activity_main_framelayout, new NotificationFragmentAttendee())
+                                .addToBackStack(null)
+                                .commit();
                     });
                 }
             }
-        }
-
-
-        // Set event data (placeholders for now)
-        //eventDescriptionTextView.setText("Event Description Here"); // Placeholder for event.getDescription()
-        //eventPosterImageView.setImageBitmap(eventModel.getPosterImage()); // Placeholder for event.getPosterImage()
-        mostRecentNotificationTextView.setText("Most Recent Notification Here"); // Placeholder for getLastNotification()
-
-        // On clicking the most recent notification, navigate to NotificationFragment
-
-        mostRecentNotificationTextView.setOnClickListener(v -> {
-            // Navigate to NotificationFragment
+        } catch(Exception e){
+            // If an error occurs, replace the fragment with the error fragment
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.activity_main_framelayout, new NotificationFragmentAttendee())
-                    .addToBackStack(null)
+                    .replace(R.id.activity_main_framelayout, new ErrorFragment())
                     .commit();
-        });
-
-
+        }
     }
+
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
