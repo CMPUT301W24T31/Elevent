@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
@@ -118,22 +119,24 @@ public class EventViewAttendee extends Fragment {
             // display attendance information
             int currentAttendees = event.getSignedUpAttendees().size();
             int maxAttendees = event.getMaxAttendance();
-            eventAttendanceTextView.setText(String.format("Attendees: %d%d", currentAttendees, maxAttendees));
+            int spotsRemaining = maxAttendees - currentAttendees;
+
+            eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
 
             // adjust sign up button based on attendance
             List<String> signedUp = event.getSignedUpAttendees();
 
             if (signedUp.contains(userID)) {
-                signUpButton.setText("Already Signed Up");
+                signUpButton.setText(R.string.already_signed_up);
                 signUpButton.setEnabled(false);
                 signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
             } else {
                 if (currentAttendees >= maxAttendees) {
-                    signUpButton.setText("Event Full");
+                    signUpButton.setText(R.string.event_full);
                     signUpButton.setEnabled(false);
                     signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
                 } else {
-                    signUpButton.setText("Sign Up");
+                    signUpButton.setText(R.string.sign_up_for_event);
                     signUpButton.setEnabled(true);
                     signUpButton.setOnClickListener(v -> {
                         EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();

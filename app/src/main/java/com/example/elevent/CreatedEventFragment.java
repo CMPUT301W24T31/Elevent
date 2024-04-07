@@ -154,9 +154,12 @@ public class CreatedEventFragment extends Fragment {
             eventTime.setText(selectedEvent.getTime());
             eventDate.setText(selectedEvent.getDate());
             eventDescription.setText(selectedEvent.getDescription());
+
             int currentAttendees = selectedEvent.getSignedUpAttendees().size();
             int maxAttendees = selectedEvent.getMaxAttendance();
-            eventAttendanceInfo.setText(String.format("%d/%d Attendees", currentAttendees, maxAttendees));
+            int spotsRemaining = maxAttendees - currentAttendees;
+            String attendanceText = getResources().getString(R.string.spots_remaining, spotsRemaining);
+            eventAttendanceInfo.setText(attendanceText);
 
             Blob checkinQRBlob = selectedEvent.getCheckinQR();
             if (checkinQRBlob != null) {
