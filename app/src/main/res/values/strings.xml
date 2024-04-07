@@ -71,5 +71,8 @@
     <string name="max_attendees">max attendees</string>
     <string name="namee">name</string>
     <string name="oops">Oops, \npage not found :(</string>
+    <string name="spots_open">0 spots open</string>
+    <string name="sign_up">sign up</string>
+    <string name="spots_remaining">0 spots remaining</string>
 
 </resources>

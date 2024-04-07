@@ -98,7 +98,7 @@
                 android:id="@+id/eventPoster_image"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@id/event_location_text"
+                android:layout_below="@id/event_attendance_info"
                 android:text="@string/add_image"
                 android:backgroundTint="@color/item_blue"
                 android:fontFamily="monospace"
@@ -113,7 +113,7 @@
                 android:id="@+id/created_event_image_view_clickable"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
-                android:layout_below="@+id/event_location_text"
+                android:layout_below="@+id/event_attendance_info"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="80dp"
                 android:layout_marginTop="24dp" />
@@ -241,10 +241,16 @@
                 android:id="@+id/event_attendance_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textSize="16sp"
-                android:gravity="center_horizontal"
-                android:text="0/0 Attendees" />
+                android:layout_below="@id/event_location_text"
+                android:text="@string/spots_remaining"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_corner"
+                android:theme="@style/FontTheme"
+                />
+
 
         </RelativeLayout>
     </ScrollView>
