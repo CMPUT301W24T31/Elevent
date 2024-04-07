@@ -28,44 +28,40 @@
                 android:id="@+id/profile_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_corner"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="30dp"
                 android:hint="@string/name"
-                android:textColorHint="@color/primary_blue" />
+                android:theme="@style/FontTheme"
+                android:textColorHint="@color/text_white"/>
 
             <TextView
                 android:id="@+id/profile_homepage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rounded_corner"
+                android:layout_height="35dp"
                 android:layout_marginTop="8dp"
                 android:hint="@string/home_page"
-                android:textColorHint="@color/primary_blue" />
+                android:textColorHint="@color/text_white"
+                android:theme="@style/FontTheme" />
 
             <TextView
                 android:id="@+id/profile_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_corner"
                 android:layout_marginTop="8dp"
                 android:hint="@string/contact"
-                android:textColorHint="@color/primary_blue" />
+                android:theme="@style/FontTheme"
+                android:textColorHint="@color/text_white" />
 
             <Button
                 android:id="@+id/edit_profile_button"
-                android:layout_width="138dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/primary_blue"
-                android:text="@string/edit_profile" />
-
-            <TextView
-                android:id="@+id/admin_navigation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:text="Are you an admin?" />
+                android:backgroundTint="@color/item_blue"
+                android:fontFamily="monospace"
+                android:text="@string/edit_profile"
+                android:textColor="@color/background_blue"
+                android:textSize="20sp" />
 
         </LinearLayout>
     </ScrollView>

@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_blue"
+    android:background="@color/item_grey"
     tools:context=".EditProfileFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background_blue">
+        android:background="@color/item_grey">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -57,9 +57,10 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_corner"
                 android:hint="@string/name"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:layout_below="@id/edit_profile_photo_text" />
+                android:fontFamily="monospace"
+                android:textColor="@color/background_blue"
+                android:inputType="textPersonName"
+                android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/edit_profile_homepage"
@@ -68,9 +69,10 @@
                 android:background="@drawable/rounded_corner"
                 android:layout_marginTop="8dp"
                 android:hint="@string/home_page"
-                android:inputType="text"
-                android:minHeight="48dp"
-                android:layout_below="@id/edit_profile_name"/>
+                android:fontFamily="monospace"
+                android:textColor="@color/background_blue"
+                android:inputType="textWebEmailAddress"
+                android:minHeight="48dp" />
 
             <EditText
                 android:id="@+id/edit_profile_contact"
@@ -79,9 +81,10 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_corner"
                 android:hint="@string/contact"
-                android:inputType="textEmailAddress"
-                android:minHeight="48dp"
-                android:layout_below="@+id/edit_profile_homepage"/>
+                android:fontFamily="monospace"
+                android:textColor="@color/background_blue"
+                android:inputType="text"
+                android:minHeight="48dp" />
 
             <Button
                 android:id="@+id/save_edited_profile_button"
@@ -89,6 +92,8 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/primary_blue"
                 android:text="@string/save"
+                android:backgroundTint="@color/background_blue"
+                android:fontFamily="monospace"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="16dp"
                 android:layout_below="@+id/edit_profile_contact"
