@@ -28,33 +28,44 @@
                 android:id="@+id/profile_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corner"
                 android:layout_marginTop="16dp"
                 android:hint="@string/name"
-                android:textColorHint="#1E88E5" />
+                android:textColorHint="@color/primary_blue" />
 
             <TextView
                 android:id="@+id/profile_homepage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corner"
                 android:layout_marginTop="8dp"
                 android:hint="@string/home_page"
-                android:textColorHint="#1E88E5" />
+                android:textColorHint="@color/primary_blue" />
 
             <TextView
                 android:id="@+id/profile_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corner"
                 android:layout_marginTop="8dp"
                 android:hint="@string/contact"
-                android:textColorHint="#1E88E5" />
+                android:textColorHint="@color/primary_blue" />
 
             <Button
                 android:id="@+id/edit_profile_button"
-                android:layout_width="wrap_content"
+                android:layout_width="138dp"
                 android:layout_height="wrap_content"
-                android:text="@string/edit_profile"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/primary_blue"
+                android:text="@string/edit_profile" />
+
+            <TextView
+                android:id="@+id/admin_navigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:text="Are you an admin?" />
 
         </LinearLayout>
     </ScrollView>

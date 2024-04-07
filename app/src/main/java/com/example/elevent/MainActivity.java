@@ -16,15 +16,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.preference.PreferenceManager;
 
-import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 /*
@@ -52,12 +49,7 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
     private static final String PREF_NAME = "MyPrefs";
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
-    private List<String> adminUserIds = Arrays.asList(
-            "c297401a-6d7a-4f09-823d-626234226e16",
-            "4f553d28-6261-49e3-8b15-186a89d01faf",
-            "a51328ca-5ee3-4903-990b-01ef1ed2eb3e"
-//            ,"45753e1e-bf94-4bd6-9dd6-cfd83fc34037"
-    );
+
 
     /**
      * Called when the activity is starting
@@ -91,19 +83,9 @@ public class MainActivity extends AppCompatActivity implements AllEventsFragment
         setSupportActionBar(toolbar);
         fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
         navigationView = findViewById(R.id.activity_main_navigation_bar);
-
-        // Check if the user ID belongs to an admin
-        if (adminUserIds.contains(userID)) {
-            // Admin user logic
-            navigationView.setVisibility(View.GONE);
-            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
-        } else {
-            // Regular user logic
-            navigationView.setVisibility(View.VISIBLE);
-            createNotificationChannel();
-            initNavView();
-        }
-
+        navigationView.setVisibility(View.VISIBLE);
+        createNotificationChannel();
+        initNavView();
         handleIntent(getIntent());
     }
 

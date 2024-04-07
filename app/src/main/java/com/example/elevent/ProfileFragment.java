@@ -1,6 +1,8 @@
 package com.example.elevent;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +23,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -39,6 +43,8 @@ import java.util.Objects;
 public class ProfileFragment extends Fragment {
 
     // attributes used in the profile fragment
+    BottomNavigationView navigationView;
+
     private String getUserIdFromPreferences() {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         return sharedPreferences.getString("userID", null);
@@ -72,7 +78,9 @@ public class ProfileFragment extends Fragment {
         TextView profileName = view.findViewById(R.id.profile_name);
         TextView profileHomepage = view.findViewById(R.id.profile_homepage);
         TextView profileContact = view.findViewById(R.id.profile_contact);
+        TextView adminNav = view.findViewById(R.id.admin_navigation);
         ImageView profileImage = view.findViewById(R.id.profile_image);
+
         String userID = getUserIdFromPreferences();
         FirebaseFirestore db = new UserDBConnector().getDb();
         db.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -130,6 +138,46 @@ public class ProfileFragment extends Fragment {
                 }
             });
         });
+        view.findViewById(R.id.admin_navigation).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                alert.setTitle("Admin Key");
+                alert.setMessage("Enter the admin key:");
+
+                // Set an EditText view to get user input
+                final EditText input = new EditText(getActivity());
+                alert.setView(input);
+
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String adminKey = input.getText().toString();
+                        // Check if the adminKey is correct
+                        if(adminKey.equals("abcd1234")) {
+                            MainActivity mainActivity = (MainActivity) getActivity();
+                            if (mainActivity != null) {
+                                // Assuming the BottomNavigationView ID is navigationView in MainActivity
+                                mainActivity.navigationView.setVisibility(View.GONE);
+                                FragmentManagerHelper fragmentManagerHelper = new FragmentManagerHelper(mainActivity.getSupportFragmentManager(), R.id.activity_main_framelayout);
+                                fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
+                                Toast.makeText(mainActivity, "Access granted", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getActivity(), "Invalid admin key", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                });
+
+                alert.show();
+            }
+        });
+
     }
 
 
