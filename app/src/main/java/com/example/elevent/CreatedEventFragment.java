@@ -146,6 +146,7 @@ public class CreatedEventFragment extends Fragment {
 
         ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
         ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
+        TextView eventAttendanceInfo = view.findViewById(R.id.event_attendance_info);
 
         if (selectedEvent != null) {
             eventName.setText(selectedEvent.getEventName());
@@ -153,6 +154,12 @@ public class CreatedEventFragment extends Fragment {
             eventTime.setText(selectedEvent.getTime());
             eventDate.setText(selectedEvent.getDate());
             eventDescription.setText(selectedEvent.getDescription());
+
+            int currentAttendees = selectedEvent.getSignedUpAttendees().size();
+            int maxAttendees = selectedEvent.getMaxAttendance();
+            int spotsRemaining = maxAttendees - currentAttendees;
+            String attendanceText = getResources().getString(R.string.spots_remaining, spotsRemaining);
+            eventAttendanceInfo.setText(attendanceText);
 
             Blob checkinQRBlob = selectedEvent.getCheckinQR();
             if (checkinQRBlob != null) {
