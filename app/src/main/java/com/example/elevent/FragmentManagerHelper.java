@@ -4,7 +4,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 /*
     This file is responsible for taking care of fragment transactions and switching fragments
-    Outstanding issues: n/a
  */
 /**
  * This class is used for fragment management and transactions
@@ -30,13 +29,6 @@ public class FragmentManagerHelper {
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(containerId, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-    public void addFragment(Fragment fragment) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(containerId, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }

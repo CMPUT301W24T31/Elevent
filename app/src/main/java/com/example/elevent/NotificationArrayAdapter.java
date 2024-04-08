@@ -11,21 +11,23 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 /*
-    This file contains the implementation of the AttendeeArrayAdapter that is responsible for displaying attendees
+    This file contains the implementation of the NotificationArrayAdapter, which displays an event's notifications
  */
 /**
- * Displays the list of attendees
+ * Displays an event's notifications
  */
-public class AttendeeArrayAdapter extends ArrayAdapter<User> {
+public class NotificationArrayAdapter extends ArrayAdapter<String> {
+    private final ArrayList<String> notifications;
+
     /**
      * Class constructor
      * @param context Host activity
-     * @param attendees List of attendees
+     * @param notifications List of notifications
      */
-    public AttendeeArrayAdapter(Context context, ArrayList<User> attendees ) {
-        super(context,0, attendees);
+    public NotificationArrayAdapter(Context context, ArrayList<String> notifications){
+        super(context, 0, notifications);
+        this.notifications = notifications;
     }
 
     /**
@@ -39,29 +41,23 @@ public class AttendeeArrayAdapter extends ArrayAdapter<User> {
      *        always of the right type (see {@link #getViewTypeCount()} and
      *        {@link #getItemViewType(int)}).
      * @param parent The parent that this view will eventually be attached to
-     * @return The view that displays the data
+     * @return A View corresponding to the data at the specified position
      */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View view;
-        if (convertView == null){
-            view = LayoutInflater.from(getContext()).inflate(R.layout.attendee_array_adapter_content, parent, false);
-        } else {
+
+        // Inflate the layout if the view is not reused
+        if(convertView == null){
+            view = LayoutInflater.from(getContext()).inflate(R.layout.notification_array_adapter_content, parent, false);
+        } else{
             view = convertView;
         }
-
-        User attendee = getItem(position);
-        TextView attendeeName = view.findViewById(R.id.attendee_array_adapter_attendee_name);
-
-        if (attendee != null) {
-            if (attendee.getName() == null) {
-                attendeeName.setText(attendee.getUserID());
-            } else {
-                attendeeName.setText(attendee.getName());
-            }
-        }
-
+        String notificationText = getItem(position);
+        TextView notificationDisplay = view.findViewById(R.id.notification_array_adapter_notif_text);
+        notificationDisplay.setText(notificationText);
         return view;
     }
+
 }

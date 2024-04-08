@@ -95,6 +95,8 @@ dependencies {
     //Maps SDK
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
+    // Alphabetic profile photos
+    implementation("com.github.amoskorir:avatarimagegenerator:1.4")
 }
 
 secrets {

@@ -1,6 +1,9 @@
 package com.example.elevent.Admin;
 
 import android.graphics.Bitmap;
+/*
+    This file contains the representation of an Image object, associated with an event or a user
+ */
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -48,6 +51,11 @@ public class Image {
         this.homepage = homepage;
         this.documentId = documentId;
     }
+
+    /**
+     * Getter for the bitmap representation of the image
+     * @return Bitmap representation of the image
+     */
     public Bitmap getImage() {
         return image;
     }
@@ -55,20 +63,42 @@ public class Image {
         this.image = image;
     }
 
+    /**
+     * Getter for the name of the event or the user
+     * @return Name of the event or user
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns true if the image belongs to an event, false if it belongs to a user
+     * @return True if event image, false if user image
+     */
     public boolean isEvent() {
         return isEvent;
     }
+
+    /**
+     * Getter for the user's contact info
+     * @return User's contact info
+     */
     public String getContactInfo() {
         return contactInfo;
     }
 
+    /**
+     * Getter for the user's homepage
+     * @return User's homepage
+     */
     public String getHomepage() {
         return homepage;
     }
+
+    /**
+     * Gets the ID of the document to which the image belongs
+     * @return ID of document to which image belongs
+     */
     public String getDocumentId(){
         return documentId;
     }

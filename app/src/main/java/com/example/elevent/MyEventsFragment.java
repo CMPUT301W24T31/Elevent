@@ -23,7 +23,6 @@ import java.util.Objects;
 /*
     This file implements the MyEventsFragment that is responsible for displaying the list of events that the organizer
     has created. As well, is responsible for displaying the UI to allow a user to create an event.
-    Outstanding issues: n/a
  */
 /**
  * This fragment displays the events that an organizer has created
@@ -34,6 +33,11 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
     private ArrayList<Event> myEvents;
     private ListView myEventList;
     private EventArrayAdapter myEventsArrayAdapter;
+
+    /**
+     * Required empty public constructor
+     */
+    public MyEventsFragment(){}
 
     /**
      * Called upon initial creation of the fragment
@@ -131,7 +135,7 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
                 Event selectedEvent = myEvents.get(position);
 
                 // Add a notification to the selected event
-                selectedEvent.addNotification("New notification message");
+                //selectedEvent.addNotification("New notification message");
 
                 // Update the UI to reflect the added notification
                 myEventsArrayAdapter.notifyDataSetChanged();
@@ -147,7 +151,7 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
                 // Pass the selected event to CreatedEventFragment should still parse the data on here
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("selected_event", selectedEvent);
+                bundle.putParcelable("selected_event", selectedEvent);
                 createdEventFragment.setArguments(bundle);
 
                 //switch fragments
@@ -198,6 +202,15 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
 
     // MyEventsFragment.java
 
+    @Override
+    public void onUserIDLogin() {
+
+    }
+
+    /**
+     * Implementation of CreatedEventListener interface
+     * @param updatedEvent Event to be updated
+     */
     public void updateEvent(Event updatedEvent) {
         if (updatedEvent == null || updatedEvent.getEventID() == null) {
             return; // Ensure updatedEvent or its ID is not null

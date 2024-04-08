@@ -19,7 +19,9 @@ import com.example.elevent.User;
 import com.example.elevent.UserDB;
 
 import java.util.ArrayList;
-
+/*
+    This file contains the implementation of the Admin UI for browsing and deleting events
+ */
 /**
  * Fragment responsible for displaying a list of events in the admin view.
  * Allows for long-click actions on each event for deletion purposes.
@@ -29,11 +31,32 @@ public class AdminEventFragment extends Fragment {
     private EventArrayAdapter eventAdapter;
     private ArrayList<Event> events = new ArrayList<>();
 
+
+
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.admin_event_view, container, false);
     }
 
+    /**
+     *
+     Fragment Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

@@ -92,6 +92,21 @@
                 android:hint="@string/location"
                 android:theme="@style/FontTheme" />
 
+            <EditText
+                android:id="@+id/event_max_attendees_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/event_location_text"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="17dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/rounded_corner"
+                android:text=""
+                android:hint="@string/no_max_limit_set"
+                android:inputType="number"
+                android:theme="@style/FontTheme"/>
+
 
 
             <Button
@@ -241,7 +256,7 @@
                 android:id="@+id/event_attendance_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/event_location_text"
+                android:layout_below="@id/event_max_attendees_text"
                 android:text="@string/spots_remaining"
                 android:layout_alignParentRight="true"
                 android:layout_marginStart="20dp"

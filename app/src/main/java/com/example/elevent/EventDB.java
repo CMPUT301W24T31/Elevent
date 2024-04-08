@@ -16,7 +16,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 /*
     This file contains the implementation for the Event Database, which stores event objects in a firebase
-    Outstanding issues: n/a
  */
 
 /**
@@ -35,6 +34,9 @@ public class EventDB {
         this.db = connector.getDb();
     }
 
+    /**
+     * Class constructor without arguments
+     */
     public EventDB() {
         EventDBConnector connector = new EventDBConnector();
         this.db = connector.getDb();
@@ -68,7 +70,7 @@ public class EventDB {
      * Updates the information of an event in the database
      *
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
-     * @return
+     * @return The result of the task
      */
     public Task<Void> updateEvent(Event newEvent) {
         DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());

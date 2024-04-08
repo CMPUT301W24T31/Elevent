@@ -6,33 +6,26 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.Firebase;
-import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Arrays;
-import java.util.Objects;
 /*
     This file contains the implementation for the ProfileFragment that is responsible for displaying the UI
     that allows a user to view their personal profile
@@ -89,18 +82,29 @@ public class ProfileFragment extends Fragment {
                 if (documentSnapshot.exists()){
                     User user = documentSnapshot.toObject(User.class);
                     if (user!=null){
-                        profileName.setText(user.getName());
-                        profileHomepage.setText(user.getHomePage());
-                        profileContact.setText(user.getContact());
-
-                        Blob profilePic = user.getProfilePic();
-                        if (profilePic != null) {
-                            System.out.println("here");
+                        if (user.getName() != null) {
+                            profileName.setText(user.getName());
+                            profileName.setTextColor(Color.parseColor("#FFFFFF"));
+                        } else {
+                            profileName.setVisibility(View.GONE);
+                        }
+                        if (user.getHomePage() != null){
+                            profileHomepage.setText(user.getHomePage());
+                            profileHomepage.setTextColor(Color.parseColor("#FFFFFF"));
+                        } else {
+                            profileHomepage.setVisibility(View.GONE);
+                        }
+                        if (user.getContact() != null) {
+                            profileContact.setText(user.getContact());
+                            profileContact.setTextColor(Color.parseColor("#FFFFFF"));
+                        } else {
+                            profileContact.setVisibility(View.GONE);
+                        }
+                        if (user.getProfilePic() != null) {
                             byte[] profileBA = user.getProfilePic().toBytes();
                             Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
                             profileImage.setImageBitmap(profileBitmap);
-                        } else {
-                            System.out.println("null");
+                        } else{
                             profileImage.setImageResource(R.drawable.default_profile_pic);
                         }
                     }
@@ -113,7 +117,13 @@ public class ProfileFragment extends Fragment {
 
     }
 
-
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * Initializes option to allow user to edit profile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -131,7 +141,7 @@ public class ProfileFragment extends Fragment {
                         FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                         EditProfileFragment editProfileFragment = new EditProfileFragment();
                         Bundle args = new Bundle();
-                        args.putSerializable("user", user);
+                        args.putParcelable("user", user);
                         editProfileFragment.setArguments(args);
                         helper.replaceFragment(editProfileFragment);
                     }

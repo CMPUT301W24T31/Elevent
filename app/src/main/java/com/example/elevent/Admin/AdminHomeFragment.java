@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import com.example.elevent.MainActivity;
 import com.example.elevent.R;
-
+/*
+    This file contains the implementation of the AdminHomeFragment, which displays the admin's home screen
+ */
 /**
  * A Fragment representing the admin home screen with navigation options.
  */
@@ -21,12 +23,30 @@ public class AdminHomeFragment extends Fragment {
         //empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.admin_homepage, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -42,6 +62,9 @@ public class AdminHomeFragment extends Fragment {
         profilesButton.setOnClickListener(v -> navigateTo(new AdminProfilesFragment(), "Remove Profiles"));
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running
+     */
     @Override
     public void onResume() {
         super.onResume();
