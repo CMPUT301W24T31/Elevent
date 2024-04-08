@@ -6,6 +6,21 @@
     android:layout_height="match_parent"
     android:background="#001F3F">
 
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="208dp"
+        android:layout_height="193dp"
+        android:layout_marginTop="52dp"
+        android:backgroundTint="#001F3F"
+        android:backgroundTintMode="src_over"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.747"
+        app:srcCompat="@drawable/userhead" />
+
     <EditText
         android:id="@+id/name"
         android:layout_width="330dp"
@@ -20,77 +35,32 @@
         android:textSize="25dp"
         app:layout_constraintBottom_toTopOf="@+id/contact"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="169dp"
-        android:layout_height="157dp"
-        android:layout_marginTop="52dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/default_profile_pic" />
 
     <EditText
         android:id="@+id/homepage"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:ems="10"
         android:fontFamily="@font/jetbrainsmono_bold"
         android:hint="homepage"
-        android:inputType="phone"
         android:textAlignment="center"
         android:textColor="#F3EFEF"
         android:textSize="25dp"
         app:layout_constraintBottom_toTopOf="@+id/location_question"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.483"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/generated_id_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="256dp"
-        android:fontFamily="@font/jetbrainsmono_bold"
-        android:text="GENERATED ID:"
-        android:textColor="#F6F2F2"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.107"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/contact"
-        android:layout_width="wrap_content"
-        android:layout_height="38dp"
-        android:layout_marginBottom="24dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="#B2C2D2"
-        android:ems="10"
-        android:fontFamily="@font/jetbrainsmono_bold"
-        android:hint="contact info "
-        android:inputType="textEmailAddress"
-        android:textAlignment="center"
-        android:textColor="#FDFDFD"
-        android:textSize="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/homepage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.435"
+        app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/location_question"
         android:layout_width="328dp"
         android:layout_height="72dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="28dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:fontFamily="@font/jetbrainsmono_bold"
@@ -101,7 +71,25 @@
         android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/generated_id_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.415"
+        app:layout_constraintHorizontal_bias="0.461"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/contact"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:ems="10"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="contact info "
+        android:textAlignment="center"
+        android:textColor="#FDFDFD"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/homepage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Switch
@@ -110,10 +98,24 @@
         android:layout_height="35dp"
         app:layout_constraintBottom_toBottomOf="@+id/location_question"
         app:layout_constraintEnd_toEndOf="@+id/location_question"
-        app:layout_constraintHorizontal_bias="0.991"
+        app:layout_constraintHorizontal_bias="0.907"
         app:layout_constraintStart_toStartOf="@+id/location_question"
         app:layout_constraintTop_toTopOf="@+id/location_question"
-        app:layout_constraintVertical_bias="0.352" />
+        app:layout_constraintVertical_bias="0.411" />
+
+    <TextView
+        android:id="@+id/generated_id_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="204dp"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:text="GENERATED ID:"
+        android:textColor="#F6F2F2"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.107"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageButton
         android:id="@+id/imageButton2"

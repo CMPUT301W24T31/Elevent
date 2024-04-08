@@ -82,21 +82,27 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
 
     @Override
     public void onCreateProfile() {
-        // Replace WelcomeFragment with CreateProfileFragment
+
         fragmentManagerHelper.replaceFragment(new CreateProfileFragment());
     }
 
     @Override
     public void onSkipStart() {
-        // This is the existing functionality that skips profile creation
-        showNavigationAndToolbar();
-        fragmentManagerHelper.replaceFragment(new AllEventsFragment());
+        if (userID == null) {
+            createUser();
+        }
+        navigateToMainContent();
     }
-
     @Override
     public void onUserIDLogin() {
 
         fragmentManagerHelper.replaceFragment(new UserIDLoginFragment());
+    }
+
+    public void navigateToMainContent() {
+        showNavigationAndToolbar();
+        initNavView();
+        fragmentManagerHelper.replaceFragment(new AllEventsFragment());
     }
 
     /**
@@ -222,22 +228,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         userID = sharedPreferences.getString(KEY_USER_ID, null);
         boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
 
-        if (userID == null) {
-            createUser();
-        } else {
-            FirebaseFirestore db = new UserDBConnector().getDb();
-            db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        if (!documentSnapshot.exists()) {
-                            createUser();
-                        }
-                    }
-                }
-            });
-        }
+
         if (isFirstRun) {
             setContentView(R.layout.activity_main);
             Toolbar toolbar = findViewById(R.id.toolbar);
@@ -314,6 +305,38 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
 
         User newUser = new User(userID, generatedPFPBlob, true);
+
+        UserDBConnector connector = new UserDBConnector();
+        UserDB userDB = new UserDB(connector);
+        userDB.addUser(newUser);
+    }
+
+    public void createProfile(String name,String contact, String homepage) {
+        userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_USER_ID, userID);
+        editor.apply();
+
+        // TODO: do we make name mandatory to implement this?
+        // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
+        BitmapDrawable generatedPFP = AvatarGenerator.Companion.avatarImage(
+                this,
+                200,
+                AvatarConstants.Companion.getRECTANGLE(),
+                "Elevent"
+        );
+        Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] generatedPFPBA = outputStream.toByteArray();
+        Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+
+        User newUser = new User(userID, generatedPFPBlob, true);
+        newUser.setName(name);
+        newUser.setContact(contact);
+        newUser.setHomePage(homepage);
+
 
         UserDBConnector connector = new UserDBConnector();
         UserDB userDB = new UserDB(connector);

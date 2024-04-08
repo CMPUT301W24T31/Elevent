@@ -65,6 +65,8 @@ public class WelcomePageFragment extends Fragment {
 
         return view;
     }
+
+    /**
     public void navigateToMainContent() {
         if (getActivity() instanceof MainActivity) {
             MainActivity mainActivity = (MainActivity) getActivity();
@@ -76,6 +78,7 @@ public class WelcomePageFragment extends Fragment {
             mainActivity.getFragmentManagerHelper().replaceFragment(new AllEventsFragment());
         }
     }
+     */
 
 
 }

@@ -83,10 +83,11 @@ public class CreateProfileFragment extends Fragment {
                 // After saving the data, you can navigate to the next Fragment or Activity
                 // For example, navigate back to the MainActivity content
                 if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).showNavigationAndToolbar();
-                    ((MainActivity) getActivity()).getFragmentManagerHelper().replaceFragment(new AllEventsFragment()); // Replace with your actual main content fragment
+                    ((MainActivity) getActivity()).createProfile(name,contact,homepage);
+                    ((MainActivity) getActivity()).navigateToMainContent();
                 }
             }
+
         });
 
         // Set the OnClickListener for your image button

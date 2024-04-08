@@ -69,14 +69,15 @@
 
     <ImageView
         android:id="@+id/elevent_logo"
-        android:layout_width="206dp"
-        android:layout_height="208dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="332dp"
+        android:layout_height="240dp"
+        android:layout_marginBottom="32dp"
+        android:backgroundTintMode="src_over"
         app:layout_constraintBottom_toTopOf="@+id/create_profile"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:srcCompat="@drawable/rafiki"
+        tools:srcCompat="@drawable/rafiki" />
 
     <TextView
         android:id="@+id/welcome_to"
