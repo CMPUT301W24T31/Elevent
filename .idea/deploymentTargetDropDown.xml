@@ -15,8 +15,14 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-04-08T23:06:07.604036600Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-04-08T20:24:41.024303300Z" />
         </State>
+      </entry>
+      <entry key="navigateToAdminHomeFragment()">
+        <State />
+      </entry>
+      <entry key="testNavigateToAdminEventFragment()">
+        <State />
       </entry>
     </value>
   </component>

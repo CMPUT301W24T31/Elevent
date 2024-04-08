@@ -74,6 +74,53 @@ public class UserDB extends MainActivity {
     }
 
     // interface for callbacks when reading user data
+    public void readUser(String userID, final OnUserReadListener listener) {
+
+        db.collection("users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        listener.onSuccess(user);
+                    } else {
+                        listener.onFailure(new Exception("User cannot be found"));
+                    }
+                })
+                .addOnFailureListener(listener::onFailure);
+        /* changed UserDB implementation to use userID from MainActivity that
+        is randomly generated, thus below code does not work but is kept for reference
+
+        db.collection("User").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Convert the documentSnapshot to a User object
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            user.setUserID(documentSnapshot.getId()); // Ensure the documentId is set in the User object
+                            listener.onSuccess(user);
+                        } else {
+                            listener.onFailure(new Exception("Failed to parse user data."));
+                        }
+                    } else {
+                        listener.onFailure(new Exception("User not found."));
+                    }
+                })
+                .addOnFailureListener(listener::onFailure);
+         */
+
+        /* Before using userIDs to parse through database and return user info that way
+        db.collection("User").document(userName).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        listener.onSuccess(user);
+                    } else {
+                        listener.onFailure(new Exception("User not found"));
+                    }
+                })
+                .addOnFailureListener(e -> listener.onFailure(e));
+         */
+    }
+
 
     /**
      * Interface for listener for callbacks when reading user data
