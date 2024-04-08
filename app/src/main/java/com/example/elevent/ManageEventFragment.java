@@ -146,7 +146,16 @@ public class ManageEventFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                FirebaseFirestore db = new EventDBConnector().getDb();
+                db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                        fetchCheckedInAttendees();
+                    }
+                });
+            }
         });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         Button mapButton = view.findViewById(R.id.map_button);
