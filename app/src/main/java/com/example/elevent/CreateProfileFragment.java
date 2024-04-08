@@ -14,6 +14,8 @@
     import android.widget.EditText;
     import android.widget.ImageButton;
     import android.widget.Switch;
+    import android.widget.TextView;
+
     import androidx.activity.result.ActivityResultLauncher;
     import androidx.activity.result.contract.ActivityResultContracts;
     import androidx.appcompat.app.AppCompatActivity;
@@ -103,8 +105,8 @@
                         // After saving the data, you can navigate to the next Fragment or Activity
                         // For example, navigate back to the MainActivity content
                     if (getActivity() instanceof MainActivity) {
-                            ((MainActivity) getActivity()).createProfile(name, contact, homepage,imageData);
-                            ((MainActivity) getActivity()).navigateToMainContent();
+                            String userID = ((MainActivity) getActivity()).createProfile(name, contact, homepage,imageData);
+                            ((MainActivity) getActivity()).navigateToMainContent(userID);
                         }
 
                 }

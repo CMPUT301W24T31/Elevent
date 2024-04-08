@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,7 +12,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -33,9 +32,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.avatarfirst.avatargenlib.AvatarConstants;
 import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.example.elevent.Admin.AdminHomeFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.Blob;
@@ -92,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         if (userID == null) {
             createUser();
         }
-        navigateToMainContent();
+        navigateToMainContent(userID);
     }
     @Override
     public void onUserIDLogin() {
@@ -100,11 +97,19 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         fragmentManagerHelper.replaceFragment(new UserIDLoginFragment());
     }
 
-    public void navigateToMainContent() {
+    public void navigateToMainContent(String userID) {
         showNavigationAndToolbar();
         initNavView();
         fragmentManagerHelper.replaceFragment(new AllEventsFragment());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Profile Created Successfully");
+        builder.setMessage("This is your user ID: " + userID);
+        builder.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
+
 
     /**
      * Called when the activity is starting
@@ -312,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         userDB.addUser(newUser);
     }
 
-    public void createProfile(String name, String contact, String homepage, byte[] imageBytes) {
+    public String createProfile(String name, String contact, String homepage, byte[] imageBytes) {
         userID = UUID.randomUUID().toString();
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -343,11 +348,11 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
             Blob pfp = Blob.fromBytes(imageBytes);
              newUser.setProfilePic(pfp);
         }
-
-
         UserDBConnector connector = new UserDBConnector();
         UserDB userDB = new UserDB(connector);
         userDB.addUser(newUser);
+
+        return userID;
     }
 
     /**
