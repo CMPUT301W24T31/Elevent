@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,11 +17,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.preference.PreferenceManager;
 
 import com.avatarfirst.avatargenlib.AvatarConstants;
 import com.avatarfirst.avatargenlib.AvatarGenerator;
-import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -47,7 +44,7 @@ import java.util.UUID;
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, AddNotificationDialogFragment.AddNotificationDialogListener {
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, AddNotificationDialogFragment.AddNotificationDialogListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener {
 
 
     private FragmentManagerHelper fragmentManagerHelper;
@@ -63,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     private static final String PREF_NAME = "MyPrefs";
     private static final String KEY_USER_ID = "userID";
     private static final String CHANNEL_ID = "EleventChannel";
+
     String userID;
     private List<String> adminUserIds = Arrays.asList(
             "c297401a-6d7a-4f09-823d-626234226e16",
@@ -70,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
             "a51328ca-5ee3-4903-990b-01ef1ed2eb3e"
 //            ,"45753e1e-bf94-4bd6-9dd6-cfd83fc34037"
     );
+
 
 
     /**
@@ -91,19 +90,9 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         setSupportActionBar(toolbar);
         fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
         navigationView = findViewById(R.id.activity_main_navigation_bar);
-
-        // Check if the user ID belongs to an admin
-        if (adminUserIds.contains(userID)) {
-            // Admin user logic
-            navigationView.setVisibility(View.GONE);
-            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
-        } else {
-            // Regular user logic
-            navigationView.setVisibility(View.VISIBLE);
-            createNotificationChannel();
-            initNavView();
-        }
-
+        navigationView.setVisibility(View.VISIBLE);
+        createNotificationChannel();
+        initNavView();
         handleIntent(getIntent());
     }
 
@@ -272,5 +261,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                 fragmentManagerHelper.replaceFragment(notificationFragmentAttendee);
             }
         }
+    }
+
+    @Override
+    public void onPositiveClick(Event event) {
+
     }
 }
