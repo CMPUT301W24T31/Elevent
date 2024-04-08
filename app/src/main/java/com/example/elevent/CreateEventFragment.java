@@ -72,10 +72,10 @@ public class CreateEventFragment extends Fragment {
         EventDB eventDB = new EventDB(new EventDBConnector());
 
         eventDB.addEvent(event).thenRun(() -> {
-            // Ensure operations that update the UI are run on the main thread
+            // ensure operations run on the main thread
             getActivity().runOnUiThread(() -> {
                 Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
-                navigateToMyEventsFragment(); // Navigate back to MyEventsFragment after event creation
+                navigateToMyEventsFragment(); // navigate back to MyEventsFragment after event creation
             });
         }).exceptionally(e -> {
             getActivity().runOnUiThread(() -> {
@@ -125,6 +125,7 @@ public class CreateEventFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_createevent, container, false);
         EditText eventName = view.findViewById(R.id.event_name_input);
         EditText eventAddress = view.findViewById(R.id.event_location_input);
@@ -135,6 +136,9 @@ public class CreateEventFragment extends Fragment {
         ImageView eventPosterView = view.findViewById(R.id.create_event_image_view);
         TextView editEventPoster = view.findViewById(R.id.change_event_poster_text);
         TextView deleteEventPoster = view.findViewById(R.id.remove_event_poster_text);
+        EditText eventMaxAttendees = view.findViewById(R.id.event_max_attendees_input);
+
+        eventMaxAttendees.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         eventPosterView.setVisibility(View.INVISIBLE);
         editEventPoster.setVisibility(View.INVISIBLE);
@@ -210,6 +214,15 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     return; // Add return to exit early if validation fails
                 }
+
+                int maxAttendees = 0; // required minimum
+                try {
+                    maxAttendees = Integer.parseInt(eventMaxAttendees.getText().toString());
+                } catch (NumberFormatException e) {
+                    Toast.makeText(getActivity(), "Please enter a valid number for maximum attendees", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String eventID = String.valueOf(System.currentTimeMillis());
                 Blob eventPoster = null;
                 if (eventPosterByteArray != null){
@@ -224,7 +237,7 @@ public class CreateEventFragment extends Fragment {
                 String event_location = eventAddress.getText().toString();
 
                 Event event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                        event_date, event_time, event_desc, event_location, eventPoster);
+                        event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
 
