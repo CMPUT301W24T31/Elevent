@@ -3,6 +3,7 @@ package com.example.elevent.Admin;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -13,12 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.example.elevent.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +92,33 @@ public class AdminImageFragment extends Fragment {
         String fieldToUpdate = image.isEvent() ? "eventPoster" : "profilePic";
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put(fieldToUpdate, null);
+        if (image.isEvent()) {
+            updates.put(fieldToUpdate, null);
+        } else {
+            BitmapDrawable generatedPFP;
+            if (image.getName() != null) {
+                generatedPFP = AvatarGenerator.Companion.avatarImage(
+                        requireContext(),
+                        200,
+                        AvatarConstants.Companion.getRECTANGLE(),
+                        String.valueOf(image.getName())
+                );
+            } else {
+                generatedPFP = AvatarGenerator.Companion.avatarImage(
+                        requireContext(),
+                        200,
+                        AvatarConstants.Companion.getRECTANGLE(),
+                        "Elevent"
+                );
+            }
+            Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            byte[] generatedPFPBA = outputStream.toByteArray();
+            Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+            updates.put(fieldToUpdate, generatedPFPBlob);
+            updates.put("hasGeneratedPFP", true);
+        }
 
         db.collection(collectionPath).document(documentId)
                 .update(updates)

@@ -1,7 +1,11 @@
 package com.example.elevent;
 
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -17,9 +21,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -55,30 +65,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ManageEventFragment extends Fragment {
 
-    /**
-     *
-     */
-    interface ManageEventListener {
-        //void onCreateEvent(Event event);
-
-        void onPositiveClick(Event event);
-    }
-
-    private ManageEventFragment.ManageEventListener listener;
-
-    /**
-     * Called when a fragment is first attached to its host activity
-     * @param context Host activity
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof ManageEventFragment.ManageEventListener) {
-            listener = (ManageEventFragment.ManageEventListener) context;
-        } else {
-            throw new RuntimeException(context + " must implement ManageEventListener");
-        }
-    }
 
     private Event event;
     private TextView attendeeListTextView;
@@ -139,12 +125,12 @@ public class ManageEventFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
-                if (Objects.equals(selection, "checked-in")){
-                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
-                    fetchCheckedInAttendees();
-                } else if (Objects.equals(selection, "signed-up")){
+                if (Objects.equals(selection, "signed-up")){
                     attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
                     fetchSignedUpAttendees();
+                } else {
+                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                    fetchCheckedInAttendees();
                 }
             }
 
@@ -153,6 +139,7 @@ public class ManageEventFragment extends Fragment {
         });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         Button mapButton = view.findViewById(R.id.map_button);
+        Button setMilestonesButton = view.findViewById(R.id.set_milestone_button);
         notifCentreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -187,6 +174,16 @@ public class ManageEventFragment extends Fragment {
                 //return null;
             }
         });
+        setMilestonesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                SetMilestoneDialogFragment setMilestoneDialogFragment = new SetMilestoneDialogFragment();
+                setMilestoneDialogFragment.setArguments(args);
+                setMilestoneDialogFragment.show(requireActivity().getSupportFragmentManager(), "SetMilestoneDialogFragment");
+            }
+        });
         listOfAttendees.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -197,24 +194,6 @@ public class ManageEventFragment extends Fragment {
                 InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
                 inspectAttendeeInformationFragment.setArguments(args);
                 inspectAttendeeInformationFragment.show(requireActivity().getSupportFragmentManager(), "InspectAttendeeInformationDialogFragment");
-            }
-        });
-        FirebaseFirestore db = new EventDBConnector().getDb();
-        db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null){
-                    Log.w("ManageEventSnapshotListener", "Listen Failed", error);
-                    return;
-                }
-                if (value != null && value.exists()) {
-                    fetchSignedUpAttendees();
-                    attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
-                    fetchCheckedInAttendees();
-                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
-                } else {
-                    Log.d("ManageEventSnapshotListener", "Document does not exist");
-                }
             }
         });
     }
@@ -302,7 +281,6 @@ public class ManageEventFragment extends Fragment {
      */
     private void updateListView(ArrayList<User> attendees){
         AttendeeArrayAdapter attendeeArrayAdapter = new AttendeeArrayAdapter(requireActivity(), attendees);
-        listOfAttendees = getView().findViewById(R.id.list_of_attendees);
         listOfAttendees.setAdapter(attendeeArrayAdapter);
     }
 }

@@ -99,12 +99,9 @@ public class ProfileFragment extends Fragment {
                         } else {
                             profileContact.setVisibility(View.GONE);
                         }
-                        Blob profilePic = user.getProfilePic();
-                        if (profilePic != null) {
-                            byte[] profileBA = user.getProfilePic().toBytes();
-                            Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
-                            profileImage.setImageBitmap(profileBitmap);
-                        }
+                        byte[] profileBA = user.getProfilePic().toBytes();
+                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
+                        profileImage.setImageBitmap(profileBitmap);
                     }
                 }
             }
@@ -115,7 +112,13 @@ public class ProfileFragment extends Fragment {
 
     }
 
-
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * Initializes option to allow user to edit profile
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

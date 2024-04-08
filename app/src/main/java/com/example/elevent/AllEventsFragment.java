@@ -40,8 +40,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class AllEventsFragment extends Fragment {
 
-    ArrayList<Event> AllEvents;
-    List<String> signedUpEvents;
+    private ArrayList<Event> AllEvents;
+    private List<String> signedUpEvents;
+    private ListView listView;
 
     /**
      * Required empty constructor
@@ -67,7 +68,9 @@ public class AllEventsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_allevents, container, false);
+        View view = inflater.inflate(R.layout.fragment_allevents, container, false);
+        listView = view.findViewById(R.id.list_view);
+        return view;
     }
 
     /**
@@ -245,7 +248,6 @@ public class AllEventsFragment extends Fragment {
      */
     private void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
         EventArrayAdapter eventAdapter = new EventArrayAdapter(requireContext(), events); // Use requireActivity() to ensure non-null Context
-        ListView listView = getView().findViewById(R.id.list_view);
         listView.setAdapter(eventAdapter);
     }
 }

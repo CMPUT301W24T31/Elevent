@@ -46,7 +46,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="@color/item_blue"
-        android:text="@string/most_recent_notification_attendee_eventview"
+        android:text="Notifications"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

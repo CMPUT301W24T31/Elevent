@@ -254,24 +254,6 @@ public class CreatedEventFragment extends Fragment {
             }
         });
 
-        shareEventButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseFirestore db = new EventDBConnector().getDb();
-                db.collection("events").document(selectedEvent.getEventID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()){
-                            Blob qrBlobToShare = (Blob) documentSnapshot.get("promotionalQR");
-                            byte[] qrBAToShare = qrBlobToShare.toBytes();
-                            shareQRCode(qrBAToShare);
-                        }
-                    }
-                });
-            }
-        });
-
-
 //        private File saveQRCodeToTempFile(Bitmap qrCodeBitmap) {
 //            try {
 //                // Create a temporary file
@@ -401,22 +383,5 @@ public class CreatedEventFragment extends Fragment {
      */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
-    }
-
-    /**
-     * shares QR to other apps
-     * @param qrBAToShare byte[] of the QR to be shared
-     */
-    private void shareQRCode(byte[] qrBAToShare){
-        Bitmap qrBitmap = BitmapFactory.decodeByteArray(qrBAToShare, 0, qrBAToShare.length);
-        qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, new ByteArrayOutputStream());
-        String path = MediaStore.Images.Media.insertImage(requireActivity().getContentResolver(), qrBitmap, "QR Code", null);
-        Uri qrUri = Uri.parse(path);
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, qrUri);
-        shareIntent.setType("image/png");
-        startActivity(Intent.createChooser(shareIntent, "Share QR Code"));
     }
 }

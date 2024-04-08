@@ -18,32 +18,11 @@ import java.util.ArrayList;
 /**
  * This fragment contains UI for the organizer to handle and push notifications
  */
-public class NotificationCentreFragment extends Fragment implements AddNotificationDialogFragment.AddNotificationDialogListener {
-
-    /**
-     * Interface for dialog listener that handles notification creation
-     */
-    interface NotificationCentreDialogListener {
-        //void onCreateEvent(Event event);
-
-        void onPositiveClick(Event event);
-    }
-
-    private NotificationCentreDialogListener listener;
+public class NotificationCentreFragment extends Fragment {
     private Event event;
     private ListView listOfNotifications;
-    private ArrayAdapter<String> notificationAdapter;
+    private NotificationArrayAdapter notificationAdapter;
     private ArrayList<String> notificationsList = new ArrayList<>();
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof NotificationCentreDialogListener) {
-            listener = (NotificationCentreDialogListener) context;
-        } else {
-            throw new RuntimeException(context.toString() + " must implement NotificationCentreDialogListener");
-        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,7 +39,7 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
         listOfNotifications = view.findViewById(R.id.list_of_notifs);
 
         // Initialize adapter and set it to the ListView
-        notificationAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, notificationsList);
+        notificationAdapter = new NotificationArrayAdapter(requireContext(), notificationsList);
         listOfNotifications.setAdapter(notificationAdapter);
 
         return view;
@@ -74,24 +53,21 @@ public class NotificationCentreFragment extends Fragment implements AddNotificat
                 showAddNotificationDialog();
             });
         }
+        updateListView((ArrayList<String>) event.getNotifications());
     }
 
     private void showAddNotificationDialog() {
         if (getActivity() != null) {
             AddNotificationDialogFragment dialogFragment = new AddNotificationDialogFragment();
             // Pass the current fragment as the listener
-            dialogFragment.setListener(this);
             Bundle args = new Bundle();
             args.putSerializable("event", event);
             dialogFragment.setArguments(args);
             dialogFragment.show(getChildFragmentManager(), "AddNotificationDialogFragment");
         }
     }
-
-    @Override
-    public void onNotificationAdded(String notification) {
-        // Add the new notification to the list
-        notificationsList.add(0, notification);
-        notificationAdapter.notifyDataSetChanged(); // Notify adapter of data change
+    private void updateListView(ArrayList<String> notifications){
+        notificationAdapter = new NotificationArrayAdapter(requireContext(), notifications);
+        listOfNotifications.setAdapter(notificationAdapter);
     }
 }

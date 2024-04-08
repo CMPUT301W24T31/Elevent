@@ -55,7 +55,13 @@ import java.util.UUID;
  */
 public class CreateEventFragment extends Fragment {
 
+    public CreateEventFragment() {}
 
+    interface CreateEventListener{
+        void createNewEvent();
+    }
+
+    private CreateEventListener listener;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
@@ -102,6 +108,16 @@ public class CreateEventFragment extends Fragment {
                     .beginTransaction()
                     .replace(R.id.activity_main_framelayout, myEventsFragment)
                     .commit();
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof CreateEventListener){
+            listener = (CreateEventListener) context;
+        } else {
+            throw new RuntimeException(context + " must implement CreateEventListener");
         }
     }
 
@@ -248,7 +264,7 @@ public class CreateEventFragment extends Fragment {
 
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
-
+                listener.createNewEvent();
 
                 // Pass the event object to CreatedEventFragment
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
