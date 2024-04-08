@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -21,7 +22,6 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -32,9 +32,7 @@ import androidx.core.app.NotificationManagerCompat;
 import com.avatarfirst.avatargenlib.AvatarConstants;
 import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.example.elevent.Admin.AdminHomeFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.Blob;
@@ -58,7 +56,7 @@ import java.util.UUID;
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, CreateEventFragment.CreateEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener {
+public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, CreateEventFragment.CreateEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener, WelcomePageFragment.OnCreateProfileListener {
 
 
     private FragmentManagerHelper fragmentManagerHelper;
@@ -80,6 +78,39 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
 //            ,"45753e1e-bf94-4bd6-9dd6-cfd83fc34037"
     );
 
+    @Override
+    public void onCreateProfile() {
+
+        fragmentManagerHelper.replaceFragment(new CreateProfileFragment());
+    }
+
+    @Override
+    public void onSkipStart() {
+        if (userID == null) {
+            createUser();
+        }
+        navigateToMainContent(userID);
+    }
+    @Override
+    public void onUserIDLogin() {
+
+        fragmentManagerHelper.replaceFragment(new UserIDLoginFragment());
+    }
+
+    public void navigateToMainContent(String userID) {
+        showNavigationAndToolbar();
+        initNavView();
+        fragmentManagerHelper.replaceFragment(new AllEventsFragment());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Profile Created Successfully");
+        builder.setMessage("This is your user ID: " + userID);
+        builder.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+
+
     /**
      * Called when the activity is starting
      * Initializes the tool bar
@@ -94,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         super.onCreate(savedInstanceState);
         checkUserExists();
 
+        /**
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -106,20 +138,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
             }
         });
 
-        // Check if the user ID belongs to an admin
-        if (adminUserIds.contains(userID)) {
-            // Admin user logic
-            navigationView.setVisibility(View.GONE);
-            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
-        } else {
-            // Regular user logic
-            navigationView.setVisibility(View.VISIBLE);
-            initNavView();
-        }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-        }
-        handleIntent(getIntent());
+        */
     }
 
     /**
@@ -130,6 +149,22 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
+
+    /**
+     * Makes the Navigation and Toolbar visible
+     */
+
+    public void showNavigationAndToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        BottomNavigationView navigationView = findViewById(R.id.activity_main_navigation_bar);
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
+        if (navigationView != null) {
+            navigationView.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     /**
      * Initializes the navigation bar
@@ -177,7 +212,9 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         appBarTitle.setText(title);
     }
 
-
+    /**
+     * Creates the notification channel
+     */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
@@ -195,22 +232,58 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     private void checkUserExists() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         userID = sharedPreferences.getString(KEY_USER_ID, null);
-        if (userID == null) {
-            createUser();
+        boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
+
+
+        if (isFirstRun || userID == null)  {
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+            navigationView = findViewById(R.id.activity_main_navigation_bar);
+
+            toolbar.setVisibility(View.GONE);
+            navigationView.setVisibility(View.GONE);
+            fragmentManagerHelper.replaceFragment(new WelcomePageFragment());
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirstRun", false);
+            editor.apply();
         } else {
-            FirebaseFirestore db = new UserDBConnector().getDb();
-            db.collection("users").document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot documentSnapshot = task.getResult();
-                        if (!documentSnapshot.exists()) {
-                            createUser();
-                        }
-                    }
-                }
-            });
+            // Your existing code that sets up the Activity for non-first-time users
+            onCreateSetupForReturningUser();
         }
+    }
+
+
+    private void onCreateSetupForReturningUser() {
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+        navigationView = findViewById(R.id.activity_main_navigation_bar);
+        createNotificationChannel();
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (!isGranted){
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Check if the user ID belongs to an admin
+        if (adminUserIds.contains(userID)) {
+            // Admin user logic
+            navigationView.setVisibility(View.GONE);
+            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
+        } else {
+            // Regular user logic
+            navigationView.setVisibility(View.VISIBLE);
+            initNavView();
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        handleIntent(getIntent());
+
     }
 
     /**
@@ -242,6 +315,44 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         UserDBConnector connector = new UserDBConnector();
         UserDB userDB = new UserDB(connector);
         userDB.addUser(newUser);
+    }
+
+    public String createProfile(String name, String contact, String homepage, byte[] imageBytes) {
+        userID = UUID.randomUUID().toString();
+        SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_USER_ID, userID);
+        editor.apply();
+
+        // TODO: do we make name mandatory to implement this?
+        // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
+        BitmapDrawable generatedPFP = AvatarGenerator.Companion.avatarImage(
+                this,
+                200,
+                AvatarConstants.Companion.getRECTANGLE(),
+                "Elevent"
+        );
+        Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        byte[] generatedPFPBA = outputStream.toByteArray();
+        Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+
+
+        User newUser = new User(userID,generatedPFPBlob, true);
+        newUser.setName(name);
+        newUser.setContact(contact);
+        newUser.setHomePage(homepage);
+
+        if (imageBytes != null){
+            Blob pfp = Blob.fromBytes(imageBytes);
+             newUser.setProfilePic(pfp);
+        }
+        UserDBConnector connector = new UserDBConnector();
+        UserDB userDB = new UserDB(connector);
+        userDB.addUser(newUser);
+
+        return userID;
     }
 
     /**
@@ -291,6 +402,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         }
     }
 
+    /**
+     * Sets a SnapshotListener to listen for notifications from signed up and checked in events
+     * @param eventID ID of the event that has been checked into or signed up to
+     */
     private void setEventAnnouncementListener(String eventID) {
         FirebaseFirestore userDB = new UserDBConnector().getDb();
         FirebaseFirestore eventDB = new EventDBConnector().getDb();
@@ -349,6 +464,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
             }
         });
     }
+
+    /**
+     * Sets a SnapshotListener to listen for when a milestone is reached
+     */
     private void setMilestoneListener(){
         FirebaseFirestore db = new EventDBConnector().getDb();
         db.collection("events").whereEqualTo("organizerID", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -403,16 +522,27 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         });
     }
 
+    /**
+     * Implementation of the CreateEventListener interface
+     */
     @Override
     public void createNewEvent() {
         setMilestoneListener();
     }
 
+    /**
+     * Implementation of the EventSignUpListener interface
+     * @param eventID ID of the event that has been signed up to
+     */
     @Override
     public void onSignUp(String eventID) {
         setEventAnnouncementListener(eventID);
     }
 
+    /**
+     * Implementation of the ScannerListener
+     * @param eventID ID of the event that has been check into
+     */
     @Override
     public void onCheckIn(String eventID) { setEventAnnouncementListener(eventID);}
 }

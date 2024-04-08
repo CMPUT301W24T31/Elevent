@@ -13,7 +13,6 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
 /* This file is responsible for providing the UI to allow the organizer to post a notification for their event
-    Outstanding issues: pushing notifications causes crashing
  */
 
 /**
@@ -74,6 +73,9 @@ public class AddNotificationDialogFragment extends DialogFragment {
         return super.onCreateDialog(savedInstanceState); // Return default dialog if an error occurs
     }
 
+    /**
+     * Displays an error fragment if an exception occurs
+     */
     private void showErrorFragment() {
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.allevents_error, new ErrorFragment())

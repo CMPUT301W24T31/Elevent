@@ -44,7 +44,9 @@ public class Event implements Parcelable {
 
     private int maxAttendance;
 
-    // No-argument constructor
+    /**
+     * No argument constructor
+     */
     public Event() {
     }
 
@@ -117,7 +119,6 @@ public class Event implements Parcelable {
         milestone = in.readInt();
         previousAttendeesCount = in.readInt();
     }
-
     public static final Creator<Event> CREATOR = new Creator<Event>() {
         @Override
         public Event createFromParcel(Parcel in) {
@@ -407,18 +408,34 @@ public class Event implements Parcelable {
         this.sha256ReusedQRContent = sha256ReusedQRContent;
     }
 
+    /**
+     * Getter for event milestone
+     * @return Event milestone
+     */
     public int getMilestone() {
         return milestone;
     }
 
+    /**
+     * Setter for event milestone
+     * @param milestone Event milestone
+     */
     public void setMilestone(int milestone) {
         this.milestone = milestone;
     }
 
+    /**
+     * Gets the attendee count from the previous state of the event to compare in Milestone SnapshotListener
+     * @return The attendee count of the previous state of the event
+     */
     public int getPreviousAttendeesCount() {
         return previousAttendeesCount;
     }
 
+    /**
+     * Gets the attendee count from the previous state of the event to compare in Milestone SnapshotListener
+     * @param previousAttendeesCount The attendee count of the previous state of the event
+     */
     public void setPreviousAttendeesCount(int previousAttendeesCount) {
         this.previousAttendeesCount = previousAttendeesCount;
     }
@@ -447,11 +464,21 @@ public class Event implements Parcelable {
         }
     }
 
+    /**
+     * Describe the kinds of special objects contained in this Parcelable instance's marshaled representation
+     * @return
+     */
     @Override
     public int describeContents() {
         return 0;
     }
 
+    /**
+     * Flatten this object in to a Parcel
+     * @param dest The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     * May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(organizerID);
