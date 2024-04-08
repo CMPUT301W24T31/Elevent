@@ -1,28 +1,14 @@
 package com.example.elevent;
 
-import static android.icu.number.NumberRangeFormatter.with;
-
-import android.Manifest;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
@@ -64,23 +50,34 @@ public class AddNotificationDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View view = getLayoutInflater().inflate(R.layout.fragment_addnotif, null);
-        EditText writeNotif = view.findViewById(R.id.notification_text);
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        return builder
-                .setView(view)
-                .setTitle("Create Notification")
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Send", (dialog, which) -> {
-                    notificationText = writeNotif.getText().toString();
-                    if (!notificationText.isEmpty()) {
-                        // Check permission again before sending notification
-                        createNotification();
-                    } else {
-                        Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .create();
+        try {
+            View view = getLayoutInflater().inflate(R.layout.fragment_addnotif, null);
+            EditText writeNotif = view.findViewById(R.id.notification_text);
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            return builder
+                    .setView(view)
+                    .setTitle("Create Notification")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Send", (dialog, which) -> {
+                        notificationText = writeNotif.getText().toString();
+                        if (!notificationText.isEmpty()) {
+                            // Check permission again before sending notification
+                            createNotification();
+                        } else {
+                            Toast.makeText(getContext(), "Failed to create notification", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .create();
+        } catch (Exception e) {
+            showErrorFragment();
+        }
+        return super.onCreateDialog(savedInstanceState); // Return default dialog if an error occurs
+    }
+
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.allevents_error, new ErrorFragment())
+                .commit();
     }
 
     /**

@@ -4,18 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.widget.ListView;
-
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import org.checkerframework.checker.units.qual.A;
-import org.checkerframework.checker.units.qual.N;
 
 import java.util.ArrayList;
+import java.util.Collections;
 /*
     This file contains the implementation for the NotificationFragmentAttendee that displays the UI for the attendee's view
     of notifications
@@ -79,9 +75,17 @@ public class NotificationFragmentAttendee extends Fragment {
         // Implementation for displaying notifications
         ArrayList<String> notifications = (ArrayList<String>) event.getNotifications();
         updateListView(notifications);
+        Collections.reverse(notificationsList);
     }
-    private void updateListView(ArrayList<String> notifications){
-        notificationArrayAdapter = new NotificationArrayAdapter(requireContext(), notifications);
-        notifList.setAdapter(notificationArrayAdapter);
+    private void updateListView(ArrayList<String> notifications) {
+        // If notificationAdapter is already initialized, update the data set
+        if (notificationArrayAdapter != null) {
+            notificationArrayAdapter.addAll(notifications);
+            notificationArrayAdapter.notifyDataSetChanged();
+        } else {
+            // If notificationAdapter is not initialized, create a new one
+            notificationArrayAdapter = new NotificationArrayAdapter(requireContext(), notifications);
+            notifList.setAdapter(notificationArrayAdapter);
+        }
     }
 }

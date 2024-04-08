@@ -18,11 +18,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.Blob;
 
-import org.checkerframework.checker.units.qual.N;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
@@ -70,6 +65,8 @@ public class EventViewAttendee extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
         // Initialize UI components
         TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
         ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
@@ -111,6 +108,8 @@ public class EventViewAttendee extends Fragment {
                 Blob eventPosterBlob = event.getEventPoster();
                 Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
                 eventPosterImageView.setImageBitmap(eventPoster);
+            } else {
+                eventPosterImageView.setVisibility(View.GONE);
             }
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
@@ -136,15 +135,18 @@ public class EventViewAttendee extends Fragment {
                     signUpButton.setEnabled(false);
                     signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
                 } else {
-                    signUpButton.setText(R.string.sign_up_for_event);
-                    signUpButton.setEnabled(true);
-                    signUpButton.setOnClickListener(v -> {
-                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
-                        Bundle args = new Bundle();
-                        args.putSerializable("Event", event);
-                        args.putString("userID", userID);
-                        eventSignUpDialogFragment.setArguments(args);
-                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                    signUpButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                            Bundle args = new Bundle();
+                            args.putSerializable("event", event);
+                            args.putString("userID", userID);
+                            eventSignUpDialogFragment.setArguments(args);
+                            eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                            String signedUpText = "Signing up...";
+                            signUpButton.setText(signedUpText);
+                        }
                     });
                 }
             }

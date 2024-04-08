@@ -13,8 +13,11 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 public class NotificationArrayAdapter extends ArrayAdapter<String> {
+    private final ArrayList<String> notifications;
+
     public NotificationArrayAdapter(Context context, ArrayList<String> notifications){
         super(context, 0, notifications);
+        this.notifications = notifications;
     }
 
     @NonNull
@@ -33,4 +36,9 @@ public class NotificationArrayAdapter extends ArrayAdapter<String> {
         notificationDisplay.setText(notificationText);
         return view;
     }
+
+    public ArrayList<String> getNotifications() {
+        return notifications;
+    }
+
 }

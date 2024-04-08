@@ -65,12 +65,7 @@ public class CreateEventFragment extends Fragment {
      * Implemented by MainActivity
      */
     //create event listener to be implemented by main activity
-    interface CreateEventListener {
-        void onPositiveClick(Event event);
-        //void onCloseCreateEventFragment();
-    }
 
-    private CreateEventListener listener;
     byte[] eventPosterByteArray;
 
     private void createEvent(Event event) {

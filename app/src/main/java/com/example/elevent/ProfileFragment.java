@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,6 @@ import androidx.fragment.app.Fragment;
 import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -84,22 +84,29 @@ public class ProfileFragment extends Fragment {
                     if (user!=null){
                         if (user.getName() != null) {
                             profileName.setText(user.getName());
+                            profileName.setTextColor(Color.parseColor("#FFFFFF"));
                         } else {
                             profileName.setVisibility(View.GONE);
                         }
                         if (user.getHomePage() != null){
                             profileHomepage.setText(user.getHomePage());
+                            profileHomepage.setTextColor(Color.parseColor("#FFFFFF"));
                         } else {
                             profileHomepage.setVisibility(View.GONE);
                         }
                         if (user.getContact() != null) {
                             profileContact.setText(user.getContact());
+                            profileContact.setTextColor(Color.parseColor("#FFFFFF"));
                         } else {
                             profileContact.setVisibility(View.GONE);
                         }
-                        byte[] profileBA = user.getProfilePic().toBytes();
-                        Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
-                        profileImage.setImageBitmap(profileBitmap);
+                        if (user.getProfilePic() != null) {
+                            byte[] profileBA = user.getProfilePic().toBytes();
+                            Bitmap profileBitmap = BitmapFactory.decodeByteArray(profileBA, 0, profileBA.length);
+                            profileImage.setImageBitmap(profileBitmap);
+                        } else{
+                            profileImage.setImageResource(R.drawable.default_profile_pic);
+                        }
                     }
                 }
             }

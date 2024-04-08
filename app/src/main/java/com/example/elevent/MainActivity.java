@@ -28,36 +28,28 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.preference.PreferenceManager;
 
 import com.avatarfirst.avatargenlib.AvatarConstants;
 import com.avatarfirst.avatargenlib.AvatarGenerator;
+import com.example.elevent.Admin.AdminHomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 /*
     This file is responsible for being the host activity of all fragments in the app
  */
@@ -66,7 +58,7 @@ import java.util.stream.Stream;
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, AddNotificationDialogFragment.AddNotificationDialogListener, ManageEventFragment.ManageEventListener, NotificationCentreFragment.NotificationCentreDialogListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener {
+public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener {
 
 
     private FragmentManagerHelper fragmentManagerHelper;
