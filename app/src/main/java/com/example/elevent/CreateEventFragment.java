@@ -299,6 +299,7 @@ public class CreateEventFragment extends Fragment {
                             event_date, event_time, event_desc, event_location, eventPoster, maxAttendees, sha256ReusedQRContent);
                 }
                 createEvent(event);
+
                 listener.createNewEvent();
                 
 
