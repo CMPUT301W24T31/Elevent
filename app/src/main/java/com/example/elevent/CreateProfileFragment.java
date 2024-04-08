@@ -36,7 +36,7 @@
         private EditText nameEditText;
         private EditText contactEditText;
         private EditText homepageEditText;
-        private Switch locationSwitch;
+
         private ImageButton sendButton;
         private ImageButton profileImageButton; // Add this line for the image button
 
@@ -82,7 +82,7 @@
             nameEditText = view.findViewById(R.id.name);
             contactEditText = view.findViewById(R.id.contact);
             homepageEditText = view.findViewById(R.id.homepage);
-            locationSwitch = view.findViewById(R.id.location_switch);
+
             sendButton = view.findViewById(R.id.imageButton2);
             profileImageButton = view.findViewById(R.id.imageButton); // This should be the ID of your image button
 
@@ -95,7 +95,6 @@
                     String name = nameEditText.getText().toString();
                     String contact = contactEditText.getText().toString();
                     String homepage = homepageEditText.getText().toString();
-                    boolean isLocationEnabled = locationSwitch.isChecked();
 
                     // You can then use this data to create a profile, save it or send it to your server, etc.
                     // ...
