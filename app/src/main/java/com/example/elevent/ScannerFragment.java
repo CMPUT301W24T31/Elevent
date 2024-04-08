@@ -151,7 +151,7 @@ public class ScannerFragment extends Fragment {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()){
                     User user = documentSnapshot.toObject(User.class);
-                    if (user != null){
+                    if (user != null && user.getCheckedInEvents() != null){
                         List<String> checkedInEvents = user.getCheckedInEvents();
                         checkedInEvents.add(eventID);
                         user.setCheckedInEvents(checkedInEvents);
