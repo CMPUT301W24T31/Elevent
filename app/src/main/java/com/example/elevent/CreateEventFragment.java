@@ -284,6 +284,7 @@ public class CreateEventFragment extends Fragment {
                             event_date, event_time, event_desc, event_location, eventPoster, 0, sha256ReusedQRContent);
                 }createEvent(event);
                 listener.createNewEvent();
+                
 
                 // Pass the event object to CreatedEventFragment
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
