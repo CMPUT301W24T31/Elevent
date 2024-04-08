@@ -3,14 +3,12 @@ package com.example.elevent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +80,28 @@ public class Event implements Parcelable {
         this.maxAttendance = maxAttendance;
     }
 
+
+    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+                 String date, String time, String description, String location, Blob eventPoster, int maxAttendance, String sha256ReusedQRContent) {
+        this.eventID = eventID;
+        this.organizerID = organizerID;
+        this.eventName = eventName;
+        this.promotionalQR = promotionalQR;
+        this.checkinQR = checkinQR;
+        this.attendeesCount = attendeesCount;
+        this.date = date;
+        this.time = time;
+        this.description = description;
+        this.eventPoster = eventPoster;
+        this.location = location;
+        this.notifications = new ArrayList<>();
+        this.signedUpAttendees = new ArrayList<>();
+        this.checkInLocations = new HashMap<>();
+        this.checkedInAttendees = new HashMap<>();
+        this.maxAttendance = maxAttendance;
+        this.sha256ReusedQRContent = sha256ReusedQRContent;
+    }
+
     protected Event(Parcel in) {
         organizerID = in.readString();
         eventID = in.readString();
@@ -109,6 +129,7 @@ public class Event implements Parcelable {
             return new Event[size];
         }
     };
+
 
     /**
      * Create the map to be put into the event database
