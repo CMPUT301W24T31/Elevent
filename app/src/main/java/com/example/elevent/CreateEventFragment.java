@@ -289,10 +289,10 @@ public class CreateEventFragment extends Fragment {
                 if (reusedQRBA == null){
                     byte[] checkInQR = generateQRCode("Check In:" + eventID);
                     event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                            event_date, event_time, event_desc, event_location, eventPoster, 0);
+                            event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
                 } else {
                     event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(reusedQRBA), 0,
-                            event_date, event_time, event_desc, event_location, eventPoster, 0, sha256ReusedQRContent);
+                            event_date, event_time, event_desc, event_location, eventPoster, maxAttendees, sha256ReusedQRContent);
                 }createEvent(event);
                 listener.createNewEvent();
                 

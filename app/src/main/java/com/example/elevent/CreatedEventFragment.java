@@ -133,6 +133,12 @@ public class CreatedEventFragment extends Fragment {
         if (selectedEvent.getDescription() != null){
             eventDescription.setText(selectedEvent.getDescription());
         }
+
+        EditText eventMaxAttendeesText = view.findViewById(R.id.event_max_attendees_text);
+        if (selectedEvent.getMaxAttendance() != -1) {
+            eventMaxAttendeesText.setText(String.valueOf(selectedEvent.getMaxAttendance()));
+        }
+
         Button addEventImage = view.findViewById(R.id.eventPoster_image);
         ImageView eventPoster = view.findViewById(R.id.created_event_image_view_clickable);
         TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
@@ -187,14 +193,6 @@ public class CreatedEventFragment extends Fragment {
                 }
             }
         }
-
-        EditText eventMaxAttendeesText = view.findViewById(R.id.event_max_attendees_text);
-        if (selectedEvent.getMaxAttendance() > 0) {
-            eventMaxAttendeesText.setText(String.valueOf(selectedEvent.getMaxAttendance()));
-        } else {
-            eventMaxAttendeesText.setText("");  // or leave it blank or any other placeholder
-        }
-        eventMaxAttendeesText.setEnabled(true);
 
         return view;
     }
@@ -425,4 +423,3 @@ public class CreatedEventFragment extends Fragment {
 
 
 }
-
