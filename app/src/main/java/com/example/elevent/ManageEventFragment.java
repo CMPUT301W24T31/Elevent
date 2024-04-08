@@ -1,16 +1,6 @@
 package com.example.elevent;
 
-import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,31 +11,15 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +44,7 @@ public class ManageEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            event = (Event) getArguments().getSerializable("event");
+            event = (Event) getArguments().getParcelable("event");
         }
     }
 
@@ -145,7 +119,7 @@ public class ManageEventFragment extends Fragment {
                 if (getActivity() instanceof MainActivity) {
                     NotificationCentreFragment notificationCentreFragment = new NotificationCentreFragment();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", event);
+                    args.putParcelable("event", event);
                     notificationCentreFragment.setArguments(args);
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
@@ -162,7 +136,7 @@ public class ManageEventFragment extends Fragment {
                 if (getActivity() instanceof MainActivity) {
                     MapFragment mapFragment = new MapFragment();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", event);
+                    args.putParcelable("event", event);
                     mapFragment.setArguments(args);
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
@@ -175,7 +149,7 @@ public class ManageEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putSerializable("event", event);
+                args.putParcelable("event", event);
                 SetMilestoneDialogFragment setMilestoneDialogFragment = new SetMilestoneDialogFragment();
                 setMilestoneDialogFragment.setArguments(args);
                 setMilestoneDialogFragment.show(requireActivity().getSupportFragmentManager(), "SetMilestoneDialogFragment");
@@ -187,7 +161,7 @@ public class ManageEventFragment extends Fragment {
                 User selectedUser = (User) parent.getItemAtPosition(position);
                 Bundle args = new Bundle();
                 args.putSerializable("user", selectedUser);
-                args.putSerializable("event", event);
+                args.putParcelable("event", event);
                 InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
                 inspectAttendeeInformationFragment.setArguments(args);
                 inspectAttendeeInformationFragment.show(requireActivity().getSupportFragmentManager(), "InspectAttendeeInformationDialogFragment");

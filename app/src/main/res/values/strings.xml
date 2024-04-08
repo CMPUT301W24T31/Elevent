@@ -25,12 +25,14 @@
 
     <!-- options for event filter spinner -->
     <string-array name="event_filter_spinner_array">
+        <item>sort</item>
         <item>all</item>
         <item>signed-up</item>
     </string-array>
 
     <!-- options for attendee filter spinner -->
     <string-array name="attendee_filter_spinner_array">
+        <item>sort</item>
         <item>checked-in</item>
         <item>signed-up</item>
     </string-array>

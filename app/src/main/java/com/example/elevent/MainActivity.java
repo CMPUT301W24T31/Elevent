@@ -58,7 +58,7 @@ import java.util.UUID;
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements CreateEventFragment.CreateEventListener, CreatedEventFragment.CreatedEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener {
+public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, CreateEventFragment.CreateEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener {
 
 
     private FragmentManagerHelper fragmentManagerHelper;
@@ -79,8 +79,6 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
             "a51328ca-5ee3-4903-990b-01ef1ed2eb3e"
 //            ,"45753e1e-bf94-4bd6-9dd6-cfd83fc34037"
     );
-
-
 
     /**
      * Called when the activity is starting
@@ -122,8 +120,6 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
         handleIntent(getIntent());
-        setEventAnnouncementListener();
-        setMilestoneListener();
     }
 
     /**
@@ -278,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
                         if (documentSnapshot.exists()) {
                             Event eventToOpen = documentSnapshot.toObject(Event.class);
                             Bundle args = new Bundle();
-                            args.putSerializable("event", eventToOpen);
+                            args.putParcelable("event", eventToOpen);
                             if (Objects.equals(intent.getStringExtra("FragmentToOpen"), "ManageEventFragment")) {
                                 ManageEventFragment manageEventFragment = new ManageEventFragment();
                                 manageEventFragment.setArguments(args);
@@ -295,71 +291,60 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         }
     }
 
-    private void setEventAnnouncementListener() {
+    private void setEventAnnouncementListener(String eventID) {
         FirebaseFirestore userDB = new UserDBConnector().getDb();
         FirebaseFirestore eventDB = new EventDBConnector().getDb();
         userDB.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot != null && documentSnapshot.exists()) {
+                if (documentSnapshot.exists()) {
                     User user = documentSnapshot.toObject(User.class);
-                    ArrayList<String> signedUpEvents = (ArrayList<String>) documentSnapshot.get("signedUpEvents");
-                    ArrayList<String> checkedInEvents = (ArrayList<String>) documentSnapshot.get("checkedInEvents");
-                    if (signedUpEvents != null && checkedInEvents != null){
-                        for (String eventID : checkedInEvents){
-                            if (!signedUpEvents.contains(eventID)){
-                                signedUpEvents.add(eventID);
+                    eventDB.collection("events").document(eventID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                            if (error != null) {
+                                Log.d("NotificationSnapshotListener", error.toString());
                             }
-                        }
-                        for (String eventID : signedUpEvents) {
-                            eventDB.collection("events").document(eventID).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                                    if (error != null) {
-                                        Log.d("NotificationSnapshotListener", error.toString());
-                                    }
-                                    if (value != null && value.exists()) {
-                                        Event event = value.toObject(Event.class);
-                                        if (event != null) {
-                                            ArrayList<String> notifications = (ArrayList<String>) event.getNotifications();
-                                            if (user != null && !notifications.isEmpty()){
-                                                String recentNotification = notifications.get(notifications.size() - 1);
-                                                List<String> receivedNotifications = user.getReceivedNotifications();
-                                                    if (!receivedNotifications.contains(recentNotification)) {
-                                                        Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                                                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
-                                                        stackBuilder.addNextIntentWithParentStack(intent);
-                                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                        intent.putExtra("eventIDToOpen", event.getEventID());
-                                                        intent.putExtra("FragmentToOpen", "NotificationFragmentAttendee");
-                                                        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                            if (value != null && value.exists()) {
+                                Event event = value.toObject(Event.class);
+                                if (event != null) {
+                                    ArrayList<String> notifications = (ArrayList<String>) event.getNotifications();
+                                    if (user != null && !notifications.isEmpty()){
+                                        String recentNotification = notifications.get(notifications.size() - 1);
+                                        List<String> receivedNotifications = user.getReceivedNotifications();
+                                        if (!receivedNotifications.contains(recentNotification)) {
+                                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                            TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
+                                            stackBuilder.addNextIntentWithParentStack(intent);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            intent.putExtra("eventIDToOpen", event.getEventID());
+                                            intent.putExtra("FragmentToOpen", "NotificationFragmentAttendee");
+                                            PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-                                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "EleventChannel")
-                                                                .setSmallIcon(R.drawable.default_profile_pic)
-                                                                .setContentTitle(event.getEventName())
-                                                                .setContentText(recentNotification)
-                                                                .setStyle(new NotificationCompat.BigTextStyle().bigText(recentNotification))
-                                                                .setAutoCancel(true)
-                                                                .setContentIntent(pendingIntent);
+                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "EleventChannel")
+                                                    .setSmallIcon(R.drawable.img_1)
+                                                    .setContentTitle(event.getEventName())
+                                                    .setContentText(recentNotification)
+                                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(recentNotification))
+                                                    .setAutoCancel(true)
+                                                    .setContentIntent(pendingIntent);
 
-                                                        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
-                                                        if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                                                            requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
-                                                            return;
-                                                        }
-                                                        notificationManagerCompat.notify(1, builder.build());
-                                                        receivedNotifications.add(recentNotification);
-                                                        user.setReceivedNotifications(receivedNotifications);
-                                                        UserDB db = new UserDB();
-                                                        db.updateUser(user);
-                                                    }
-                                                }
+                                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
+                                            if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
+                                                return;
                                             }
+                                            notificationManagerCompat.notify(1, builder.build());
+                                            receivedNotifications.add(recentNotification);
+                                            user.setReceivedNotifications(receivedNotifications);
+                                            UserDB db = new UserDB();
+                                            db.updateUser(user);
                                         }
                                     }
-                            });
+                                }
+                            }
                         }
-                    }
+                    });
                 }
             }
         });
@@ -368,9 +353,9 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
         FirebaseFirestore db = new EventDBConnector().getDb();
         db.collection("events").whereEqualTo("organizerID", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                db.collection("events").document(documentSnapshot.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                    db.collection("events").document(documentSnapshot.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                             if (error != null){
@@ -391,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
                                             PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
                                             NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "EleventChannel")
-                                                    .setSmallIcon(R.drawable.default_profile_pic)
+                                                    .setSmallIcon(R.drawable.img_1)
                                                     .setContentTitle((String) value.get("eventName"))
                                                     .setContentText(String.format("Your event has %d checked in attendees!", event.getAttendeesCount()))
                                                     .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format("Your event has %d checked in attendees!", event.getAttendeesCount())))
@@ -424,10 +409,16 @@ public class MainActivity extends AppCompatActivity implements CreateEventFragme
     }
 
     @Override
+    public void onCheckIn(String eventID) { setEventAnnouncementListener(eventID);}
+
+
+    @Override
     public void onSignUp() {
-        setEventAnnouncementListener();
+
     }
 
     @Override
-    public void onCheckIn() { setEventAnnouncementListener();}
+    public void onSignUp(String eventID) {
+
+    }
 }

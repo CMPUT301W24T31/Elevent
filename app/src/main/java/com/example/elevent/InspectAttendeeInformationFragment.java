@@ -17,8 +17,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.firebase.firestore.Blob;
 
-import org.w3c.dom.Text;
-
 import java.util.Objects;
 /*
     This file contains the implementation for displaying a dialog fragment to the organizer that contains an
@@ -38,8 +36,8 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            user = (User) getArguments().getSerializable("user");
-            event = (Event) getArguments().getSerializable("event");
+            user = (User) getArguments().getParcelable("user");
+            event = (Event) getArguments().getParcelable("event");
         }
     }
 

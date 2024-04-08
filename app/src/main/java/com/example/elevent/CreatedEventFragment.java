@@ -87,7 +87,7 @@ public class CreatedEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            selectedEvent = (Event) getArguments().getSerializable("selected_event");
+            selectedEvent = (Event) getArguments().getParcelable("selected_event");
         }
     }
 
@@ -265,7 +265,7 @@ public class CreatedEventFragment extends Fragment {
             public void onClick(View v) {
                 ManageEventFragment manageEventFragment = new ManageEventFragment();
                 Bundle args = new Bundle();
-                args.putSerializable("event", selectedEvent);
+                args.putParcelable("event", selectedEvent);
                 manageEventFragment.setArguments(args);
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))

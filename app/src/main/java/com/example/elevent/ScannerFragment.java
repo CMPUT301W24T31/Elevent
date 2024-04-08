@@ -23,7 +23,6 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public class ScannerFragment extends Fragment {
     public ScannerFragment(){}
 
     interface ScannerListener{
-        void onCheckIn();
+        void onCheckIn(String eventID);
     }
 
     @Override
@@ -104,14 +103,6 @@ public class ScannerFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_scanner, container, false);
     }
 
-    private void handleException(Exception e) {
-        Log.e("ScannerFragment", "Exception occurred: " + e.getMessage());
-        // Replace current fragment with error fragment
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_main_framelayout, new ErrorFragment())
-                .commit();
-    }
-
     /**
      * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
      * Calls the checkCameraPermission function to check if permission is granted
@@ -133,7 +124,7 @@ public class ScannerFragment extends Fragment {
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(true);
         options.setPrompt("");
-        //options.setCaptureActivity(CaptureAct.class);
+        options.setCaptureActivity(CaptureAct.class);
         qrScannerLauncher.launch(options);
     }
 
@@ -162,7 +153,7 @@ public class ScannerFragment extends Fragment {
                 }
             }
         });
-        listener.onCheckIn();
+        listener.onCheckIn(eventID);
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore eventDB = eventDBConnector.getDb();
 
@@ -203,7 +194,7 @@ public class ScannerFragment extends Fragment {
                         FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                         EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         eventViewAttendeeFragment.setArguments(args);
                         helper.replaceFragment(eventViewAttendeeFragment);
 
@@ -234,7 +225,7 @@ public class ScannerFragment extends Fragment {
                         Event event = documentSnapshot.toObject(Event.class);
                         EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         eventViewAttendeeFragment.setArguments(args);
 
                         helper.replaceFragment(eventViewAttendeeFragment);

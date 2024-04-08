@@ -58,7 +58,7 @@ public class EditProfileFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            user = (User) getArguments().getSerializable("user");
+            user = (User) getArguments().getParcelable("user");
         }
     }
 

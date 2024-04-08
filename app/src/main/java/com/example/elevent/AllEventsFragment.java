@@ -89,7 +89,6 @@ public class AllEventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Spinner filterStatus = view.findViewById(R.id.event_filter_spinner);
-
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.event_filter_spinner_array,
@@ -97,6 +96,7 @@ public class AllEventsFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
         EventArrayAdapter eventArrayAdapter = new EventArrayAdapter(requireActivity(), events);
@@ -110,9 +110,15 @@ public class AllEventsFragment extends Fragment {
 
                     // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                    if (clickedEvent != null) {
+                        // Proceed with further actions
+                    } else {
+                        Log.e("AllEventsFragment", "Clicked event is null");
+                    }
+
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
+                    args.putParcelable("event", clickedEvent); // Ensure Event implements Serializable
                     eventViewAttendeeFragment.setArguments(args);
 
                     helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details

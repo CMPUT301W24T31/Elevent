@@ -1,5 +1,10 @@
 package com.example.elevent;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.GeoPoint;
@@ -16,7 +21,7 @@ import java.util.Map;
 /**
  * Represents an event
  */
-public class Event implements Serializable {
+public class Event implements Parcelable {
 
     // attributes for the information of an event
     private String organizerID;
@@ -73,44 +78,7 @@ public class Event implements Serializable {
         this.signedUpAttendees = new ArrayList<>();
         this.checkInLocations = new HashMap<>();
         this.checkedInAttendees = new HashMap<>();
-        this.previousAttendeesCount = 0;
-    }
-    /**
-     * Class constructor with reused QR
-     * @param eventName Name of the event
-     * @param promotionalQR QR code linked to event poster an description
-     * @param checkinQR QR code for checking in to the event
-     * @param attendeesCount Number of attendees checked in
-     * @param date Date of the event
-     * @param time Time of the event
-     * @param description Description of the event
-     * @param location Location of the event
-     * @param eventPoster Uploaded poster of the event
-     * @param sha256ReusedQRContent Content of the reused QR code converted into SHA-256 encryption
-     */
-    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, Blob eventPoster, String sha256ReusedQRContent) {
-        this.eventID = eventID;
-        this.organizerID = organizerID;
-        this.eventName = eventName;
-        this.promotionalQR = promotionalQR;
-        this.checkinQR = checkinQR;
-        this.attendeesCount = attendeesCount;
-        this.date = date;
-        this.time = time;
-        this.description = description;
-        this.eventPoster = eventPoster;
-        this.location = location;
-        this.sha256ReusedQRContent = sha256ReusedQRContent;
-        this.notifications = new ArrayList<>();
-        this.signedUpAttendees = new ArrayList<>();
-        this.checkInLocations = new HashMap<>();
-        this.checkedInAttendees = new HashMap<>();
         this.maxAttendance = maxAttendance;
-    }
-
-    public Event(String eventID, String organizerID, String name, Blob blob, Blob blob1, int i, String eventDate, String eventTime, String eventDesc, String eventLocation, Blob eventPoster) {
-        this.previousAttendeesCount = 0;
     }
 
     /**
@@ -136,7 +104,7 @@ public class Event implements Serializable {
         eventMap.put("checkInLocations", checkInLocations);
         eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
         eventMap.put("milestone", milestone);
-        eventMap.put("previousAttendeesCount", previousAttendeesCount);
+        eventMap.put("maxAttendance", maxAttendance);
 
         return eventMap;
     }
@@ -351,6 +319,12 @@ public class Event implements Serializable {
      */
     public void setCheckedInAttendees(Map<String, Integer> checkedInAttendees){this.checkedInAttendees = checkedInAttendees;}
 
+    public void setMaxAttendance(int maxAttendance) {this.maxAttendance = maxAttendance;}
+
+    public void addNotification(String newNotificationMessage) {
+
+    }
+
     /**
      * Getter for the event ID
      * @return ID of the event
@@ -421,5 +395,34 @@ public class Event implements Serializable {
         if (checkInLocations.containsKey(userID)) {
             checkInLocations.remove(userID);
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(organizerID);
+        dest.writeString(eventID);
+        dest.writeString(eventName);
+        dest.writeByteArray(promotionalQR.toBytes());
+        dest.writeByteArray(checkinQR.toBytes());
+        dest.writeInt(attendeesCount);
+        if (eventPoster != null) {
+            dest.writeByteArray(eventPoster.toBytes());
+        }
+        dest.writeString(date);
+        dest.writeString(time);
+        dest.writeString(description);
+        dest.writeString(location);
+        dest.writeStringList(notifications);
+        dest.writeStringList(signedUpAttendees);
+        dest.writeMap(checkInLocations);
+        dest.writeMap(checkedInAttendees);
+        dest.writeString(sha256ReusedQRContent);
+        dest.writeInt(milestone);
+        dest.writeInt(previousAttendeesCount);
     }
 }
