@@ -110,16 +110,17 @@ public class ManageEventFragment extends Fragment {
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                            ManageEventFragment manageEventFragment = new ManageEventFragment();
-                            Bundle args = new Bundle();
-                            args.putParcelable("event", event);
-                            manageEventFragment.setArguments(args);
-                            //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
-                            //(same implementation as the random floating button in all events :))
-                            if (getActivity() instanceof MainActivity) {
-                                MainActivity mainActivity = (MainActivity) getActivity();
-                                FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                                helper.replaceFragment(manageEventFragment);
+                            if (value != null && value.exists()) {
+                                Event event = (Event) value.toObject(Event.class);
+                                if (event != null) {
+                                    if (!event.getPreviousSignedUpAttendees().equals(event.getSignedUpAttendees())) {
+                                        attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
+                                        fetchSignedUpAttendees();
+                                        event.setPreviousSignedUpAttendees(event.getPreviousSignedUpAttendees());
+                                        EventDB eventDB = new EventDB();
+                                        eventDB.updateEvent(event);
+                                    }
+                                }
                             }
                         }
                     });
@@ -129,16 +130,17 @@ public class ManageEventFragment extends Fragment {
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                            ManageEventFragment manageEventFragment = new ManageEventFragment();
-                            Bundle args = new Bundle();
-                            args.putParcelable("event", event);
-                            manageEventFragment.setArguments(args);
-                            //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
-                            //(same implementation as the random floating button in all events :))
-                            if (getActivity() instanceof MainActivity) {
-                                MainActivity mainActivity = (MainActivity) getActivity();
-                                FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                                helper.replaceFragment(manageEventFragment);
+                            if(value != null && value.exists()){
+                                Event event = (Event) value.toObject(Event.class);
+                                if (event != null) {
+                                    if (!event.getPreviousCheckedInAttendees().equals(event.getCheckedInAttendees())) {
+                                        attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                                        fetchCheckedInAttendees();
+                                        event.setPreviousCheckedInAttendees(event.getPreviousCheckedInAttendees());
+                                        EventDB eventDB = new EventDB();
+                                        eventDB.updateEvent(event);
+                                    }
+                                }
                             }
                         }
                     });
@@ -151,21 +153,23 @@ public class ManageEventFragment extends Fragment {
                 attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
                 fetchCheckedInAttendees();
                 db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                    ManageEventFragment manageEventFragment = new ManageEventFragment();
-                    Bundle args = new Bundle();
-                    args.putParcelable("event", event);
-                    manageEventFragment.setArguments(args);
-                    //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
-                    //(same implementation as the random floating button in all events :))
-                    if (getActivity() instanceof MainActivity) {
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                        helper.replaceFragment(manageEventFragment);
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (value != null && value.exists()) {
+                            Event event = (Event) value.toObject(Event.class);
+                            if (event != null) {
+                                if (!event.getPreviousCheckedInAttendees().equals(event.getCheckedInAttendees())) {
+                                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                                    fetchCheckedInAttendees();
+                                    event.setPreviousCheckedInAttendees(event.getPreviousCheckedInAttendees());
+                                    EventDB eventDB = new EventDB();
+                                    eventDB.updateEvent(event);
+                                }
+                            }
+                        }
                     }
-                }
-            });}
+                });
+            }
         });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         Button mapButton = view.findViewById(R.id.map_button);
