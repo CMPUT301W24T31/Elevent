@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -229,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
 
 
-        if (isFirstRun) {
+        if (isFirstRun || userID == null)  {
             setContentView(R.layout.activity_main);
             Toolbar toolbar = findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -311,13 +312,13 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         userDB.addUser(newUser);
     }
 
-    public void createProfile(String name,String contact, String homepage) {
+    public void createProfile(String name, String contact, String homepage, byte[] imageBytes) {
         userID = UUID.randomUUID().toString();
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_USER_ID, userID);
         editor.apply();
-
+        /**
         // TODO: do we make name mandatory to implement this?
         // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
         BitmapDrawable generatedPFP = AvatarGenerator.Companion.avatarImage(
@@ -330,12 +331,14 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         byte[] generatedPFPBA = outputStream.toByteArray();
-        Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+         */
+        Blob pfp = Blob.fromBytes(imageBytes);
 
-        User newUser = new User(userID, generatedPFPBlob, true);
+        User newUser = new User(userID,pfp, true);
         newUser.setName(name);
         newUser.setContact(contact);
         newUser.setHomePage(homepage);
+        newUser.setProfilePic(pfp);
 
 
         UserDBConnector connector = new UserDBConnector();
