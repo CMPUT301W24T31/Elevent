@@ -1,13 +1,14 @@
 package com.example.elevent;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-<<<<<<< HEAD
+
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationRequest;
-=======
->>>>>>> locmerge
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,19 +17,24 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-<<<<<<< HEAD
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.FusedOrientationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.CancellationTokenSource;
-=======
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
->>>>>>> locmerge
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,7 +51,6 @@ import java.util.Objects;
     This file contains the implementation of the ScannerFragment that is responsible for
     requesting for camera permission and opening the camera to scan QR codes.
  */
-
 /**
  * This fragment request permission to open the camera and scans the QR code
  */
@@ -53,24 +58,17 @@ public class ScannerFragment extends Fragment {
 
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
-<<<<<<< HEAD
+    private ScannerListener listener;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
     private LatLng latLng;
 
     private FusedLocationProviderClient fusedLocationClient;
-=======
-    private ScannerListener listener;
->>>>>>> locmerge
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
 
     /**
      * Required empty public constructor
      */
-<<<<<<< HEAD
-    public ScannerFragment() {
-=======
-    public ScannerFragment(){}
->>>>>>> locmerge
+    public ScannerFragment() {}
 
     /**
      * Interface for ScannerListener
@@ -140,10 +138,6 @@ public class ScannerFragment extends Fragment {
                 }
             }
         });
-<<<<<<< HEAD
-
-
-
 
     }
 
@@ -152,8 +146,6 @@ public class ScannerFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
         scanQR();
         setLocation();
-=======
->>>>>>> locmerge
     }
 
     /**
@@ -217,12 +209,6 @@ public class ScannerFragment extends Fragment {
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
 
-<<<<<<< HEAD
-//        setLocation();
-
-
-        db.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-=======
         UserDBConnector userDBConnector = new UserDBConnector();
         FirebaseFirestore userDB = userDBConnector.getDb();
         userDB.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -244,8 +230,11 @@ public class ScannerFragment extends Fragment {
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore eventDB = eventDBConnector.getDb();
 
+//        setLocation();
+
+
         eventDB.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
->>>>>>> locmerge
+
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()){
@@ -320,31 +309,6 @@ public class ScannerFragment extends Fragment {
         });
     }
 
-<<<<<<< HEAD
-    private void setLocation() {
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        if (!(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-
-
-            fusedLocationClient.getCurrentLocation(LocationRequest.QUALITY_BALANCED_POWER_ACCURACY, cancellationTokenSource.getToken())
-                    .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                Log.d("locloc", "inLoop");
-                                latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                // Logic to handle location object
-                            }
-                        }
-                    });
-            Log.d("locloc", "loc1");
-        }
-    }
-
-
-
-=======
     /**
      * For reused QR, finds the event associated with the QR and checks the attendee into the event
      * @param encryptedContent SHA-256 encrypted content of the QR code
@@ -389,5 +353,28 @@ public class ScannerFragment extends Fragment {
             return null;
         }
     }
->>>>>>> locmerge
+
+    private void setLocation() {
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        if (!(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+
+
+            fusedLocationClient.getCurrentLocation(LocationRequest.QUALITY_BALANCED_POWER_ACCURACY, cancellationTokenSource.getToken())
+                    .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.d("locloc", "inLoop");
+                                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                // Logic to handle location object
+                            }
+                        }
+                    });
+            Log.d("locloc", "loc1");
+        }
+    }
+
+
+
 }
