@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Map;
@@ -78,5 +79,24 @@ public class UserDB extends MainActivity {
         void onFailure(Exception e);
         // handle the error of user not being parsed
     }
+
+    public void checkUserExists(String userId, OnUserReadListener listener) {
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                    // User exists
+                    listener.onSuccess(document.toObject(User.class)); // Assuming a User class exists that can be instantiated from a DocumentSnapshot
+                } else {
+                    // User does not exist
+                    listener.onFailure(new Exception("User does not exist"));
+                }
+            } else {
+                // Error occurred
+                listener.onFailure(task.getException());
+            }
+        });
+    }
+
 
 }

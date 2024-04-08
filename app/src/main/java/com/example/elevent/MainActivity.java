@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         if (userID == null) {
             createUser();
         }
-        navigateToMainContent(userID);
+        navigateToMainContent(userID,true);
     }
     @Override
     public void onUserIDLogin() {
@@ -97,9 +97,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         fragmentManagerHelper.replaceFragment(new UserIDLoginFragment());
     }
 
-    public void navigateToMainContent(String userID) {
+    public void navigateToMainContent(String userID, boolean ifCreated) {
         showNavigationAndToolbar();
         initNavView();
+        if(ifCreated){
         fragmentManagerHelper.replaceFragment(new AllEventsFragment());
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Profile Created Successfully");
@@ -107,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         builder.setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
+        }
 
     }
 
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkUserExists();
+        checkIfUserCreated();
 
         /**
         setContentView(R.layout.activity_main);
@@ -229,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     /**
      * Check if this user exists already
      */
-    private void checkUserExists() {
+    private void checkIfUserCreated() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         userID = sharedPreferences.getString(KEY_USER_ID, null);
         boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
@@ -285,6 +287,34 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         handleIntent(getIntent());
 
     }
+
+    public void processUserLogin(String userId) {
+        UserDB userDB = new UserDB(); // Instantiate UserDB
+
+        // Use the new method in UserDB to check if the user exists
+        userDB.checkUserExists(userId, new UserDB.OnUserReadListener() {
+            @Override
+            public void onSuccess(User user) {
+                // User exists, proceed with login
+                SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(KEY_USER_ID, userId);
+                editor.apply();
+
+                MainActivity.this.userID = userId; // Set the user ID for the session
+
+                // Navigate to the main content after login
+                navigateToMainContent(userID,false);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                // User does not exist or error occurred, show an error message
+                Toast.makeText(MainActivity.this, "Invalid User ID. Please try again.", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
 
     /**
      * Create a new user and store it in the database
