@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -89,6 +90,8 @@ public class AllEventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Spinner filterStatus = view.findViewById(R.id.event_filter_spinner);
+
+        // Create ArrayAdapter directly from the resource array
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.event_filter_spinner_array,
@@ -96,6 +99,10 @@ public class AllEventsFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+
+        // Set default hint text
+        filterStatus.setPrompt(getString(R.string.spinner_hint));
+
 
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
@@ -132,6 +139,9 @@ public class AllEventsFragment extends Fragment {
                 if (Objects.equals(selection, "signed-up")) {
                     fetchSignedUpEventsList();
                     displaySignedUpEvents();
+                    if (signedUpEvents == null){
+                        Toast.makeText(getContext(), "sign up to events to see them here :D", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (Objects.equals(selection, "all")){
                     fetchEvents();
                 }

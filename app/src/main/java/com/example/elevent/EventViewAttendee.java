@@ -121,6 +121,11 @@ public class EventViewAttendee extends Fragment {
             int spotsRemaining = maxAttendees - currentAttendees;
 
             eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
+            if (spotsRemaining <= 0) {
+                eventAttendanceTextView.setVisibility(View.INVISIBLE);
+            } else {
+                eventAttendanceTextView.setVisibility(View.VISIBLE);
+            }
 
             // adjust sign up button based on attendance
             List<String> signedUp = event.getSignedUpAttendees();
@@ -130,7 +135,7 @@ public class EventViewAttendee extends Fragment {
                 signUpButton.setEnabled(false);
                 signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
             } else {
-                if (currentAttendees >= maxAttendees) {
+                if (currentAttendees >= maxAttendees && spotsRemaining > 0) {
                     signUpButton.setText(R.string.event_full);
                     signUpButton.setEnabled(false);
                     signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));

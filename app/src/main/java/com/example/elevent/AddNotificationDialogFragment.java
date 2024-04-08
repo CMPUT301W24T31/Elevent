@@ -86,20 +86,29 @@ public class AddNotificationDialogFragment extends DialogFragment {
     // https://developer.android.com/develop/ui/views/notifications/build-notification
     // https://developer.android.com/develop/ui/views/notifications/navigation
     private void createNotification() {
-        List<String> notifications = event.getNotifications();
-        notifications.add(notificationText);
-        event.setNotifications(notifications);
+        if (event != null) {
+            List<String> notifications = event.getNotifications();
+            if (notifications != null) {
+                notifications.add(notificationText);
+                event.setNotifications(notifications);
 
-        EventDB db = new EventDB();
-        db.updateEvent(event);
+                EventDB db = new EventDB();
+                db.updateEvent(event);
 
-        Bundle args = new Bundle();
-        args.putParcelable("event", event);
-        NotificationCentreFragment notificationCentreFragment = new NotificationCentreFragment();
-        notificationCentreFragment.setArguments(args);
-        if (getActivity() instanceof MainActivity) {
-            FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
-            helper.replaceFragment(notificationCentreFragment);
+                Bundle args = new Bundle();
+                args.putParcelable("event", event);
+                NotificationCentreFragment notificationCentreFragment = new NotificationCentreFragment();
+                notificationCentreFragment.setArguments(args);
+                if (getActivity() instanceof MainActivity) {
+                    FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                    helper.replaceFragment(notificationCentreFragment);
+                }
+            } else {
+                Toast.makeText(getContext(), "Failed to add notification: notifications list is null", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(getContext(), "Failed to add notification: event is null", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

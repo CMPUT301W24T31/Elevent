@@ -160,7 +160,7 @@ public class CreatedEventFragment extends Fragment {
             int spotsRemaining = maxAttendees - currentAttendees;
             String attendanceText = getResources().getString(R.string.spots_remaining, spotsRemaining);
             eventAttendanceInfo.setText(attendanceText);
-            if (spotsRemaining == -1 || spotsRemaining == 0) {
+            if (spotsRemaining <= 0) {
                 eventAttendanceInfo.setVisibility(View.INVISIBLE);
             } else {
                 eventAttendanceInfo.setVisibility(View.VISIBLE);
@@ -396,7 +396,7 @@ public class CreatedEventFragment extends Fragment {
         TextView eventAttendanceInfo = getView().findViewById(R.id.event_attendance_info);
         String attendanceText = getString(R.string.spots_remaining, spotsRemaining); // Proper formatting
         eventAttendanceInfo.setText(attendanceText);
-        if (spotsRemaining == -1 || spotsRemaining == 0) {
+        if (spotsRemaining <= 0) {
             eventAttendanceInfo.setVisibility(View.INVISIBLE);
         } else {
             eventAttendanceInfo.setVisibility(View.VISIBLE);
