@@ -106,7 +106,7 @@
                         // For example, navigate back to the MainActivity content
                     if (getActivity() instanceof MainActivity) {
                             String userID = ((MainActivity) getActivity()).createProfile(name, contact, homepage,imageData);
-                            ((MainActivity) getActivity()).navigateToMainContent(userID);
+                            ((MainActivity) getActivity()).navigateToMainContent(userID,true);
                         }
 
                 }

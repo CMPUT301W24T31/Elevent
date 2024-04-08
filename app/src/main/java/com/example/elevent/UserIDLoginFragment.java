@@ -6,45 +6,42 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 
 public class UserIDLoginFragment extends Fragment {
 
-    // UI Components
     private TextView userIdTextView;
     private ImageButton loginButton;
 
-    // Required empty public constructor
     public UserIDLoginFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.userid_login, container, false);
 
-        // Initialize your UI components here
         userIdTextView = view.findViewById(R.id.typeUserID);
         loginButton = view.findViewById(R.id.nextToMain);
 
-        // Handle the login button click
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Here you would capture the user ID entered by the user
-                String userId = userIdTextView.getText().toString();
+        loginButton.setOnClickListener(v -> {
+            String userId = userIdTextView.getText().toString().trim();
 
-                // TODO: Validate the userID and perform login operation
-
-                // After login, navigate to the next Fragment or Activity
-                // For example:
-                // if (getActivity() instanceof MainActivity) {
-                //     ((MainActivity) getActivity()).proceedToNextSection(userId);
-                // }
+            // Check for empty input
+            if (userId.isEmpty()) {
+                // Show a toast message asking the user to enter something
+                Toast.makeText(getContext(), "No input detected. Please enter a user ID.", Toast.LENGTH_SHORT).show();
+            } else {
+                // Input is not empty, proceed with user login process
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).processUserLogin(userId);
+                } else {
+                    // Handle the unlikely case of fragment not being attached to MainActivity
+                    Toast.makeText(getContext(), "Operation not supported in the current context", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         return view;
     }
-
-    // TODO: Optionally add a method to handle the login logic, if not handled by MainActivity
 }
