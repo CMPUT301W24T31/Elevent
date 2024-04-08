@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#001F3F">
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="208dp"
+        android:layout_height="193dp"
+        android:layout_marginTop="52dp"
+        android:backgroundTint="#001F3F"
+        android:backgroundTintMode="src_over"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.747"
+        app:srcCompat="@drawable/userhead" />
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="330dp"
+        android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="name"
+        android:textAlignment="center"
+        android:textColor="#F3EBEB"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/contact"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/homepage"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:ems="10"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="homepage"
+        android:textAlignment="center"
+        android:textColor="#F3EFEF"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/location_question"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/location_question"
+        android:layout_width="328dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="220dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:padding="10dp"
+        android:text="do you want to enable location ?"
+        android:textAlignment="viewStart"
+        android:textColor="#F6F4F4"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <EditText
+        android:id="@+id/contact"
+        android:layout_width="wrap_content"
+        android:layout_height="38dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="#B2C2D2"
+        android:ems="10"
+        android:fontFamily="@font/jetbrainsmono_bold"
+        android:hint="contact info "
+        android:textAlignment="center"
+        android:textColor="#FDFDFD"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/homepage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.516"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Switch
+        android:id="@+id/location_switch"
+        android:layout_width="59dp"
+        android:layout_height="35dp"
+        app:layout_constraintBottom_toBottomOf="@+id/location_question"
+        app:layout_constraintEnd_toEndOf="@+id/location_question"
+        app:layout_constraintHorizontal_bias="0.907"
+        app:layout_constraintStart_toStartOf="@+id/location_question"
+        app:layout_constraintTop_toTopOf="@+id/location_question"
+        app:layout_constraintVertical_bias="0.411" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="97dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="40dp"
+        android:backgroundTint="#001F3F"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.898"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/next_icon" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="AdminFragmentNavigationTest">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <runningDeviceTargetSelectedWithDropDown>
@@ -17,6 +20,12 @@
           </runningDeviceTargetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-04-08T20:24:41.024303300Z" />
         </State>
+      </entry>
+      <entry key="navigateToAdminHomeFragment()">
+        <State />
+      </entry>
+      <entry key="testNavigateToAdminEventFragment()">
+        <State />
       </entry>
     </value>
   </component>

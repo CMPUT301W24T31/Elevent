@@ -49,6 +49,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore:24.10.3")
+    implementation("androidx.fragment:fragment-testing:1.6.2")
     androidTestImplementation("androidx.test:rules:1.6.0-alpha01")
     val nav_version = "2.7.7"
 
@@ -81,6 +82,8 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:20.3.0")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation ("org.mockito:mockito-core:3.11.2")
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
     androidTestImplementation("androidx.test.ext:junit:1.2.0-alpha03")
 
     //Things for Espresso

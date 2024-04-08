@@ -3,21 +3,18 @@ package com.example.elevent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.GeoPoint;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of an Event object
-    Outstanding Issues: figure out QR codes, location, notifications
  */
 /**
  * Represents an event
@@ -45,6 +42,8 @@ public class Event implements Parcelable {
     private int previousAttendeesCount;
 
     private int maxAttendance;
+    private List<String> previousSignedUpAttendees;
+    private Map<String, Integer> previousCheckedInAttendees;
 
     /**
      * No argument constructor
@@ -54,6 +53,8 @@ public class Event implements Parcelable {
 
     /**
      * Class constructor without reused QR
+     * @param eventID ID of the event
+     * @param organizerID ID of the event organizer
      * @param eventName Name of the event
      * @param promotionalQR QR code linked to event poster an description
      * @param checkinQR QR code for checking in to the event
@@ -63,6 +64,7 @@ public class Event implements Parcelable {
      * @param description Description of the event
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
+     * @param maxAttendance Max attendees permitted to sign up
      */
     public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster, int maxAttendance) {
@@ -82,12 +84,49 @@ public class Event implements Parcelable {
         this.checkInLocations = new HashMap<>();
         this.checkedInAttendees = new HashMap<>();
         this.maxAttendance = maxAttendance;
+        this.previousCheckedInAttendees = new HashMap<>();
+        this.previousSignedUpAttendees = new ArrayList<>();
     }
 
     /**
-     * Reads event parcel
-     * @param in Event parcel to be read
+     * Constructor with reused QR
+     * @param eventID ID of the event
+     * @param organizerID ID of the event organizer
+     * @param eventName Name of the event
+     * @param promotionalQR QR code linked to event poster an description
+     * @param checkinQR QR code for checking in to the event
+     * @param attendeesCount Number of attendees checked in
+     * @param date Date of the event
+     * @param time Time of the event
+     * @param description Description of the event
+     * @param location Location of the event
+     * @param eventPoster Uploaded poster of the event
+     * @param maxAttendance Max attendees permitted to sign up
+     * @param sha256ReusedQRContent SHA-256 hash encrypted content of the reused QR
      */
+    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+                 String date, String time, String description, String location, Blob eventPoster, int maxAttendance, String sha256ReusedQRContent) {
+        this.eventID = eventID;
+        this.organizerID = organizerID;
+        this.eventName = eventName;
+        this.promotionalQR = promotionalQR;
+        this.checkinQR = checkinQR;
+        this.attendeesCount = attendeesCount;
+        this.date = date;
+        this.time = time;
+        this.description = description;
+        this.eventPoster = eventPoster;
+        this.location = location;
+        this.notifications = new ArrayList<>();
+        this.signedUpAttendees = new ArrayList<>();
+        this.checkInLocations = new HashMap<>();
+        this.checkedInAttendees = new HashMap<>();
+        this.maxAttendance = maxAttendance;
+        this.sha256ReusedQRContent = sha256ReusedQRContent;
+        this.previousSignedUpAttendees = new ArrayList<>();
+        this.previousCheckedInAttendees = new HashMap<>();
+    }
+
     protected Event(Parcel in) {
         organizerID = in.readString();
         eventID = in.readString();
@@ -115,6 +154,7 @@ public class Event implements Parcelable {
         }
     };
 
+
     /**
      * Create the map to be put into the event database
      * @return Map that contains the event information
@@ -139,6 +179,8 @@ public class Event implements Parcelable {
         eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
         eventMap.put("milestone", milestone);
         eventMap.put("maxAttendance", maxAttendance);
+        eventMap.put("previousSignedUpAttendees", previousSignedUpAttendees);
+        eventMap.put("previousCheckedInAttendees", previousCheckedInAttendees);
 
         return eventMap;
     }
@@ -421,6 +463,22 @@ public class Event implements Parcelable {
      */
     public void setPreviousAttendeesCount(int previousAttendeesCount) {
         this.previousAttendeesCount = previousAttendeesCount;
+    }
+
+    public List<String> getPreviousSignedUpAttendees() {
+        return previousSignedUpAttendees;
+    }
+
+    public void setPreviousSignedUpAttendees(List<String> previousSignedUpAttendees) {
+        this.previousSignedUpAttendees = previousSignedUpAttendees;
+    }
+
+    public Map<String, Integer> getPreviousCheckedInAttendees() {
+        return previousCheckedInAttendees;
+    }
+
+    public void setPreviousCheckedInAttendees(Map<String, Integer> previousCheckedInAttendees) {
+        this.previousCheckedInAttendees = previousCheckedInAttendees;
     }
 
     /**

@@ -202,6 +202,11 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
 
     // MyEventsFragment.java
 
+    @Override
+    public void onUserIDLogin() {
+
+    }
+
     /**
      * Implementation of CreatedEventListener interface
      * @param updatedEvent Event to be updated

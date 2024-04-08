@@ -164,8 +164,12 @@ public class ScannerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+//        super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.fragment_scanner, container, false);
+        Log.d("locloc", "onCreateView: ");
+        scanQR();
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scanner, container, false);
+        return v;
     }
 
     /**
@@ -187,9 +191,10 @@ public class ScannerFragment extends Fragment {
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private void scanQR(){
         ScanOptions options = new ScanOptions();
-        options.setOrientationLocked(true);
-        options.setPrompt("");
-        options.setCaptureActivity(CaptureAct.class);
+//        options.setOrientationLocked(true);
+//
+//        options.setPrompt("");
+//        options.setCaptureActivity(CaptureAct.class);
         qrScannerLauncher.launch(options);
 
         locationPermissionRequest.launch(new String[] {

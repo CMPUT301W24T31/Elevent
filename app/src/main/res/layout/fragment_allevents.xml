@@ -44,7 +44,6 @@
             android:divider="@color/item_grey"
             android:dividerHeight="5dp"
             />
-            -->
     </LinearLayout>
 <!--    TEMPORARY BUTTON TO TEST FRAGMENT NAVIGATION
         REPLACE WITH EVENT ITEM CLICK FROM LIST VIEW    -->
