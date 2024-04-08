@@ -70,7 +70,7 @@ public class EventDB {
      * Updates the information of an event in the database
      *
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
-     * @return
+     * @return The result of the task
      */
     public Task<Void> updateEvent(Event newEvent) {
         DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());

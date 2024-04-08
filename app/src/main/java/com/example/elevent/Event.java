@@ -35,6 +35,8 @@ public class Event implements Serializable {
     private Map<String, GeoPoint> checkInLocations;
     private Map<String, Integer> checkedInAttendees;
     private String sha256ReusedQRContent;
+    private int milestone;
+    private int previousAttendeesCount;
 
     private int maxAttendance;
 
@@ -71,6 +73,7 @@ public class Event implements Serializable {
         this.signedUpAttendees = new ArrayList<>();
         this.checkInLocations = new HashMap<>();
         this.checkedInAttendees = new HashMap<>();
+        this.previousAttendeesCount = 0;
     }
     /**
      * Class constructor with reused QR
@@ -107,6 +110,7 @@ public class Event implements Serializable {
     }
 
     public Event(String eventID, String organizerID, String name, Blob blob, Blob blob1, int i, String eventDate, String eventTime, String eventDesc, String eventLocation, Blob eventPoster) {
+        this.previousAttendeesCount = 0;
     }
 
     /**
@@ -131,6 +135,8 @@ public class Event implements Serializable {
         eventMap.put("checkedInAttendees", checkedInAttendees);
         eventMap.put("checkInLocations", checkInLocations);
         eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
+        eventMap.put("milestone", milestone);
+        eventMap.put("previousAttendeesCount", previousAttendeesCount);
 
         return eventMap;
     }
@@ -375,6 +381,22 @@ public class Event implements Serializable {
      */
     public void setSha256ReusedQRContent(String sha256ReusedQRContent) {
         this.sha256ReusedQRContent = sha256ReusedQRContent;
+    }
+
+    public int getMilestone() {
+        return milestone;
+    }
+
+    public void setMilestone(int milestone) {
+        this.milestone = milestone;
+    }
+
+    public int getPreviousAttendeesCount() {
+        return previousAttendeesCount;
+    }
+
+    public void setPreviousAttendeesCount(int previousAttendeesCount) {
+        this.previousAttendeesCount = previousAttendeesCount;
     }
 
     /**

@@ -18,6 +18,11 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.firestore.Blob;
 
+import org.checkerframework.checker.units.qual.N;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
@@ -149,16 +154,24 @@ public class EventViewAttendee extends Fragment {
         // Set event data (placeholders for now)
         //eventDescriptionTextView.setText("Event Description Here"); // Placeholder for event.getDescription()
         //eventPosterImageView.setImageBitmap(eventModel.getPosterImage()); // Placeholder for event.getPosterImage()
-        mostRecentNotificationTextView.setText("Most Recent Notification Here"); // Placeholder for getLastNotification()
+        if (event.getNotifications() != null && event.getNotifications().size() != 0) {
+            mostRecentNotificationTextView.setText(event.getNotifications().get(event.getNotifications().size() - 1));
+        }
 
         // On clicking the most recent notification, navigate to NotificationFragment
 
-        mostRecentNotificationTextView.setOnClickListener(v -> {
-            // Navigate to NotificationFragment
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.activity_main_framelayout, new NotificationFragmentAttendee())
-                    .addToBackStack(null)
-                    .commit();
+        mostRecentNotificationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putSerializable("event", event);
+                NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                notificationFragmentAttendee.setArguments(args);
+                if (getActivity() instanceof MainActivity){
+                    FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                    helper.replaceFragment(notificationFragmentAttendee);
+                }
+            }
         });
 
 

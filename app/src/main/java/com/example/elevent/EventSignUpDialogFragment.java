@@ -2,20 +2,35 @@ package com.example.elevent;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 /*
     This file implements dialog fragment that shows a disclaimer telling the attendee that they must
@@ -29,8 +44,22 @@ import java.util.List;
  */
 public class EventSignUpDialogFragment extends DialogFragment {
 
+    interface EventSignUpListener{
+        void onSignUp();
+    }
     private Event event;
     private String userID;
+    private EventSignUpListener listener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof EventSignUpListener) {
+            listener = (EventSignUpListener) context;
+        } else {
+            throw new RuntimeException(context + " must implement EventSignUpListener");
+        }
+    }
 
     /**
      * Called to do initial creation of a fragment
@@ -57,7 +86,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_add_attendee_sign_up, null);
+        View view = getLayoutInflater().inflate(R.layout.fragment_add_attendee_sign_up, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         return builder
                 .setView(view)
@@ -80,6 +109,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
                     bundle.putSerializable("event", event);
                     EventViewAttendee eventViewAttendee = new EventViewAttendee();
                     eventViewAttendee.setArguments(bundle);
+                    listener.onSignUp();
                     if (getActivity() instanceof MainActivity){
                         FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
                         helper.replaceFragment(eventViewAttendee);

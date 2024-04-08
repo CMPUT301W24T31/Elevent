@@ -45,7 +45,13 @@ import java.util.Calendar;
  */
 public class CreateEventFragment extends Fragment {
 
+    public CreateEventFragment() {}
 
+    interface CreateEventListener{
+        void createNewEvent();
+    }
+
+    private CreateEventListener listener;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
@@ -96,11 +102,10 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof CreateEventListener) {
+        if (context instanceof CreateEventListener){
             listener = (CreateEventListener) context;
         } else {
             throw new RuntimeException(context + " must implement CreateEventListener");
@@ -239,7 +244,7 @@ public class CreateEventFragment extends Fragment {
                         event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
-
+                listener.createNewEvent();
 
                 // Pass the event object to CreatedEventFragment
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();

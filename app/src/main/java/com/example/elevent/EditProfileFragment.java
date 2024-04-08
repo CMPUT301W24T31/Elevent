@@ -85,7 +85,6 @@ public class EditProfileFragment extends Fragment {
         EditText editProfileHomepage = view.findViewById(R.id.edit_profile_homepage);
         EditText editProfileContact = view.findViewById(R.id.edit_profile_contact);
         ImageView editProfileImage = view.findViewById(R.id.edit_profile_image);
-        TextView deleteProfileImageText = view.findViewById(R.id.delete_profile_photo_text);
 
         editProfileName.setText(user.getName());
         editProfileHomepage.setText(user.getHomePage());
@@ -113,22 +112,26 @@ public class EditProfileFragment extends Fragment {
         ImageView editProfileImage = view.findViewById(R.id.edit_profile_image);
         TextView editProfileImageText = view.findViewById(R.id.edit_profile_photo_text);
         TextView deleteProfileImageText = view.findViewById(R.id.delete_profile_photo_text);
+        if (user.getHasGeneratedPFP()){
+            deleteProfileImageText.setVisibility(View.INVISIBLE);
+        }
         getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-            if (uri != null) {
-                // OpenAI, 2024, ChatGPT, Convert to byte array
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] profilePhotoByteArray = byteArrayOutputStream.toByteArray();
-                    user.setProfilePic(Blob.fromBytes(profilePhotoByteArray));
-                    editProfileImage.setImageBitmap(bitmap);
-                    deleteProfileImageText.setVisibility(View.VISIBLE);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        });
+                    if (uri != null) {
+                        // OpenAI, 2024, ChatGPT, Convert to byte array
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), uri);
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                            byte[] profilePhotoByteArray = byteArrayOutputStream.toByteArray();
+                            user.setProfilePic(Blob.fromBytes(profilePhotoByteArray));
+                            user.setHasGeneratedPFP(false);
+                            editProfileImage.setImageBitmap(bitmap);
+                            deleteProfileImageText.setVisibility(View.VISIBLE);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                });
         editProfileImageText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,14 +147,14 @@ public class EditProfileFragment extends Fragment {
                             requireContext(),
                             200,
                             AvatarConstants.Companion.getRECTANGLE(),
-                            String.valueOf(user.getName().charAt(0))
+                            user.getName()
                     );
                 } else {
                     generatedPFP = AvatarGenerator.Companion.avatarImage(
                             requireContext(),
-                            200,
+                            50,
                             AvatarConstants.Companion.getRECTANGLE(),
-                            String.valueOf(user.getUserID().charAt(0))
+                            "Elevent"
                     );
                 }
                 Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
@@ -160,6 +163,7 @@ public class EditProfileFragment extends Fragment {
                 byte[] generatedPFPBA = outputStream.toByteArray();
                 Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
                 user.setProfilePic(generatedPFPBlob);
+                user.setHasGeneratedPFP(true);
                 editProfileImage.setImageBitmap(generatedPFPBitmap);
                 deleteProfileImageText.setVisibility(View.INVISIBLE);
             }
@@ -167,6 +171,23 @@ public class EditProfileFragment extends Fragment {
         view.findViewById(R.id.save_edited_profile_button).setOnClickListener(v -> {
 
             user.setName(editProfileName.getText().toString());
+            if (!editProfileName.getText().toString().isEmpty()){
+                if (user.getHasGeneratedPFP()){
+                    BitmapDrawable generatedPFP = AvatarGenerator.Companion.avatarImage(
+                            requireContext(),
+                            200,
+                            AvatarConstants.Companion.getRECTANGLE(),
+                            editProfileName.getText().toString()
+                    );
+                    Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                    byte[] generatedPFPBA = outputStream.toByteArray();
+                    Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+                    user.setProfilePic(generatedPFPBlob);
+                    editProfileImage.setImageBitmap(generatedPFPBitmap);
+                }
+            }
             user.setHomePage(editProfileHomepage.getText().toString());
             user.setContact(editProfileContact.getText().toString());
 

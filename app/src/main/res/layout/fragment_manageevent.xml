@@ -93,6 +93,18 @@
                     android:textColor="@color/text_white"
                     android:textSize="20sp"
                     android:theme="@style/FontTheme" />
+                    
+                <Button
+                    android:id="@+id/set_milestone_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/attendees_count_text"
+                    android:layout_centerInParent="true"
+                    android:backgroundTint="@color/item_grey"
+                    android:theme="@style/FontTheme"
+                    android:text="Set milestones"
+                    android:textSize="20sp"
+                    android:layout_marginTop="10dp"/>
 
             </RelativeLayout>
         </ScrollView>
