@@ -42,7 +42,7 @@
         android:id="@+id/homepage"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="268dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="#B2C2D2"
         android:ems="10"
@@ -51,27 +51,8 @@
         android:textAlignment="center"
         android:textColor="#F3EFEF"
         android:textSize="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/location_question"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/location_question"
-        android:layout_width="328dp"
-        android:layout_height="72dp"
-        android:layout_marginBottom="220dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="#B2C2D2"
-        android:fontFamily="@font/jetbrainsmono_bold"
-        android:padding="10dp"
-        android:text="do you want to enable location ?"
-        android:textAlignment="viewStart"
-        android:textColor="#F6F4F4"
-        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
@@ -91,17 +72,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <Switch
-        android:id="@+id/location_switch"
-        android:layout_width="59dp"
-        android:layout_height="35dp"
-        app:layout_constraintBottom_toBottomOf="@+id/location_question"
-        app:layout_constraintEnd_toEndOf="@+id/location_question"
-        app:layout_constraintHorizontal_bias="0.907"
-        app:layout_constraintStart_toStartOf="@+id/location_question"
-        app:layout_constraintTop_toTopOf="@+id/location_question"
-        app:layout_constraintVertical_bias="0.411" />
 
     <ImageButton
         android:id="@+id/imageButton2"
