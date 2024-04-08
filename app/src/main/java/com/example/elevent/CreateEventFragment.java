@@ -34,19 +34,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.UUID;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
     to allow an organizer to input event information and create the event.
-    Outstanding issues: encoding and creating QR code for activities needs work
  */
 /**
  * This fragment displays the UI for allowing a user to input event information
  * Creates an event object
  */
 public class CreateEventFragment extends Fragment {
+    /**
+     * Required empty constructor
+     */
+    public CreateEventFragment() {}
 
+    /**
+     * Interface for CreateEventListener
+     */
+    interface CreateEventListener{
+        void createNewEvent();
+    }
 
+    private CreateEventListener listener;
     private final ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
         if (isGranted) {
             getEventPosterImage();
@@ -60,22 +69,21 @@ public class CreateEventFragment extends Fragment {
      * Implemented by MainActivity
      */
     //create event listener to be implemented by main activity
-    interface CreateEventListener {
-        void onPositiveClick(Event event);
-        //void onCloseCreateEventFragment();
-    }
 
-    private CreateEventListener listener;
     byte[] eventPosterByteArray;
 
+    /**
+     * Puts the created event into the database
+     * @param event
+     */
     private void createEvent(Event event) {
         EventDB eventDB = new EventDB(new EventDBConnector());
 
         eventDB.addEvent(event).thenRun(() -> {
-            // Ensure operations that update the UI are run on the main thread
+            // ensure operations run on the main thread
             getActivity().runOnUiThread(() -> {
                 Toast.makeText(getActivity(), "Event added successfully", Toast.LENGTH_SHORT).show();
-                navigateToMyEventsFragment(); // Navigate back to MyEventsFragment after event creation
+                navigateToMyEventsFragment(); // navigate back to MyEventsFragment after event creation
             });
         }).exceptionally(e -> {
             getActivity().runOnUiThread(() -> {
@@ -86,6 +94,9 @@ public class CreateEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Handles navigation to the MyEventsFragment
+     */
     private void navigateToMyEventsFragment() {
         // Ensure this operation is also considered to be executed on the main thread
         if (isAdded() && getActivity() != null && getFragmentManager() != null) {
@@ -97,11 +108,14 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
-
+    /**
+     * Attaches listener to host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof CreateEventListener) {
+        if (context instanceof CreateEventListener){
             listener = (CreateEventListener) context;
         } else {
             throw new RuntimeException(context + " must implement CreateEventListener");
@@ -125,6 +139,7 @@ public class CreateEventFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_createevent, container, false);
         EditText eventName = view.findViewById(R.id.event_name_input);
         EditText eventAddress = view.findViewById(R.id.event_location_input);
@@ -135,6 +150,9 @@ public class CreateEventFragment extends Fragment {
         ImageView eventPosterView = view.findViewById(R.id.create_event_image_view);
         TextView editEventPoster = view.findViewById(R.id.change_event_poster_text);
         TextView deleteEventPoster = view.findViewById(R.id.remove_event_poster_text);
+        EditText eventMaxAttendees = view.findViewById(R.id.event_max_attendees_input);
+
+        eventMaxAttendees.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         eventPosterView.setVisibility(View.INVISIBLE);
         editEventPoster.setVisibility(View.INVISIBLE);
@@ -160,7 +178,7 @@ public class CreateEventFragment extends Fragment {
                 }
             }
         });
-        
+
         addEventImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -210,6 +228,24 @@ public class CreateEventFragment extends Fragment {
                     Toast.makeText(getActivity(), "Event Name Required", Toast.LENGTH_SHORT).show();
                     return; // Add return to exit early if validation fails
                 }
+
+                String maxAttendeesInput = eventMaxAttendees.getText().toString().trim();
+                int maxAttendees = -1; // required minimum
+
+                if (!maxAttendeesInput.isEmpty()) {
+                    try {
+                        maxAttendees = Integer.parseInt(maxAttendeesInput);
+                        //maxAttendees = Integer.parseInt(eventMaxAttendees.getText().toString());
+                        if (maxAttendees < 0) {
+                            Toast.makeText(getActivity(), "Please enter a non-negative number for maximum attendees", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(getActivity(), "Please enter a valid number for maximum attendees", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+
                 String eventID = String.valueOf(System.currentTimeMillis());
                 Blob eventPoster = null;
                 if (eventPosterByteArray != null){
@@ -224,15 +260,15 @@ public class CreateEventFragment extends Fragment {
                 String event_location = eventAddress.getText().toString();
 
                 Event event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                        event_date, event_time, event_desc, event_location, eventPoster);
+                        event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
                 // Call createEvent method to add the event and handle navigation
                 createEvent(event);
-
+                listener.createNewEvent();
 
                 // Pass the event object to CreatedEventFragment
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
                 Bundle args = new Bundle();
-                args.putSerializable("selected_event", event); // Assuming "event" is your Event object
+                args.putParcelable("selected_event", event); // Assuming "event" is your Event object
                 createdEventFragment.setArguments(args);
 
             }
@@ -281,6 +317,11 @@ public class CreateEventFragment extends Fragment {
         getContentLauncher.launch("image/*");
     }
 
+    /**
+     * Generates a QR Code
+     * @param data Data to be encoded into the QR Code
+     * @return QR Code as a byte array
+     */
     private byte[] generateQRCode(String data) {
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();

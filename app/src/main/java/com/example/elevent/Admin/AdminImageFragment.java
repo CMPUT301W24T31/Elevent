@@ -3,6 +3,7 @@ package com.example.elevent.Admin;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -13,16 +14,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.avatarfirst.avatargenlib.AvatarConstants;
+import com.avatarfirst.avatargenlib.AvatarGenerator;
 import com.example.elevent.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+/*
+    This file contains the implementation of the AdminImageFragment, which allows an admin to browse and delete images
+ */
 
 /**
  * A fragment that uses a RecyclerView to display images and names from Firestore.
@@ -34,10 +44,23 @@ public class AdminImageFragment extends Fragment {
     private ImageAdapter imageAdapter;
     private List<Image> imageList;
 
-    public AdminImageFragment() {
-        //empty public constructor
-    }
+    /**
+     * Required empty public constructor
+     */
+    public AdminImageFragment() {}
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or nul
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -85,7 +108,33 @@ public class AdminImageFragment extends Fragment {
         String fieldToUpdate = image.isEvent() ? "eventPoster" : "profilePic";
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put(fieldToUpdate, null);
+        if (image.isEvent()) {
+            updates.put(fieldToUpdate, null);
+        } else {
+            BitmapDrawable generatedPFP;
+            if (image.getName() != null) {
+                generatedPFP = AvatarGenerator.Companion.avatarImage(
+                        requireContext(),
+                        200,
+                        AvatarConstants.Companion.getRECTANGLE(),
+                        String.valueOf(image.getName())
+                );
+            } else {
+                generatedPFP = AvatarGenerator.Companion.avatarImage(
+                        requireContext(),
+                        200,
+                        AvatarConstants.Companion.getRECTANGLE(),
+                        "Elevent"
+                );
+            }
+            Bitmap generatedPFPBitmap = generatedPFP.getBitmap();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            byte[] generatedPFPBA = outputStream.toByteArray();
+            Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
+            updates.put(fieldToUpdate, generatedPFPBlob);
+            updates.put("hasGeneratedPFP", true);
+        }
 
         db.collection(collectionPath).document(documentId)
                 .update(updates)

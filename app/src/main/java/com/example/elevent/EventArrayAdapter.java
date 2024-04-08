@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 /*
     This file contains the implementation of the EventArrayAdapter that is responsible for displaying events
-    Outstanding issues: n/a
  */
 /**
  * Displays the list of events
@@ -64,7 +63,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event> {
         // Set the text for the event name and date TextViews
         eventName.setText(event.getEventName());
         // TODO: 2024-03-06 uncomment when getEventDate()
-        //eventDate.setText(event.getDate()); // Assuming Event has getEventDate() method
+        eventDate.setText(event.getDate()); // Assuming Event has getEventDate() method
 
         return view;
     }

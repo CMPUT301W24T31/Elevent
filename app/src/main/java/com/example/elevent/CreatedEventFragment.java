@@ -2,8 +2,10 @@ package com.example.elevent;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -22,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -33,7 +34,6 @@ import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
-    Outstanding issues: Need to display the QR codes,
  */
 /**
  * This fragment displays the organizer's view of an event they created
@@ -46,10 +46,10 @@ public class CreatedEventFragment extends Fragment {
      * Implemented by MainActivity
      */
     interface CreatedEventListener {
-        //void onCreateEvent(Event event);
 
         void updateEvent(Event event);
     }
+
 
     private Event selectedEvent;
     private CreatedEventListener listener;
@@ -59,6 +59,11 @@ public class CreatedEventFragment extends Fragment {
         }
     });
     private ActivityResultLauncher<String> getContentLauncher;
+
+    /**
+     * Required empty public constructor
+     */
+    public CreatedEventFragment(){}
 
     /**
      * Called when a fragment is first attached to its host activity
@@ -74,6 +79,7 @@ public class CreatedEventFragment extends Fragment {
         }
     }
 
+
     /**
      * Called to do initial creation of a fragment.
      * Gets the selected event in the array adapter
@@ -84,7 +90,7 @@ public class CreatedEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            selectedEvent = (Event) getArguments().getSerializable("selected_event");
+            selectedEvent = getArguments().getParcelable("selected_event");
         }
     }
 
@@ -106,6 +112,7 @@ public class CreatedEventFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_createdevent, container, false);
+
         EditText eventName = view.findViewById(R.id.event_name_text);
         eventName.setText(selectedEvent.getEventName());
         EditText eventAddress = view.findViewById(R.id.event_location_text);
@@ -142,6 +149,7 @@ public class CreatedEventFragment extends Fragment {
 
         ImageView checkInQRImageView = view.findViewById(R.id.checkinQR_image);
         ImageView promotionalQRImageView = view.findViewById(R.id.promotionalQR_image);
+        TextView eventAttendanceInfo = view.findViewById(R.id.event_attendance_info);
 
         if (selectedEvent != null) {
             eventName.setText(selectedEvent.getEventName());
@@ -149,6 +157,17 @@ public class CreatedEventFragment extends Fragment {
             eventTime.setText(selectedEvent.getTime());
             eventDate.setText(selectedEvent.getDate());
             eventDescription.setText(selectedEvent.getDescription());
+
+            int currentAttendees = selectedEvent.getSignedUpAttendees().size();
+            int maxAttendees = selectedEvent.getMaxAttendance();
+            int spotsRemaining = maxAttendees - currentAttendees;
+            String attendanceText = getResources().getString(R.string.spots_remaining, spotsRemaining);
+            eventAttendanceInfo.setText(attendanceText);
+            if (spotsRemaining <= 0) {
+                eventAttendanceInfo.setVisibility(View.INVISIBLE);
+            } else {
+                eventAttendanceInfo.setVisibility(View.VISIBLE);
+            }
 
             Blob checkinQRBlob = selectedEvent.getCheckinQR();
             if (checkinQRBlob != null) {
@@ -166,6 +185,14 @@ public class CreatedEventFragment extends Fragment {
                 }
             }
         }
+
+        EditText eventMaxAttendeesText = view.findViewById(R.id.event_max_attendees_text);
+        if (selectedEvent.getMaxAttendance() > 0) {
+            eventMaxAttendeesText.setText(String.valueOf(selectedEvent.getMaxAttendance()));
+        } else {
+            eventMaxAttendeesText.setText("");  // or leave it blank or any other placeholder
+        }
+        eventMaxAttendeesText.setEnabled(true);
 
         return view;
     }
@@ -190,6 +217,10 @@ public class CreatedEventFragment extends Fragment {
         Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
         TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
         TextView deleteEventPoster = view.findViewById(R.id.delete_event_poster_text);
+
+        TextView eventAttendanceInfo = view.findViewById(R.id.event_attendance_info);
+        EditText eventMaxAttendeesText = view.findViewById(R.id.event_max_attendees_text);
+
         getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
                 // OpenAI, 2024, ChatGPT, Convert to byte array
@@ -231,6 +262,9 @@ public class CreatedEventFragment extends Fragment {
                 addEventImageButton.setVisibility(View.VISIBLE);
             }
         });
+
+
+
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
         Button saveChangesButton = view.findViewById(R.id.save_the_event);
         Button shareEventButton = view.findViewById(R.id.share_the_event);
@@ -239,7 +273,7 @@ public class CreatedEventFragment extends Fragment {
             public void onClick(View v) {
                 ManageEventFragment manageEventFragment = new ManageEventFragment();
                 Bundle args = new Bundle();
-                args.putSerializable("event", selectedEvent);
+                args.putParcelable("event", selectedEvent);
                 manageEventFragment.setArguments(args);
                 //did fragment switching using fragment helper, creates instance of main to tie with the fragment to enable switching
                 //(same implementation as the random floating button in all events :))
@@ -252,66 +286,30 @@ public class CreatedEventFragment extends Fragment {
             }
         });
 
+        shareEventButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Convert promotional QR Blob to Bitmap
+                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
+                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
 
-//        private File saveQRCodeToTempFile(Bitmap qrCodeBitmap) {
-//            try {
-//                // Create a temporary file
-//                File tempFile = File.createTempFile("qr_code", ".png", requireContext().getCacheDir());
-//
-//                // Write the bitmap to the temporary file
-//                FileOutputStream outputStream = new FileOutputStream(tempFile);
-//                qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//                outputStream.close();
-//
-//                return tempFile;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-
-//        shareEventButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Convert promotional QR Blob to Bitmap
-//                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
-//                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
-//
-//                // Save the promotional QR code image to a temporary file
-//                File qrCodeFile = saveQRCodeToTempFile(promotionalQRBitmap);
-//
-//                if (qrCodeFile != null) {
-//                    // Create a share intent
-//                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//                    shareIntent.setType("image/*");
-//
-//                    // Add event details to the share message
-//                    String shareMessage = "Check out this event: " + selectedEvent.getEventName()
-//                            + "\nLocation: " + selectedEvent.getLocation()
-//                            + "\nDate: " + selectedEvent.getDate()
-//                            + "\nTime: " + selectedEvent.getTime()
-//                            + "\nDescription: " + selectedEvent.getDescription();
-//
-//                    // Set the text message
-//                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-//
-//                    // Set the promotional QR code image file to be shared
-//                    Uri qrCodeUri = FileProvider.getUriForFile(requireContext(),
-//                            "com.example.elevent.fileprovider",
-//                            qrCodeFile);
-//                    shareIntent.putExtra(Intent.EXTRA_STREAM, qrCodeUri);
-//
-//                    // Grant read permission to the sharing app
-//                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//                    // Start the activity with the share intent
-//                    startActivity(Intent.createChooser(shareIntent, "Share Event"));
-//                } else {
-//                    // Handle error if QR code file cannot be saved
-//                    Toast.makeText(getContext(), "Failed to save QR code image", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
+                // Check if promotionalQRBitmap is not null
+                if (promotionalQRBitmap != null) {
+                    // Share the QR code bitmap
+                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                    shareIntent.setType("image/png");
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    promotionalQRBitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+                    String path = MediaStore.Images.Media.insertImage(getContext().getContentResolver(), promotionalQRBitmap, "QR Code", null);
+                    Uri imageUri = Uri.parse(path);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                    startActivity(Intent.createChooser(shareIntent, "Share via"));
+                } else {
+                    // Handle case where QR code bitmap is null
+                    Toast.makeText(getContext(), "Promotional QR code not available", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         saveChangesButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,6 +320,8 @@ public class CreatedEventFragment extends Fragment {
                 String updatedEventTime = eventTimeText.getText().toString();
                 String updatedEventDate = eventDateText.getText().toString();
                 String updatedEventDescription = eventDescriptionText.getText().toString();
+                String updatedAttendanceInfo = eventAttendanceInfo.getText().toString();
+                String updatedMaxAttendanceText = eventMaxAttendeesText.getText().toString();
 
                 // Update selectedEvent object with the retrieved data
                 selectedEvent.setEventName(updatedEventName);
@@ -329,6 +329,19 @@ public class CreatedEventFragment extends Fragment {
                 selectedEvent.setTime(updatedEventTime);
                 selectedEvent.setDate(updatedEventDate);
                 selectedEvent.setDescription(updatedEventDescription);
+                if (!updatedMaxAttendanceText.isEmpty()) {
+                    try {
+                        int maxAttendance = Integer.parseInt(updatedMaxAttendanceText);
+                        selectedEvent.setMaxAttendance(maxAttendance);
+                        updateAttendanceInfo();
+                    } catch (NumberFormatException e) {
+                        eventMaxAttendeesText.setError("Invalid number");
+                        return;
+                    }
+                } else {
+                    selectedEvent.setMaxAttendance(0);
+                    updateAttendanceInfo();
+                }
 
 
                 // Update event in Firebase Firestore
@@ -366,11 +379,46 @@ public class CreatedEventFragment extends Fragment {
 
     // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()
     // OpenAI, 2024, ChatGPT, Display QR code from byte array
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return Resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
+
+    /**
+     * Gets the event poster uploaded by the organizer
+     */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
     }
+
+    /**
+     * Updates the remaining sign up spots
+     */
+    private void updateAttendanceInfo() {
+
+        int currentAttendees = selectedEvent.getSignedUpAttendees().size();
+        int maxAttendees = selectedEvent.getMaxAttendance();
+        int spotsRemaining = maxAttendees - currentAttendees;
+
+        // Ensure spotsRemaining doesn't go negative
+        spotsRemaining = Math.max(spotsRemaining, 0);
+
+        TextView eventAttendanceInfo = getView().findViewById(R.id.event_attendance_info);
+        String attendanceText = getString(R.string.spots_remaining, spotsRemaining); // Proper formatting
+        eventAttendanceInfo.setText(attendanceText);
+        if (spotsRemaining <= 0) {
+            eventAttendanceInfo.setVisibility(View.INVISIBLE);
+        } else {
+            eventAttendanceInfo.setVisibility(View.VISIBLE);
+        }
+    }
+
+
 }
+

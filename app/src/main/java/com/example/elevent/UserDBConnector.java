@@ -3,14 +3,13 @@ package com.example.elevent;
 import com.google.firebase.firestore.FirebaseFirestore;
 /*
     This file is responsible for connecting the user database to the app
-    Outstanding issues: n/a
  */
 /**
  * This class connects the user database to the app
  */
 public class UserDBConnector {
 
-    private FirebaseFirestore db;
+    private final FirebaseFirestore db;
 
     /**
      * Connects the database to the app

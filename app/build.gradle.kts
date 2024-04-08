@@ -27,8 +27,8 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
     }
@@ -97,6 +97,8 @@ dependencies {
     implementation("androidx.fragment:fragment:1.6.2")
     implementation("com.google.android.gms:play-services-location:21.2.0")
 
+    // Alphabetic profile photos
+    implementation("com.github.amoskorir:avatarimagegenerator:1.4")
 }
 
 secrets {

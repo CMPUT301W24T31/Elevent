@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +12,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.FirebaseFirestore;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import com.google.firebase.firestore.Blob;
+
 import java.util.List;
-import java.util.Map;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
-    Outstanding issues: figure out attributes of event, such as QR code and notifications
  */
 /**
  * This fragment displays the UI for the attendee's view of an event
@@ -35,9 +30,10 @@ public class EventViewAttendee extends Fragment {
     // Placeholder for event data model
     // private EventModel eventModel;
 
-    public EventViewAttendee() {
-        // Required empty public constructor
-    }
+    /**
+     * Required empty public constructor
+     */
+    public EventViewAttendee(){}
 
 
     /**
@@ -69,13 +65,16 @@ public class EventViewAttendee extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
         // Initialize UI components
         TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
         ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
         TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
+        TextView eventAttendanceTextView = view.findViewById(R.id.event_attendance_textview);
         // Extracting event details from arguments
         assert getArguments() != null;
-        Event event = (Event) getArguments().getSerializable("event");
+        Event event = getArguments().getParcelable("event");
         Button signUpButton = view.findViewById(R.id.sign_up_event_button);
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -85,14 +84,13 @@ public class EventViewAttendee extends Fragment {
             if (signedUp.contains(userID)){
                 String signedUpText = "Signed up!";
                 signUpButton.setText(signedUpText);
-                signUpButton.setBackgroundColor(getResources().getColor(R.color.background_green));
             } else{
                 signUpButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         args.putString("userID", userID);
                         eventSignUpDialogFragment.setArguments(args);
                         eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
@@ -110,9 +108,52 @@ public class EventViewAttendee extends Fragment {
                 Blob eventPosterBlob = event.getEventPoster();
                 Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
                 eventPosterImageView.setImageBitmap(eventPoster);
+            } else {
+                eventPosterImageView.setVisibility(View.GONE);
             }
             if (getActivity() instanceof MainActivity) {
                 ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
+            }
+
+            // display attendance information
+            int currentAttendees = event.getSignedUpAttendees().size();
+            int maxAttendees = event.getMaxAttendance();
+            int spotsRemaining = maxAttendees - currentAttendees;
+
+            eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
+            if (spotsRemaining <= 0) {
+                eventAttendanceTextView.setVisibility(View.INVISIBLE);
+            } else {
+                eventAttendanceTextView.setVisibility(View.VISIBLE);
+            }
+
+            // adjust sign up button based on attendance
+            List<String> signedUp = event.getSignedUpAttendees();
+
+            if (signedUp.contains(userID)) {
+                signUpButton.setText(R.string.already_signed_up);
+                signUpButton.setEnabled(false);
+                signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+            } else {
+                if (currentAttendees >= maxAttendees && spotsRemaining > 0) {
+                    signUpButton.setText(R.string.event_full);
+                    signUpButton.setEnabled(false);
+                    signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                } else {
+                    signUpButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                            Bundle args = new Bundle();
+                            args.putParcelable("event", event);
+                            args.putString("userID", userID);
+                            eventSignUpDialogFragment.setArguments(args);
+                            eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                            String signedUpText = "Signing up...";
+                            signUpButton.setText(signedUpText);
+                        }
+                    });
+                }
             }
         }
 
@@ -120,20 +161,34 @@ public class EventViewAttendee extends Fragment {
         // Set event data (placeholders for now)
         //eventDescriptionTextView.setText("Event Description Here"); // Placeholder for event.getDescription()
         //eventPosterImageView.setImageBitmap(eventModel.getPosterImage()); // Placeholder for event.getPosterImage()
-        mostRecentNotificationTextView.setText("Most Recent Notification Here"); // Placeholder for getLastNotification()
+        if (event.getNotifications() != null && event.getNotifications().size() != 0) {
+            mostRecentNotificationTextView.setText(event.getNotifications().get(event.getNotifications().size() - 1));
+        }
 
         // On clicking the most recent notification, navigate to NotificationFragment
 
-        mostRecentNotificationTextView.setOnClickListener(v -> {
-            // Navigate to NotificationFragment
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.activity_main_framelayout, new NotificationFragmentAttendee())
-                    .addToBackStack(null)
-                    .commit();
+        mostRecentNotificationTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle args = new Bundle();
+                args.putParcelable("event", event);
+                NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
+                notificationFragmentAttendee.setArguments(args);
+                if (getActivity() instanceof MainActivity){
+                    FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                    helper.replaceFragment(notificationFragmentAttendee);
+                }
+            }
         });
 
 
     }
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return Resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);

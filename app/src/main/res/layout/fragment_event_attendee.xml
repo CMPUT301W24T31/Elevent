@@ -12,32 +12,37 @@
         android:id="@+id/include"
         layout="@layout/toolbar" />
                                      -->
-    <TextView
-        android:id="@+id/event_description_textview"
-        android:layout_width="395dp"
-        android:layout_height="81dp"
-        android:background="@drawable/rounded_corner"
-        android:backgroundTint="@color/item_blue"
-        android:paddingTop="28dp"
-        android:text="@string/event_location"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-        <!--app:layout_constraintTop_toBottomOf="@+id/include"-->
 
     <ImageView
         android:id="@+id/event_poster"
         android:layout_width="380dp"
         android:layout_height="380dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/event_description_textview"
+        app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/event_description_textview"
+        android:layout_width="395dp"
+        android:layout_height="81dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/item_grey"
+        android:paddingTop="28dp"
+        android:text="@string/event_location"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:fontFamily="monospace"
+        android:textColor="@color/background_blue"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/event_poster"
+         />
+        <!--app:layout_constraintTop_toBottomOf="@+id/include"-->
 
     <TextView
         android:id="@+id/notification_text"
@@ -45,23 +50,42 @@
         android:layout_height="27dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/rounded_corner"
-        android:backgroundTint="@color/item_blue"
-        android:text="@string/most_recent_notification_attendee_eventview"
+        android:backgroundTint="@color/item_grey"
+        android:text="notifications"
+        android:fontFamily="monospace"
         android:textSize="18sp"
+        android:paddingLeft="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/event_poster" />
+        app:layout_constraintTop_toBottomOf="@+id/event_description_textview" />
+
+    <TextView
+        android:id="@+id/event_attendance_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/spots_open"
+        android:textColor="@android:color/white"
+        android:fontFamily="monospace"
+        android:textSize="16sp"
+        android:paddingRight="10dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sign_up_event_button"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/sign_up_event_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/item_grey"
-        android:text="Sign up"
-        android:textColor="@color/black"
+        android:backgroundTint="@color/item_blue"
+        android:text="@string/sign_up"
+        android:textColor="@color/background_blue"
+        android:fontFamily="monospace"
         tools:layout_editor_absoluteX="270dp"
         tools:layout_editor_absoluteY="708dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,18 +7,15 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-//import com.google.firebase.storage.FirebaseStorage;
-//import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.util.Consumer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 /*
     This file contains the implementation for the Event Database, which stores event objects in a firebase
-    Outstanding issues: n/a
  */
 
 /**
@@ -37,6 +34,9 @@ public class EventDB {
         this.db = connector.getDb();
     }
 
+    /**
+     * Class constructor without arguments
+     */
     public EventDB() {
         EventDBConnector connector = new EventDBConnector();
         this.db = connector.getDb();
@@ -70,7 +70,7 @@ public class EventDB {
      * Updates the information of an event in the database
      *
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
-     * @return
+     * @return The result of the task
      */
     public Task<Void> updateEvent(Event newEvent) {
         DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());
@@ -101,11 +101,27 @@ public class EventDB {
             }
         });
     }
-
     /**
      * Queries the Firebase for a list of all events
      * @return Event ArrayList of all events in the Firebase
      */
+
+    public ArrayList<Event> getAllEvents() {
+        ArrayList<Event> allEvents = new ArrayList<Event>();
+
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    allEvents.add(event);
+                }
+            } else {
+                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+            }
+        });
+
+        return allEvents;
+    }
 
     public void getAllEvents(final Consumer<List<Event>> callback) {
                         db.collection("events").get().addOnCompleteListener(task -> {
