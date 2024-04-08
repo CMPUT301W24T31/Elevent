@@ -30,8 +30,6 @@ import java.util.List;
 public class EventSignUpDialogFragment extends DialogFragment {
 
     interface EventSignUpListener{
-        void onSignUp();
-
         void onSignUp(String eventID);
     }
     private Event event;
@@ -58,7 +56,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            event = (Event) getArguments().getParcelable("event");
+            event = getArguments().getParcelable("event");
             userID = getArguments().getString("userID");
         }
     }
@@ -96,7 +94,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
                     bundle.putParcelable("event", event);
                     EventViewAttendee eventViewAttendee = new EventViewAttendee();
                     eventViewAttendee.setArguments(bundle);
-                    listener.onSignUp();
+                    listener.onSignUp(event.getEventID());
                     if (getActivity() instanceof MainActivity){
                         FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
                         helper.replaceFragment(eventViewAttendee);

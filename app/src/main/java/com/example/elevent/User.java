@@ -1,5 +1,10 @@
 package com.example.elevent;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import com.google.firebase.firestore.Blob;
 import java.util.ArrayList;
@@ -13,7 +18,7 @@ import java.util.Map;
 /**
  * This class represents a user of the app
  */
-public class User implements Serializable {
+public class User implements Parcelable {
 
     // attributes for User class
     // (what information a user has)
@@ -67,6 +72,30 @@ public class User implements Serializable {
         this.checkedInEvents = new ArrayList<>();
         this.receivedNotifications = new ArrayList<>();
     }
+
+    protected User(Parcel in) {
+        name = in.readString();
+        contact = in.readString();
+        homePage = in.readString();
+        userID = in.readString();
+        signedUpEvents = in.createStringArrayList();
+        byte tmpHasGeneratedPFP = in.readByte();
+        hasGeneratedPFP = tmpHasGeneratedPFP == 0 ? null : tmpHasGeneratedPFP == 1;
+        checkedInEvents = in.createStringArrayList();
+        receivedNotifications = in.createStringArrayList();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     /**
      * Maps the user object to be stored in the database
@@ -206,5 +235,22 @@ public class User implements Serializable {
 
     public void setReceivedNotifications(List<String> receivedNotifications) {
         this.receivedNotifications = receivedNotifications;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(contact);
+        dest.writeString(homePage);
+        dest.writeString(userID);
+        dest.writeStringList(signedUpEvents);
+        dest.writeByteArray(profilePic.toBytes());
+        dest.writeStringList(checkedInEvents);
+        dest.writeStringList(receivedNotifications);
     }
 }

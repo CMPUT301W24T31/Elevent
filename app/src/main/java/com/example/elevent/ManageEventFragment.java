@@ -44,7 +44,7 @@ public class ManageEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            event = (Event) getArguments().getParcelable("event");
+            event = getArguments().getParcelable("event");
         }
     }
 
@@ -96,12 +96,23 @@ public class ManageEventFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
+                FirebaseFirestore db = new EventDBConnector().getDb();
                 if (Objects.equals(selection, "signed-up")){
-                    attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
-                    fetchSignedUpAttendees();
+                    db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                            attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
+                            fetchSignedUpAttendees();
+                        }
+                    });
                 } else {
-                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
-                    fetchCheckedInAttendees();
+                    db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                            attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                            fetchCheckedInAttendees();
+                        }
+                    });
                 }
             }
 
@@ -125,7 +136,6 @@ public class ManageEventFragment extends Fragment {
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(notificationCentreFragment);
                 }
-                //return null;
             }
         });
         mapButton.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +152,6 @@ public class ManageEventFragment extends Fragment {
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                     helper.replaceFragment(mapFragment);
                 }
-                //return null;
             }
         });
         setMilestonesButton.setOnClickListener(new View.OnClickListener() {
@@ -160,7 +169,7 @@ public class ManageEventFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User selectedUser = (User) parent.getItemAtPosition(position);
                 Bundle args = new Bundle();
-                args.putSerializable("user", selectedUser);
+                args.putParcelable("user", selectedUser);
                 args.putParcelable("event", event);
                 InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
                 inspectAttendeeInformationFragment.setArguments(args);

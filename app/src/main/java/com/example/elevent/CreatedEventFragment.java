@@ -87,7 +87,7 @@ public class CreatedEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            selectedEvent = (Event) getArguments().getParcelable("selected_event");
+            selectedEvent = getArguments().getParcelable("selected_event");
         }
     }
 

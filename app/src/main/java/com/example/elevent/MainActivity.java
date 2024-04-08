@@ -343,7 +343,6 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                                     }
                                 }
                             }
-                        }
                     });
                 }
             }
@@ -409,16 +408,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     }
 
     @Override
-    public void onCheckIn(String eventID) { setEventAnnouncementListener(eventID);}
-
-
-    @Override
-    public void onSignUp() {
-
-    }
-
-    @Override
     public void onSignUp(String eventID) {
-
+        setEventAnnouncementListener(eventID);
     }
+
+    @Override
+    public void onCheckIn(String eventID) { setEventAnnouncementListener(eventID);}
 }

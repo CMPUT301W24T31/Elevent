@@ -3,6 +3,7 @@ package com.example.elevent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -80,6 +81,34 @@ public class Event implements Parcelable {
         this.checkedInAttendees = new HashMap<>();
         this.maxAttendance = maxAttendance;
     }
+
+    protected Event(Parcel in) {
+        organizerID = in.readString();
+        eventID = in.readString();
+        eventName = in.readString();
+        attendeesCount = in.readInt();
+        date = in.readString();
+        time = in.readString();
+        description = in.readString();
+        location = in.readString();
+        notifications = in.createStringArrayList();
+        signedUpAttendees = in.createStringArrayList();
+        sha256ReusedQRContent = in.readString();
+        milestone = in.readInt();
+        previousAttendeesCount = in.readInt();
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 
     /**
      * Create the map to be put into the event database

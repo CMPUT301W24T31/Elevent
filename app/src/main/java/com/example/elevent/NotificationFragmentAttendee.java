@@ -35,7 +35,7 @@ public class NotificationFragmentAttendee extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            event = (Event) getArguments().getParcelable("event");
+            event = getArguments().getParcelable("event");
         }
     }
 
