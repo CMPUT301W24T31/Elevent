@@ -28,7 +28,7 @@ public class NotificationCentreFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
         }
     }
 
@@ -61,7 +61,7 @@ public class NotificationCentreFragment extends Fragment {
             AddNotificationDialogFragment dialogFragment = new AddNotificationDialogFragment();
             // Pass the current fragment as the listener
             Bundle args = new Bundle();
-            args.putSerializable("event", event);
+            args.putParcelable("event", event);
             dialogFragment.setArguments(args);
             dialogFragment.show(getChildFragmentManager(), "AddNotificationDialogFragment");
         }

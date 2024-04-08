@@ -286,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                         if (documentSnapshot.exists()) {
                             Event eventToOpen = documentSnapshot.toObject(Event.class);
                             Bundle args = new Bundle();
-                            args.putSerializable("event", eventToOpen);
+                            args.putParcelable("event", eventToOpen);
                             if (Objects.equals(intent.getStringExtra("FragmentToOpen"), "ManageEventFragment")) {
                                 ManageEventFragment manageEventFragment = new ManageEventFragment();
                                 manageEventFragment.setArguments(args);

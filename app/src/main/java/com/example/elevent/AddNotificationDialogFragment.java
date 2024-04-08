@@ -50,7 +50,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
         }
     }
 
@@ -97,7 +97,7 @@ public class AddNotificationDialogFragment extends DialogFragment {
         db.updateEvent(event);
 
         Bundle args = new Bundle();
-        args.putSerializable("event", event);
+        args.putParcelable("event", event);
         NotificationCentreFragment notificationCentreFragment = new NotificationCentreFragment();
         notificationCentreFragment.setArguments(args);
         if (getActivity() instanceof MainActivity) {

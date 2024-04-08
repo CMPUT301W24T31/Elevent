@@ -120,7 +120,7 @@ public class AllEventsFragment extends Fragment {
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
+                    args.putParcelable("event", clickedEvent); // Ensure Event implements Serializable
                     eventViewAttendeeFragment.setArguments(args);
 
                     helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details

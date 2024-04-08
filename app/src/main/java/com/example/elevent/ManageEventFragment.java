@@ -73,7 +73,7 @@ public class ManageEventFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
         }
     }
 
@@ -148,7 +148,7 @@ public class ManageEventFragment extends Fragment {
                 if (getActivity() instanceof MainActivity) {
                     NotificationCentreFragment notificationCentreFragment = new NotificationCentreFragment();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", event);
+                    args.putParcelable("event", event);
                     notificationCentreFragment.setArguments(args);
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
@@ -165,7 +165,7 @@ public class ManageEventFragment extends Fragment {
                 if (getActivity() instanceof MainActivity) {
                     MapFragment mapFragment = new MapFragment();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", event);
+                    args.putParcelable("event", event);
                     mapFragment.setArguments(args);
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
@@ -178,7 +178,7 @@ public class ManageEventFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putSerializable("event", event);
+                args.putParcelable("event", event);
                 SetMilestoneDialogFragment setMilestoneDialogFragment = new SetMilestoneDialogFragment();
                 setMilestoneDialogFragment.setArguments(args);
                 setMilestoneDialogFragment.show(requireActivity().getSupportFragmentManager(), "SetMilestoneDialogFragment");
@@ -189,8 +189,8 @@ public class ManageEventFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User selectedUser = (User) parent.getItemAtPosition(position);
                 Bundle args = new Bundle();
-                args.putSerializable("user", selectedUser);
-                args.putSerializable("event", event);
+                args.putParcelable("user", selectedUser);
+                args.putParcelable("event", event);
                 InspectAttendeeInformationFragment inspectAttendeeInformationFragment = new InspectAttendeeInformationFragment();
                 inspectAttendeeInformationFragment.setArguments(args);
                 inspectAttendeeInformationFragment.show(requireActivity().getSupportFragmentManager(), "InspectAttendeeInformationDialogFragment");

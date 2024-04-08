@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -215,7 +216,7 @@ public class ScannerFragment extends Fragment {
                         FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                         EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         eventViewAttendeeFragment.setArguments(args);
                         helper.replaceFragment(eventViewAttendeeFragment);
 
@@ -246,7 +247,7 @@ public class ScannerFragment extends Fragment {
                         Event event = documentSnapshot.toObject(Event.class);
                         EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         eventViewAttendeeFragment.setArguments(args);
 
                         helper.replaceFragment(eventViewAttendeeFragment);

@@ -38,8 +38,8 @@ public class InspectAttendeeInformationFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null){
-            user = (User) getArguments().getSerializable("user");
-            event = (Event) getArguments().getSerializable("event");
+            user = getArguments().getParcelable("user");
+            event = getArguments().getParcelable("event");
         }
     }
 

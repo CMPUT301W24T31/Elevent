@@ -269,7 +269,7 @@ public class CreateEventFragment extends Fragment {
                 // Pass the event object to CreatedEventFragment
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
                 Bundle args = new Bundle();
-                args.putSerializable("selected_event", event); // Assuming "event" is your Event object
+                args.putParcelable("selected_event", event); // Assuming "event" is your Event object
                 createdEventFragment.setArguments(args);
 
             }

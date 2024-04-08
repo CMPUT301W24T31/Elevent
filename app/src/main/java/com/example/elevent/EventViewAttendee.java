@@ -77,7 +77,7 @@ public class EventViewAttendee extends Fragment {
         TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
         // Extracting event details from arguments
         assert getArguments() != null;
-        Event event = (Event) getArguments().getSerializable("event");
+        Event event = getArguments().getParcelable("event");
         Button signUpButton = view.findViewById(R.id.sign_up_event_button);
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -94,7 +94,7 @@ public class EventViewAttendee extends Fragment {
                     public void onClick(View v) {
                         EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         args.putString("userID", userID);
                         eventSignUpDialogFragment.setArguments(args);
                         eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
@@ -132,7 +132,7 @@ public class EventViewAttendee extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle args = new Bundle();
-                args.putSerializable("event", event);
+                args.putParcelable("event", event);
                 NotificationFragmentAttendee notificationFragmentAttendee = new NotificationFragmentAttendee();
                 notificationFragmentAttendee.setArguments(args);
                 if (getActivity() instanceof MainActivity){

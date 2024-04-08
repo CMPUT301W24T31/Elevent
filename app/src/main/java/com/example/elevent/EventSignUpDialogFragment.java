@@ -72,7 +72,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
             userID = getArguments().getString("userID");
         }
     }
@@ -94,7 +94,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
                 .setTitle("Disclaimer")
                 .setNegativeButton("Cancel", ((dialog, which) -> {
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("event", event);
+                    bundle.putParcelable("event", event);
                     EventViewAttendee eventViewAttendee = new EventViewAttendee();
                     eventViewAttendee.setArguments(bundle);
                     if (getActivity() instanceof MainActivity){
@@ -107,7 +107,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
                     addEventSignedUpByAttendee();
                     Toast.makeText(requireContext(), "You are now signed up!", Toast.LENGTH_LONG).show();
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("event", event);
+                    bundle.putParcelable("event", event);
                     EventViewAttendee eventViewAttendee = new EventViewAttendee();
                     eventViewAttendee.setArguments(bundle);
                     listener.onSignUp();

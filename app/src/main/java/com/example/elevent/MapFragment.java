@@ -57,7 +57,7 @@ public class MapFragment extends Fragment {
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (getArguments() != null){
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
         }
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);

@@ -136,7 +136,7 @@ public class ProfileFragment extends Fragment {
                         FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
                         EditProfileFragment editProfileFragment = new EditProfileFragment();
                         Bundle args = new Bundle();
-                        args.putSerializable("user", user);
+                        args.putParcelable("user", user);
                         editProfileFragment.setArguments(args);
                         helper.replaceFragment(editProfileFragment);
                     }

@@ -117,7 +117,7 @@ public class MyEventsFragment extends Fragment{
                 // Pass the selected event to CreatedEventFragment should still parse the data on here
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("selected_event", selectedEvent);
+                bundle.putParcelable("selected_event", selectedEvent);
                 createdEventFragment.setArguments(bundle);
 
                 //switch fragments

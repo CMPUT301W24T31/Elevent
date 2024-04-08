@@ -1,6 +1,10 @@
 package com.example.elevent;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
@@ -18,7 +22,7 @@ import java.util.Map;
 /**
  * Represents an event
  */
-public class Event implements Serializable {
+public class Event implements Parcelable {
 
     // attributes for the information of an event
     private String organizerID;
@@ -108,6 +112,34 @@ public class Event implements Serializable {
         this.checkedInAttendees = new HashMap<>();
         this.previousAttendeesCount = 0;
     }
+
+    protected Event(Parcel in) {
+        organizerID = in.readString();
+        eventID = in.readString();
+        eventName = in.readString();
+        attendeesCount = in.readInt();
+        date = in.readString();
+        time = in.readString();
+        description = in.readString();
+        location = in.readString();
+        notifications = in.createStringArrayList();
+        signedUpAttendees = in.createStringArrayList();
+        sha256ReusedQRContent = in.readString();
+        milestone = in.readInt();
+        previousAttendeesCount = in.readInt();
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 
     /**
      * Create the map to be put into the event database
@@ -415,5 +447,34 @@ public class Event implements Serializable {
         if (checkInLocations.containsKey(userID)) {
             checkInLocations.remove(userID);
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(organizerID);
+        dest.writeString(eventID);
+        dest.writeString(eventName);
+        dest.writeByteArray(promotionalQR.toBytes());
+        dest.writeByteArray(checkinQR.toBytes());
+        dest.writeInt(attendeesCount);
+        if (eventPoster != null) {
+            dest.writeByteArray(eventPoster.toBytes());
+        }
+        dest.writeString(date);
+        dest.writeString(time);
+        dest.writeString(description);
+        dest.writeString(location);
+        dest.writeStringList(notifications);
+        dest.writeStringList(signedUpAttendees);
+        dest.writeMap(checkInLocations);
+        dest.writeMap(checkedInAttendees);
+        dest.writeString(sha256ReusedQRContent);
+        dest.writeInt(milestone);
+        dest.writeInt(previousAttendeesCount);
     }
 }
