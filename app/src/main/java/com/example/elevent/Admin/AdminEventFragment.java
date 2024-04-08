@@ -15,8 +15,13 @@ import com.example.elevent.Event;
 import com.example.elevent.EventArrayAdapter;
 import com.example.elevent.EventDB;
 import com.example.elevent.R;
-import java.util.ArrayList;
+import com.example.elevent.User;
+import com.example.elevent.UserDB;
 
+import java.util.ArrayList;
+/*
+    This file contains the implementation of the Admin UI for browsing and deleting events
+ */
 /**
  * Fragment responsible for displaying a list of events in the admin view.
  * Allows for long-click actions on each event for deletion purposes.
@@ -26,11 +31,32 @@ public class AdminEventFragment extends Fragment {
     private EventArrayAdapter eventAdapter;
     private ArrayList<Event> events = new ArrayList<>();
 
+
+
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.admin_event_view, container, false);
     }
 
+    /**
+     *
+     Fragment Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -68,14 +94,21 @@ public class AdminEventFragment extends Fragment {
      *
      * @param eventToDelete The event to be deleted.
      */
-    private void deleteEvent(Event eventToDelete) {
+    public void deleteEvent(Event eventToDelete) {
         if (eventToDelete.getEventID() == null) {
             Toast.makeText(getContext(), "Error: Event ID is null.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         EventDB eventDB = new EventDB();
+        UserDB userDB = new UserDB(); // Assuming initialization is done elsewhere or using a singleton pattern.
+
+        // Delete the event from the EventDB
         eventDB.deleteEvent(eventToDelete.getEventID()).thenRun(() -> {
+            // After deleting the event, remove it from all users' signedUpEvents and checkedInEvents
+            userDB.removeEventFromUsers(eventToDelete.getEventID());
+
+            // UI update and Toast message
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     events.remove(eventToDelete);
@@ -89,6 +122,8 @@ public class AdminEventFragment extends Fragment {
             return null;
         });
     }
+
+
 
     /**
      * Fetches all events from the database and updates the UI.

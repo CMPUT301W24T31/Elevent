@@ -1,52 +1,35 @@
 package com.example.elevent;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.zxing.client.android.Intents;
-import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CaptureActivity;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
-import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-import com.journeyapps.barcodescanner.DefaultDecoderFactory;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.journeyapps.barcodescanner.camera.CameraSettings;
 
-import org.checkerframework.checker.units.qual.C;
-
-import java.util.HashMap;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 /*
     This file contains the implementation of the ScannerFragment that is responsible for
     requesting for camera permission and opening the camera to scan QR codes.
-    Outstanding issues: need to finish implementing the decoding
  */
 /**
  * This fragment request permission to open the camera and scans the QR code
@@ -54,25 +37,32 @@ import java.util.Objects;
 public class ScannerFragment extends Fragment {
 
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
-    private final ActivityResultLauncher<ScanOptions> qrScannerLauncher= registerForActivityResult(new ScanContract(), result -> {
-        if (result.getContents() != null){
-            Log.d("ScanQRCodeActivity", "Scanned");
-            String resultContents = result.getContents();
-            String[] data = resultContents.split(",");
-            if (Objects.equals(data[0], "Check In")){
-                onAttendeeCheckIn(data[1]);
-            } else if (Objects.equals(data[0], "Promotion")){
-                onPromotionScan(data[1]);
-            }
-        }
-    });;
+    private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
+    private ScannerListener listener;
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
 
     /**
      * Required empty public constructor
      */
-    public ScannerFragment(){
-        Log.d("locloc", "constructor");
+    public ScannerFragment(){}
+
+    /**
+     * Interface for ScannerListener
+     */
+    interface ScannerListener{
+        void onCheckIn(String eventID);
+    }
+
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity
+     */
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof ScannerListener){
+            listener = (ScannerListener) context;
+        }
     }
 
     /**
@@ -84,20 +74,21 @@ public class ScannerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("locloc", "onCreate: ");
-//        qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
-//            if (result.getContents() != null){
-//                Log.d("ScanQRCodeActivity", "Scanned");
-//                String resultContents = result.getContents();
-//                String[] data = resultContents.split(",");
-//                if (Objects.equals(data[0], "Check In")){
-//                    onAttendeeCheckIn(data[1]);
-//                } else if (Objects.equals(data[0], "Promotion")){
-//                    onPromotionScan(data[1]);
-//                }
-//            }
-//        });
-//        scanQR();
+        qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+            if (result.getContents() != null){
+                Log.d("ScanQRCodeActivity", "Scanned");
+                String resultContents = result.getContents();
+                String[] data = resultContents.split(":");
+                if (Objects.equals(data[0], "Check In")){
+                    onAttendeeCheckIn(data[1]);
+                } else if (Objects.equals(data[0], "Promotion")){
+                    onPromotionScan(data[1]);
+                } else {
+                    String encryptedContent = sha256Hash(data[0]);
+                    findEventToCheckIn(encryptedContent);
+                }
+            }
+        });
     }
 
     /**
@@ -134,33 +125,7 @@ public class ScannerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("locloc", "onViewCreated: ");
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        Log.d("locloc", "onViewStateRestored: ");
-//        scanQR();
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d("locloc", "onStart: ");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d("locloc", "onStop");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d("locloc", "onDestroyView: ");
+        scanQR();
     }
 
     /**
@@ -176,13 +141,36 @@ public class ScannerFragment extends Fragment {
         qrScannerLauncher.launch(options);
     }
 
+    /**
+     * Handles attendee check in
+     * @param eventID ID of the event that is being checked into
+     */
     private void onAttendeeCheckIn(String eventID){
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
-        EventDBConnector eventDBConnector = new EventDBConnector();
-        FirebaseFirestore db = eventDBConnector.getDb();
 
-        db.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        UserDBConnector userDBConnector = new UserDBConnector();
+        FirebaseFirestore userDB = userDBConnector.getDb();
+        userDB.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    User user = documentSnapshot.toObject(User.class);
+                    if (user != null){
+                        List<String> checkedInEvents = user.getCheckedInEvents();
+                        checkedInEvents.add(eventID);
+                        user.setCheckedInEvents(checkedInEvents);
+                        UserDB db = new UserDB();
+                        db.updateUser(user);
+                    }
+                }
+            }
+        });
+        listener.onCheckIn(eventID);
+        EventDBConnector eventDBConnector = new EventDBConnector();
+        FirebaseFirestore eventDB = eventDBConnector.getDb();
+
+        eventDB.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()){
@@ -202,27 +190,16 @@ public class ScannerFragment extends Fragment {
                         event.setAttendeesCount(attendeeCount);
                         EventDB eventDB = new EventDB(eventDBConnector);
                         eventDB.updateEvent(event);
-                        /*
-                              eventDB.updateEvent(eventName, updates);
-                              required: Event
-                              found:    String,Map<String,Object>
-                              reason: actual and formal argument lists differ in length
-                              so i tried using gpt's suggestion
-
-                        Event updatedEvent = new Event(eventName, updates);
-                        // Pass the updated Event object to the updateEvent method
-                        eventDB.updateEvent(updatedEvent);*/
                     }
                     Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_LONG).show();
                     if (getActivity() instanceof MainActivity){
-                        Log.d("locloc", "Activity");
-//                        MainActivity mainActivity = (MainActivity) getActivity();
-//                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-//                        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
-//                        Bundle args = new Bundle();
-//                        args.putSerializable("event", event);
-//                        eventViewAttendeeFragment.setArguments(args);
-//                        helper.replaceFragment(eventViewAttendeeFragment);
+                        MainActivity mainActivity = (MainActivity) getActivity();
+                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+                        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+                        Bundle args = new Bundle();
+                        args.putParcelable("event", event);
+                        eventViewAttendeeFragment.setArguments(args);
+                        helper.replaceFragment(eventViewAttendeeFragment);
 
                     }
                 } else{
@@ -231,6 +208,11 @@ public class ScannerFragment extends Fragment {
             }
         });
     }
+
+    /**
+     * Called when the attendee scans the promotional QR
+     * @param eventID ID of the event whose promotional QR is scanned
+     */
     private void onPromotionScan(String eventID){
         EventDBConnector connector = new EventDBConnector();
         FirebaseFirestore db = connector.getDb();
@@ -246,7 +228,7 @@ public class ScannerFragment extends Fragment {
                         Event event = documentSnapshot.toObject(Event.class);
                         EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                         Bundle args = new Bundle();
-                        args.putSerializable("event", event);
+                        args.putParcelable("event", event);
                         eventViewAttendeeFragment.setArguments(args);
 
                         helper.replaceFragment(eventViewAttendeeFragment);
@@ -254,5 +236,50 @@ public class ScannerFragment extends Fragment {
                 }
             }
         });
+    }
+
+    /**
+     * For reused QR, finds the event associated with the QR and checks the attendee into the event
+     * @param encryptedContent SHA-256 encrypted content of the QR code
+     */
+    private void findEventToCheckIn(String encryptedContent){
+        FirebaseFirestore db = new EventDBConnector().getDb();
+
+        db.collection("events").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                    String sha256Content = (String) documentSnapshot.get("sha256ReusedQRContent");
+                    if (Objects.equals(encryptedContent, sha256Content)){
+                        String eventID = (String) documentSnapshot.get("eventID");
+                        onAttendeeCheckIn(eventID);
+                    }
+                }
+            }
+        });
+    }
+    // Open AI, 2024, ChatGPT, How to use SHA-256 hashing
+    /**
+     * Takes the content of the reused QR code and SHA-256 hashes it
+     * @param input content of the QR code
+     * @return encrypted QR content
+     */
+    private String sha256Hash(String input){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(input.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for(byte hashByte : hashBytes){
+                String hex = Integer.toHexString(0xff & hashByte);
+                if (hex.length() == 1){
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

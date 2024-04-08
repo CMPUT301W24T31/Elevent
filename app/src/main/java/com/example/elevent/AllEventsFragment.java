@@ -1,66 +1,46 @@
 package com.example.elevent;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
-    Outstanding issues: n/a
  */
 /**
  * This fragment displays all events posted to the app
  */
 public class AllEventsFragment extends Fragment {
 
-    ArrayList<Event> AllEvents;
-    //defaultEvent.add("Sample Event"); // Add your default event details here
-
-    /**
-     * Listener for when user clicks on an event on their screen
-     */
-    public interface OnEventClickListener {
-        void onEventClicked(Event event);
-    }
-
-    // Define a listener member variable
-    private OnEventClickListener eventClickListener;
-    List<String> signedUpEvents;
+    private ArrayList<Event> AllEvents;
+    private List<String> signedUpEvents;
+    private ListView listView;
 
     /**
      * Required empty constructor
      */
-    public AllEventsFragment() {
-        // Required empty public constructor
-    }
+    public AllEventsFragment() {}
 
 
     /**
@@ -79,33 +59,9 @@ public class AllEventsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_allevents, container, false);
-    }
-
-    /**
-     * Called when a fragment is first attached to its host activity
-     * @param context Host activity of the fragment
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        if (context instanceof OnEventClickListener) {
-            eventClickListener = (OnEventClickListener) context;
-        } else {
-
-            Log.w("AllEventsFragment", "Parent context does not implement OnEventClickListener");
-        }
-    }
-
-    /**
-     * Called when the fragment is no longer attached to its activity.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        eventClickListener = null;
+        View view = inflater.inflate(R.layout.fragment_allevents, container, false);
+        listView = view.findViewById(R.id.list_view);
+        return view;
     }
 
     /**
@@ -114,7 +70,7 @@ public class AllEventsFragment extends Fragment {
      */
     public void onResume() {
         super.onResume();
-        // update the app bar title when navigating back to the AllEventsFragment
+        // Update the app bar title when navigating back to the AllEventsFragment
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).updateAppBarTitle(getString(R.string.all_events_title));
         }
@@ -133,6 +89,7 @@ public class AllEventsFragment extends Fragment {
 
         Spinner filterStatus = view.findViewById(R.id.event_filter_spinner);
 
+        // Create ArrayAdapter directly from the resource array
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.event_filter_spinner_array,
@@ -140,6 +97,11 @@ public class AllEventsFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+
+        // Set default hint text
+        filterStatus.setPrompt(getString(R.string.spinner_hint));
+
+
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
         EventArrayAdapter eventArrayAdapter = new EventArrayAdapter(requireActivity(), events);
@@ -151,14 +113,20 @@ public class AllEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
 
-
+                    // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                    if (clickedEvent != null) {
+                        // Proceed with further actions
+                    } else {
+                        Log.e("AllEventsFragment", "Clicked event is null");
+                    }
+
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", clickedEvent);
+                    args.putParcelable("event", clickedEvent); // Ensure Event implements Serializable
                     eventViewAttendeeFragment.setArguments(args);
 
-                    helper.replaceFragment(eventViewAttendeeFragment);
+                    helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
                 }
             }
         });
@@ -169,7 +137,12 @@ public class AllEventsFragment extends Fragment {
                 if (Objects.equals(selection, "signed-up")) {
                     fetchSignedUpEventsList();
                     displaySignedUpEvents();
+                    if (signedUpEvents == null){
+                        Toast.makeText(getContext(), "sign up to events to see them here :D", Toast.LENGTH_SHORT).show();
+                    }
                 } else if (Objects.equals(selection, "all")){
+                    fetchEvents();
+                } else if (Objects.equals(selection, "sort")){
                     fetchEvents();
                 }
             }
@@ -233,6 +206,9 @@ public class AllEventsFragment extends Fragment {
         });
     }
 
+    /**
+     * Fetch signed up events from db
+     */
     private void fetchSignedUpEventsList(){
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
@@ -253,6 +229,9 @@ public class AllEventsFragment extends Fragment {
         }
     }
 
+    /**
+     * Convert signed up events to event objects and call updateListView to display
+     */
     private void displaySignedUpEvents(){
         EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
         FirebaseFirestore db = connector.getDb();
@@ -279,7 +258,6 @@ public class AllEventsFragment extends Fragment {
      */
     private void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
         EventArrayAdapter eventAdapter = new EventArrayAdapter(requireContext(), events); // Use requireActivity() to ensure non-null Context
-        ListView listView = getView().findViewById(R.id.list_view);
         listView.setAdapter(eventAdapter);
     }
 }

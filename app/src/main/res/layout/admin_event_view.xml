@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Admin.AdminEventFragment"
-    android:background="@color/background_blue">
+    android:background="@color/item_grey">
 
     <LinearLayout
         android:layout_width="match_parent"

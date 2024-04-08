@@ -7,5 +7,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/sign_up_disclaimer_text"
         android:text="By clicking Confirm, you promise to attend this event"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
         android:textAlignment="center"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,8 +19,8 @@
 
             <ImageView
                 android:id="@+id/profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="24dp" />
 
@@ -51,6 +51,15 @@
                 android:theme="@style/FontTheme"
                 android:textColorHint="@color/text_white" />
 
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/geolocation_switch"
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:text="location"
+                android:textColor="@color/text_white"
+                android:theme="@style/FontTheme" />
+
             <Button
                 android:id="@+id/edit_profile_button"
                 android:layout_width="wrap_content"
@@ -65,10 +74,12 @@
 
             <TextView
                 android:id="@+id/admin_navigation"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Are you an admin?"
-                android:textColor="@color/white"/>
+                android:text="are you an admin?"
+                android:fontFamily="monospace"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white" />
 
         </LinearLayout>
     </ScrollView>

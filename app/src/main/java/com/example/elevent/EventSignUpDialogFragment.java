@@ -2,9 +2,9 @@ package com.example.elevent;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
@@ -16,66 +16,107 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+/*
+    This file implements dialog fragment that shows a disclaimer telling the attendee that they must
+    promise to attend if they sign up.
+    As well, handles the sign up in the database
+ */
 
+/**
+ * A dialog fragment that confirms that an attendee promises to attend the event if they sign up.
+ * Handles sign up in the database
+ */
 public class EventSignUpDialogFragment extends DialogFragment {
 
+    interface EventSignUpListener{
+        void onSignUp(String eventID);
+    }
     private Event event;
     private String userID;
+    private EventSignUpListener listener;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof EventSignUpListener) {
+            listener = (EventSignUpListener) context;
+        } else {
+            throw new RuntimeException(context + " must implement EventSignUpListener");
+        }
+    }
+
+    /**
+     * Called to do initial creation of a fragment
+     * Gets the event being signed up to and the user signing up
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
             userID = getArguments().getString("userID");
         }
     }
 
+    /**
+     * Builds the dialog fragment
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Builder of the dialog fragment
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_add_attendee_sign_up, null);
+        View view = getLayoutInflater().inflate(R.layout.fragment_add_attendee_sign_up, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-        // check if the event has reached max capacity
-        boolean isFull = event.getSignedUpAttendees().size() >= event.getMaxAttendance();
-
-        builder.setView(view)
-                .setTitle(isFull ? "Event Full" : "Confirm Sign-Up")
-                .setNegativeButton("Cancel", null);
-
-        // changes to dialog depending on full event or not
-        if (!isFull) {
-            builder.setPositiveButton("Confirm", (dialog, which) -> {
-                if (addAttendeeSignUpToEvent()) {
+        return builder
+                .setView(view)
+                .setTitle("Disclaimer")
+                .setNegativeButton("Cancel", ((dialog, which) -> {
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("event", event);
+                    EventViewAttendee eventViewAttendee = new EventViewAttendee();
+                    eventViewAttendee.setArguments(bundle);
+                    if (getActivity() instanceof MainActivity){
+                        FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                        helper.replaceFragment(eventViewAttendee);
+                    }
+                }))
+                .setPositiveButton("Confirm", (dialog, which) -> {
+                    addAttendeeSignUpToEvent();
                     addEventSignedUpByAttendee();
                     Toast.makeText(requireContext(), "You are now signed up!", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(requireContext(), "Sorry, the event is now full.", Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            builder.setMessage("This event has reached its capacity and no additional sign-ups are possible.");
-        }
-
-
-        return builder.create();
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("event", event);
+                    EventViewAttendee eventViewAttendee = new EventViewAttendee();
+                    eventViewAttendee.setArguments(bundle);
+                    listener.onSignUp(event.getEventID());
+                    if (getActivity() instanceof MainActivity){
+                        FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
+                        helper.replaceFragment(eventViewAttendee);
+                    }
+                })
+                .create();
     }
 
-    private boolean addAttendeeSignUpToEvent() {
+    /**
+     * Updates event's signed up attendees list in the database
+     */
+    private void addAttendeeSignUpToEvent() {
         List<String> newSignUp = event.getSignedUpAttendees();
-        if (newSignUp.size() < event.getMaxAttendance()) {
-            newSignUp.add(userID);
-            event.setSignedUpAttendees(newSignUp);
-            EventDB eventDB = new EventDB(new EventDBConnector());
-            eventDB.updateEvent(event);
-            return true;
-        }
-        return false;
+        newSignUp.add(userID);
+        event.setSignedUpAttendees(newSignUp);
+        EventDB eventDB = new EventDB(new EventDBConnector());
+        eventDB.updateEvent(event);
     }
 
+    /**
+     * Adds the event to the list of signed up events for the user
+     */
     private void addEventSignedUpByAttendee() {
         UserDBConnector connector = new UserDBConnector();
         FirebaseFirestore db = connector.getDb();

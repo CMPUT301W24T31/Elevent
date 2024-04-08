@@ -1,5 +1,10 @@
 package com.example.elevent;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 import com.google.firebase.firestore.Blob;
 import java.util.ArrayList;
@@ -8,12 +13,11 @@ import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of a User object
-    Outstanding issues: n/a
  */
 /**
  * This class represents a user of the app
  */
-public class User implements Serializable {
+public class User implements Parcelable {
 
     // attributes for User class
     // (what information a user has)
@@ -24,16 +28,35 @@ public class User implements Serializable {
 
     private String userID;
     private List<String> signedUpEvents;
+    private Boolean hasGeneratedPFP;
+    private List<String> checkedInEvents;
+    private List<String> receivedNotifications;
 
-    // no argument constructor
     public User() {}
 
-    public User(String userID){
+    /**
+     * Class constructor with two arguments
+     * @param userID ID of the user
+     * @param profilePic profile picture of the user
+     */
+    public User(String userID, Blob profilePic, Boolean hasGeneratedPFP){
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
+        this.profilePic = profilePic;
+        this.hasGeneratedPFP = hasGeneratedPFP;
+        this.checkedInEvents = new ArrayList<>();
+        this.receivedNotifications = new ArrayList<>();
     }
 
-    public User(String name, String contact, Blob profilePic, String homePage, String userID) {
+    /**
+     * Class constructor
+     * @param name name of the user
+     * @param contact contact of the user
+     * @param profilePic profile picture of the user
+     * @param homePage homepage of the user
+     * @param userID ID of the user
+     */
+    public User(String name, String contact, Blob profilePic, String homePage, String userID, Boolean hasGeneratedPFP) {
 
         this.name = name;
         this.contact = contact;
@@ -41,8 +64,40 @@ public class User implements Serializable {
         this.homePage = homePage;
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
+        this.hasGeneratedPFP = hasGeneratedPFP;
+        this.checkedInEvents = new ArrayList<>();
+        this.receivedNotifications = new ArrayList<>();
+
     }
 
+    protected User(Parcel in) {
+        name = in.readString();
+        contact = in.readString();
+        homePage = in.readString();
+        userID = in.readString();
+        signedUpEvents = in.createStringArrayList();
+        byte tmpHasGeneratedPFP = in.readByte();
+        hasGeneratedPFP = tmpHasGeneratedPFP == 0 ? null : tmpHasGeneratedPFP == 1;
+        checkedInEvents = in.createStringArrayList();
+        receivedNotifications = in.createStringArrayList();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    /**
+     * Maps the user object to be stored in the database
+     * @return the map of the user object
+     */
     public Map<String, Object> userToMap() {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("name", name);
@@ -51,10 +106,18 @@ public class User implements Serializable {
         userMap.put("homePage", homePage);
         userMap.put("userID", userID);
         userMap.put("signedUpEvents", signedUpEvents);
+        userMap.put("hasGeneratedPFP", hasGeneratedPFP);
+        userMap.put("checkedInEvents", checkedInEvents);
+        userMap.put("receivedNotifications", receivedNotifications);
+
 
         return userMap;
     }
 
+    /**
+     * Getter for the name of the user
+     * @return Name of the user
+     */
     public String getName() {
         return this.name;
     }
@@ -100,10 +163,18 @@ public class User implements Serializable {
         this.profilePic = profilePic;
     }
 
+    /**
+     * Getter for the list of events that the user has signed up for
+     * @return List of events that the user has signed up for
+     */
     public List<String> getSignedUpEvents() {
         return this.signedUpEvents;
     }
 
+    /**
+     * Setter for the list of events that the user has signed up for
+     * @param signedUpEvents List of events that the user has signed up for
+     */
     public void setSignedUpEvents(List<String> signedUpEvents) {
         this.signedUpEvents = signedUpEvents;
     }
@@ -138,5 +209,46 @@ public class User implements Serializable {
      */
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public Boolean getHasGeneratedPFP() {
+        return hasGeneratedPFP;
+    }
+
+    public void setHasGeneratedPFP(Boolean hasGeneratedPFP) {
+        this.hasGeneratedPFP = hasGeneratedPFP;
+    }
+
+    public List<String> getCheckedInEvents() {
+        return checkedInEvents;
+    }
+
+    public void setCheckedInEvents(List<String> checkedInEvents) {
+        this.checkedInEvents = checkedInEvents;
+    }
+
+    public List<String> getReceivedNotifications() {
+        return receivedNotifications;
+    }
+
+    public void setReceivedNotifications(List<String> receivedNotifications) {
+        this.receivedNotifications = receivedNotifications;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(contact);
+        dest.writeString(homePage);
+        dest.writeString(userID);
+        dest.writeStringList(signedUpEvents);
+        dest.writeByteArray(profilePic.toBytes());
+        dest.writeStringList(checkedInEvents);
+        dest.writeStringList(receivedNotifications);
     }
 }

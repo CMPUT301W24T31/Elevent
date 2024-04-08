@@ -169,6 +169,8 @@
 
             </TextView>
 
+
+
             <Button
                 android:id="@+id/reuse_qr_button"
                 android:layout_width="wrap_content"

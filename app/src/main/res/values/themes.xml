@@ -17,10 +17,5 @@
 
     </style>
 
-    <!--<style name="MonospaceSpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:fontFamily">monospace</item>
-    </style>-->
-
-
     <style name="Theme.Elevent" parent="Base.Theme.Elevent" />
 </resources>

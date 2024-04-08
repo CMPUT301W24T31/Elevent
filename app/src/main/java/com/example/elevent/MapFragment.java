@@ -1,14 +1,13 @@
 package com.example.elevent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,9 +17,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+/*
+    This file contains the implementation of displaying the map for an organizer to see where attendees
+    have checked in from
+ */
 
+/**
+ * This fragment contains the UI of the map for an organizer to see where attendees have checked in from
+ */
 public class MapFragment extends Fragment {
+
     private Event event;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -43,6 +49,23 @@ public class MapFragment extends Fragment {
         }
     };
 
+    /**
+     * Required empty public constructor
+     */
+    public MapFragment(){}
+
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or null
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,19 +74,42 @@ public class MapFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
+    /**
+     * Called immediately after onCreateView has returned, but before any saved state has been restored in to the view
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        try{
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (getArguments() != null){
-            event = (Event) getArguments().getSerializable("event");
+            event = getArguments().getParcelable("event");
         }
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+        } catch (Exception e) {
+            showErrorFragment();
+        }
     }
 
+    /**
+     * Catches exceptions an displays an error page
+     */
+    private void showErrorFragment() {
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                .commit();
+    }
+
+    /**
+     * Marks the check in locations on the map
+     * @param googleMap
+     */
     public void createMarkers(GoogleMap googleMap) {
         UserDB db = new UserDB();
         for (Map.Entry<String, GeoPoint> e : event.getCheckInLocations().entrySet()) {

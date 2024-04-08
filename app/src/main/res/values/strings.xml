@@ -23,6 +23,9 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="spinner_hint">sort</string>
+
+
     <!-- options for event filter spinner -->
     <string-array name="event_filter_spinner_array">
         <item>all</item>
@@ -77,5 +80,15 @@
     <string name="already_signed_up">Already Signed Up</string>
     <string name="event_full">Event Full</string>
     <string name="sign_up_for_event">Sign Up</string>
+    <string-array name="image_categories">
+        <item>Events</item>
+        <item>Users</item>
+    </string-array>
+
+    <string name="map">map</string>
+    <string name="max_attendees_set">max attendees set</string>
+    <string name="no_max_limit_set">no max limit set</string>
+    <string name="notify_per_check_ins">notify per check-ins</string>
+
 
 </resources>

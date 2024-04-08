@@ -30,15 +30,17 @@
         android:id="@+id/list_of_notifs"
         android:layout_width="370dp"
         android:layout_height="630dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/rounded_corner"
-        android:backgroundTint="@color/item_blue"
+        android:backgroundTint="@color/item_grey"
         android:fontFamily="monospace"
         android:text="@string/attendees"
         android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:divider="@color/item_grey"
+        android:dividerHeight="5dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
