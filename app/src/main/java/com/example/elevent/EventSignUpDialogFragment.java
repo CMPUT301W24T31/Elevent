@@ -2,37 +2,21 @@ package com.example.elevent;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 /*
     This file implements dialog fragment that shows a disclaimer telling the attendee that they must
     promise to attend if they sign up.
@@ -46,7 +30,7 @@ import java.util.Map;
 public class EventSignUpDialogFragment extends DialogFragment {
 
     interface EventSignUpListener{
-        void onSignUp();
+        void onSignUp(String eventID);
     }
     private Event event;
     private String userID;
@@ -110,7 +94,7 @@ public class EventSignUpDialogFragment extends DialogFragment {
                     bundle.putParcelable("event", event);
                     EventViewAttendee eventViewAttendee = new EventViewAttendee();
                     eventViewAttendee.setArguments(bundle);
-                    listener.onSignUp();
+                    listener.onSignUp(event.getEventID());
                     if (getActivity() instanceof MainActivity){
                         FragmentManagerHelper helper = ((MainActivity) getActivity()).getFragmentManagerHelper();
                         helper.replaceFragment(eventViewAttendee);

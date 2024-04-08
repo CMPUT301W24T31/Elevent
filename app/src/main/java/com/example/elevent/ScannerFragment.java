@@ -68,7 +68,7 @@ public class ScannerFragment extends Fragment {
     public ScannerFragment(){}
 
     interface ScannerListener{
-        void onCheckIn();
+        void onCheckIn(String eventID);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class ScannerFragment extends Fragment {
                 }
             }
         });
-        listener.onCheckIn();
+        listener.onCheckIn(eventID);
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore eventDB = eventDBConnector.getDb();
 
