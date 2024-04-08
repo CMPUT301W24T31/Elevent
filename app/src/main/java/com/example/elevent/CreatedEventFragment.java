@@ -178,6 +178,14 @@ public class CreatedEventFragment extends Fragment {
             }
         }
 
+        EditText eventMaxAttendeesText = view.findViewById(R.id.event_max_attendees_text);
+        if (selectedEvent.getMaxAttendance() > 0) {
+            eventMaxAttendeesText.setText(String.valueOf(selectedEvent.getMaxAttendance()));
+        } else {
+            eventMaxAttendeesText.setText("");  // or leave it blank or any other placeholder
+        }
+        eventMaxAttendeesText.setEnabled(true);
+
         return view;
     }
 
@@ -201,6 +209,10 @@ public class CreatedEventFragment extends Fragment {
         Button addEventImageButton = view.findViewById(R.id.eventPoster_image);
         TextView editEventPoster = view.findViewById(R.id.edit_event_poster_text);
         TextView deleteEventPoster = view.findViewById(R.id.delete_event_poster_text);
+
+        TextView eventAttendanceInfo = view.findViewById(R.id.event_attendance_info);
+        EditText eventMaxAttendeesText = view.findViewById(R.id.event_max_attendees_text);
+
         getContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
             if (uri != null) {
                 // OpenAI, 2024, ChatGPT, Convert to byte array
@@ -242,6 +254,8 @@ public class CreatedEventFragment extends Fragment {
                 addEventImageButton.setVisibility(View.VISIBLE);
             }
         });
+
+
 
         Button manageEventButton = view.findViewById(R.id.manage_the_event);
         Button saveChangesButton = view.findViewById(R.id.save_the_event);
@@ -299,6 +313,8 @@ public class CreatedEventFragment extends Fragment {
                 String updatedEventTime = eventTimeText.getText().toString();
                 String updatedEventDate = eventDateText.getText().toString();
                 String updatedEventDescription = eventDescriptionText.getText().toString();
+                String updatedAttendanceInfo = eventAttendanceInfo.getText().toString();
+                String updatedMaxAttendanceText = eventMaxAttendeesText.getText().toString();
 
                 // Update selectedEvent object with the retrieved data
                 selectedEvent.setEventName(updatedEventName);
@@ -306,6 +322,19 @@ public class CreatedEventFragment extends Fragment {
                 selectedEvent.setTime(updatedEventTime);
                 selectedEvent.setDate(updatedEventDate);
                 selectedEvent.setDescription(updatedEventDescription);
+                if (!updatedMaxAttendanceText.isEmpty()) {
+                    try {
+                        int maxAttendance = Integer.parseInt(updatedMaxAttendanceText);
+                        selectedEvent.setMaxAttendance(maxAttendance);
+                        updateAttendanceInfo();
+                    } catch (NumberFormatException e) {
+                        eventMaxAttendeesText.setError("Invalid number");
+                        return;
+                    }
+                } else {
+                    selectedEvent.setMaxAttendance(0);
+                    updateAttendanceInfo();
+                }
 
 
                 // Update event in Firebase Firestore
@@ -350,4 +379,21 @@ public class CreatedEventFragment extends Fragment {
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
     }
+
+    private void updateAttendanceInfo() {
+
+        int currentAttendees = selectedEvent.getSignedUpAttendees().size();
+        int maxAttendees = selectedEvent.getMaxAttendance();
+        int spotsRemaining = maxAttendees - currentAttendees;
+
+        // Ensure spotsRemaining doesn't go negative
+        spotsRemaining = Math.max(spotsRemaining, 0);
+
+        TextView eventAttendanceInfo = getView().findViewById(R.id.event_attendance_info);
+        String attendanceText = getString(R.string.spots_remaining, spotsRemaining); // Proper formatting
+        eventAttendanceInfo.setText(attendanceText);
+    }
+
+
 }
+
