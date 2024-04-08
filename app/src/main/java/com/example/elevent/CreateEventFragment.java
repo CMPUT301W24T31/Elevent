@@ -283,7 +283,7 @@ public class CreateEventFragment extends Fragment {
                     eventPoster = Blob.fromBytes(eventPosterByteArray);
                 }
                 // Arguments for event constructor to be passed into addEvent
-                byte[] promotionalQR = generateQRCode("Promotion," + eventID);
+                byte[] promotionalQR = generateQRCode("Promotion:" + eventID);
                 String event_date = eventDate.getText().toString();
                 String event_time = eventTime.getText().toString();
                 String event_desc = eventDescription.getText().toString();

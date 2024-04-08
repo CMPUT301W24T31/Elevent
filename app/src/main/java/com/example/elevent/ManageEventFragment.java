@@ -110,8 +110,18 @@ public class ManageEventFragment extends Fragment {
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                            attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
-                            fetchSignedUpAttendees();
+                            if (value != null && value.exists()) {
+                                Event event = (Event) value.toObject(Event.class);
+                                if (event != null) {
+                                    if (!event.getPreviousSignedUpAttendees().equals(event.getSignedUpAttendees())) {
+                                        attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
+                                        fetchSignedUpAttendees();
+                                        event.setPreviousSignedUpAttendees(event.getPreviousSignedUpAttendees());
+                                        EventDB eventDB = new EventDB();
+                                        eventDB.updateEvent(event);
+                                    }
+                                }
+                            }
                         }
                     });
                 } else if (Objects.equals(selection, "checked-in")) {
@@ -120,8 +130,18 @@ public class ManageEventFragment extends Fragment {
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                            attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
-                            fetchCheckedInAttendees();
+                            if(value != null && value.exists()){
+                                Event event = (Event) value.toObject(Event.class);
+                                if (event != null) {
+                                    if (!event.getPreviousCheckedInAttendees().equals(event.getCheckedInAttendees())) {
+                                        attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                                        fetchCheckedInAttendees();
+                                        event.setPreviousCheckedInAttendees(event.getPreviousCheckedInAttendees());
+                                        EventDB eventDB = new EventDB();
+                                        eventDB.updateEvent(event);
+                                    }
+                                }
+                            }
                         }
                     });
                 }
@@ -133,12 +153,23 @@ public class ManageEventFragment extends Fragment {
                 attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
                 fetchCheckedInAttendees();
                 db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
-                    fetchCheckedInAttendees();
-                }
-            });}
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (value != null && value.exists()) {
+                            Event event = (Event) value.toObject(Event.class);
+                            if (event != null) {
+                                if (!event.getPreviousCheckedInAttendees().equals(event.getCheckedInAttendees())) {
+                                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                                    fetchCheckedInAttendees();
+                                    event.setPreviousCheckedInAttendees(event.getPreviousCheckedInAttendees());
+                                    EventDB eventDB = new EventDB();
+                                    eventDB.updateEvent(event);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         Button mapButton = view.findViewById(R.id.map_button);

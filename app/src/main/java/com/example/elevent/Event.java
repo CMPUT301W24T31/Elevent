@@ -42,6 +42,8 @@ public class Event implements Parcelable {
     private int previousAttendeesCount;
 
     private int maxAttendance;
+    private List<String> previousSignedUpAttendees;
+    private Map<String, Integer> previousCheckedInAttendees;
 
     /**
      * No argument constructor
@@ -82,6 +84,8 @@ public class Event implements Parcelable {
         this.checkInLocations = new HashMap<>();
         this.checkedInAttendees = new HashMap<>();
         this.maxAttendance = maxAttendance;
+        this.previousCheckedInAttendees = new HashMap<>();
+        this.previousSignedUpAttendees = new ArrayList<>();
     }
 
     /**
@@ -119,6 +123,8 @@ public class Event implements Parcelable {
         this.checkedInAttendees = new HashMap<>();
         this.maxAttendance = maxAttendance;
         this.sha256ReusedQRContent = sha256ReusedQRContent;
+        this.previousSignedUpAttendees = new ArrayList<>();
+        this.previousCheckedInAttendees = new HashMap<>();
     }
 
     protected Event(Parcel in) {
@@ -173,6 +179,8 @@ public class Event implements Parcelable {
         eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
         eventMap.put("milestone", milestone);
         eventMap.put("maxAttendance", maxAttendance);
+        eventMap.put("previousSignedUpAttendees", previousSignedUpAttendees);
+        eventMap.put("previousCheckedInAttendees", previousCheckedInAttendees);
 
         return eventMap;
     }
@@ -455,6 +463,22 @@ public class Event implements Parcelable {
      */
     public void setPreviousAttendeesCount(int previousAttendeesCount) {
         this.previousAttendeesCount = previousAttendeesCount;
+    }
+
+    public List<String> getPreviousSignedUpAttendees() {
+        return previousSignedUpAttendees;
+    }
+
+    public void setPreviousSignedUpAttendees(List<String> previousSignedUpAttendees) {
+        this.previousSignedUpAttendees = previousSignedUpAttendees;
+    }
+
+    public Map<String, Integer> getPreviousCheckedInAttendees() {
+        return previousCheckedInAttendees;
+    }
+
+    public void setPreviousCheckedInAttendees(Map<String, Integer> previousCheckedInAttendees) {
+        this.previousCheckedInAttendees = previousCheckedInAttendees;
     }
 
     /**
