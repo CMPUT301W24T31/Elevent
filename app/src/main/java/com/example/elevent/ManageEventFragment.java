@@ -41,6 +41,7 @@ public class ManageEventFragment extends Fragment {
     private Event event;
     private TextView attendeeListTextView;
     private ListView listOfAttendees;
+    private TextView attendeeCountText;
 
     /**
      * Required empty public constructor
@@ -75,6 +76,7 @@ public class ManageEventFragment extends Fragment {
         // Find views by their respective IDs
         attendeeListTextView = view.findViewById(R.id.attendee_list_textview);
         listOfAttendees = view.findViewById(R.id.list_of_attendees);
+        attendeeCountText = view.findViewById(R.id.attendees_count_text);
         return view;
     }
 
@@ -88,7 +90,6 @@ public class ManageEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TextView attendeeCountText = view.findViewById(R.id.attendees_count_text);
         Spinner filterStatus = view.findViewById(R.id.attendee_spinner);
 
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
@@ -104,6 +105,8 @@ public class ManageEventFragment extends Fragment {
                 String selection = (String) parent.getItemAtPosition(position);
                 FirebaseFirestore db = new EventDBConnector().getDb();
                 if (Objects.equals(selection, "signed-up")){
+                    attendeeCountText.setText(String.format("%d attendee(s) signed up", event.getSignedUpAttendees().size()));
+                    fetchSignedUpAttendees();
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -112,6 +115,8 @@ public class ManageEventFragment extends Fragment {
                         }
                     });
                 } else if (Objects.equals(selection, "checked-in")) {
+                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                    fetchCheckedInAttendees();
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -123,7 +128,17 @@ public class ManageEventFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                FirebaseFirestore db = new EventDBConnector().getDb();
+                attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                fetchCheckedInAttendees();
+                db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                    attendeeCountText.setText(String.format("%d attendee(s) checked in", event.getAttendeesCount()));
+                    fetchCheckedInAttendees();
+                }
+            });}
         });
         Button notifCentreButton = view.findViewById(R.id.notif_centre_button);
         Button mapButton = view.findViewById(R.id.map_button);

@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
@@ -195,6 +196,9 @@ public class CreateEventFragment extends Fragment {
                 reusedQRBA = generateQRCode(resultContents);
                 sha256ReusedQRContent = sha256Hash(resultContents);
                 checkQRInUse(sha256ReusedQRContent);
+                if (reusedQRBA != null){
+                    Toast.makeText(requireContext(), "Scan successful. Scanned code will be used for check in", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -289,11 +293,12 @@ public class CreateEventFragment extends Fragment {
                 if (reusedQRBA == null){
                     byte[] checkInQR = generateQRCode("Check In:" + eventID);
                     event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(checkInQR), 0,
-                            event_date, event_time, event_desc, event_location, eventPoster, 0);
+                            event_date, event_time, event_desc, event_location, eventPoster, maxAttendees);
                 } else {
                     event = new Event(eventID, organizerID, name, Blob.fromBytes(promotionalQR), Blob.fromBytes(reusedQRBA), 0,
-                            event_date, event_time, event_desc, event_location, eventPoster, 0, sha256ReusedQRContent);
-                }createEvent(event);
+                            event_date, event_time, event_desc, event_location, eventPoster, maxAttendees, sha256ReusedQRContent);
+                }
+                createEvent(event);
                 listener.createNewEvent();
                 
 
@@ -308,6 +313,10 @@ public class CreateEventFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Displays the date of the event
+     * @param eventDate Date of the event
+     */
     private void showDateDialog(final EditText eventDate) {
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -324,6 +333,10 @@ public class CreateEventFragment extends Fragment {
         new DatePickerDialog(requireContext(), dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+    /**
+     * Displays the time of the event
+     * @param eventTime Time of the event
+     */
     private void showTimeDialog(final EditText eventTime) {
         final Calendar calendar = Calendar.getInstance();
 
@@ -367,6 +380,9 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Launches activity to scan QR
+     */
     private void scanQR(){
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(true);
