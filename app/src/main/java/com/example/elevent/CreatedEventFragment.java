@@ -28,14 +28,13 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
+    Outstanding issues: Need to display the QR codes,
  */
 /**
  * This fragment displays the organizer's view of an event they created
@@ -48,6 +47,7 @@ public class CreatedEventFragment extends Fragment {
      * Implemented by MainActivity
      */
     interface CreatedEventListener {
+        //void onCreateEvent(Event event);
 
         void updateEvent(Event event);
     }
@@ -184,7 +184,7 @@ public class CreatedEventFragment extends Fragment {
 
     /**
      * Called immediately after onCreateView has returned
-     * Initializes options for editing event
+     * Initializes option to confirm changes and return to previous fragment
      * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
      * @param savedInstanceState If non-null, this fragment is being re-constructed
      * from a previous saved state as given here.
@@ -192,8 +192,6 @@ public class CreatedEventFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        try{
         EditText eventNameText = view.findViewById(R.id.event_name_text);
         EditText eventLocationText = view.findViewById(R.id.event_location_text);
         EditText eventTimeText = view.findViewById(R.id.event_time_text);
@@ -269,20 +267,9 @@ public class CreatedEventFragment extends Fragment {
         shareEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore db = new EventDBConnector().getDb();
-                db.collection("events").document(selectedEvent.getEventID()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()){
-                            Blob qrBlobToShare = (Blob) documentSnapshot.get("promotionalQR");
-                            byte[] qrBAToShare = qrBlobToShare.toBytes();
-                            shareQRCode(qrBAToShare);
-                        }
-                    }
-                });
-            }
-        });
-
+                // Convert promotional QR Blob to Bitmap
+                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
+                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
 
                 // Check if promotionalQRBitmap is not null
                 if (promotionalQRBitmap != null) {
@@ -352,51 +339,15 @@ public class CreatedEventFragment extends Fragment {
                 }
             }
         });
-     } catch (Exception e) {
-        showErrorFragment();
-    }
-}
-
-    private void showErrorFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.activity_main_framelayout, new ErrorFragment())
-                .commit();
     }
 
     // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()
     // OpenAI, 2024, ChatGPT, Display QR code from byte array
-
-    /**
-     * Converts blob to bitmap for displaying images
-     * @param blob Blob to be converted
-     * @return The bitmap that the blob was converted to
-     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
-
-    /**
-     * Launches content launcher to get event posters
-     */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
-    }
-
-    /**
-     * shares QR to other apps
-     * @param qrBAToShare byte[] of the QR to be shared
-     */
-    private void shareQRCode(byte[] qrBAToShare){
-        Bitmap qrBitmap = BitmapFactory.decodeByteArray(qrBAToShare, 0, qrBAToShare.length);
-        qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, new ByteArrayOutputStream());
-        String path = MediaStore.Images.Media.insertImage(requireActivity().getContentResolver(), qrBitmap, "QR Code", null);
-        Uri qrUri = Uri.parse(path);
-        Intent shareIntent = new Intent();
-        shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, qrUri);
-        shareIntent.setType("image/png");
-        startActivity(Intent.createChooser(shareIntent, "Share QR Code"));
     }
 }

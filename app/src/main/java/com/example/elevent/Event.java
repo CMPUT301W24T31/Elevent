@@ -106,6 +106,9 @@ public class Event implements Serializable {
         this.maxAttendance = maxAttendance;
     }
 
+    public Event(String eventID, String organizerID, String name, Blob blob, Blob blob1, int i, String eventDate, String eventTime, String eventDesc, String eventLocation, Blob eventPoster) {
+    }
+
     /**
      * Create the map to be put into the event database
      * @return Map that contains the event information

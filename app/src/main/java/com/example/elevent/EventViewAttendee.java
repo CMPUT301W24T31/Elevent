@@ -65,6 +65,15 @@ public class EventViewAttendee extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Initialize UI components
+        TextView eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
+        ImageView eventPosterImageView = view.findViewById(R.id.event_poster);
+        TextView mostRecentNotificationTextView = view.findViewById(R.id.notification_text);
+        TextView eventAttendanceTextView = view.findViewById(R.id.event_attendance_textview);
+        // Extracting event details from arguments
+        assert getArguments() != null;
+        Event event = (Event) getArguments().getSerializable("event");
+        Button signUpButton = view.findViewById(R.id.sign_up_event_button);
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String userID = sharedPreferences.getString("userID", null);
@@ -73,7 +82,6 @@ public class EventViewAttendee extends Fragment {
             if (signedUp.contains(userID)){
                 String signedUpText = "Signed up!";
                 signUpButton.setText(signedUpText);
-                signUpButton.setBackgroundColor(getResources().getColor(R.color.background_green));
             } else{
                 signUpButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -84,65 +92,77 @@ public class EventViewAttendee extends Fragment {
                         args.putString("userID", userID);
                         eventSignUpDialogFragment.setArguments(args);
                         eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
-                        String signingUpText = "Signing up...";
-                        signUpButton.setText(signingUpText);
+                        String signedUpText = "Signing up...";
+                        signUpButton.setText(signedUpText);
                     }
+                });
+            }
+        }
 
-                    if (getActivity() instanceof MainActivity) {
-                        ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
-                    }
+        if (event != null) {
+            eventDescriptionTextView = view.findViewById(R.id.event_description_textview);
+            eventDescriptionTextView.setText(event.getDescription()); //after description is implemented
+            if (event.getEventPoster() != null){
+                Blob eventPosterBlob = event.getEventPoster();
+                Bitmap eventPoster = convertBlobToBitmap(eventPosterBlob);
+                eventPosterImageView.setImageBitmap(eventPoster);
+            }
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).updateAppBarTitle(event.getEventName());
+            }
 
-                    // display attendance information
-                    int currentAttendees = event.getSignedUpAttendees().size();
-                    int maxAttendees = event.getMaxAttendance();
-                    int spotsRemaining = maxAttendees - currentAttendees;
+            // display attendance information
+            int currentAttendees = event.getSignedUpAttendees().size();
+            int maxAttendees = event.getMaxAttendance();
+            int spotsRemaining = maxAttendees - currentAttendees;
 
-                    eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
+            eventAttendanceTextView.setText(getString(R.string.spots_remaining, spotsRemaining));
 
-                    List<String> signedUp = event.getSignedUpAttendees();
+            // adjust sign up button based on attendance
+            List<String> signedUp = event.getSignedUpAttendees();
 
-                    if (signedUp.contains(userID)) {
-                        signUpButton.setText(R.string.already_signed_up);
-                        signUpButton.setEnabled(false);
-                        signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-                    } else {
-                        if (currentAttendees >= maxAttendees) {
-                            signUpButton.setText(R.string.event_full);
-                            signUpButton.setEnabled(false);
-                            signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
-                        } else {
-                            signUpButton.setText(R.string.sign_up_for_event);
-                            signUpButton.setEnabled(true);
-                            signUpButton.setOnClickListener(v -> {
-                                EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
-                                args.putSerializable("Event", event);
-                                args.putString("userID", userID);
-                                eventSignUpDialogFragment.setArguments(args);
-                                eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
-                            });
-                        }
-                    }
+            if (signedUp.contains(userID)) {
+                signUpButton.setText(R.string.already_signed_up);
+                signUpButton.setEnabled(false);
+                signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+            } else {
+                if (currentAttendees >= maxAttendees) {
+                    signUpButton.setText(R.string.event_full);
+                    signUpButton.setEnabled(false);
+                    signUpButton.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+                } else {
+                    signUpButton.setText(R.string.sign_up_for_event);
+                    signUpButton.setEnabled(true);
+                    signUpButton.setOnClickListener(v -> {
+                        EventSignUpDialogFragment eventSignUpDialogFragment = new EventSignUpDialogFragment();
+                        Bundle args = new Bundle();
+                        args.putSerializable("Event", event);
+                        args.putString("userID", userID);
+                        eventSignUpDialogFragment.setArguments(args);
+                        eventSignUpDialogFragment.show(requireActivity().getSupportFragmentManager(), "EventSignUpDialogFragment");
+                    });
                 }
             }
-        } catch (Exception e) {
-                showErrorFragment();
-            }
         }
 
-        private void showErrorFragment() {
+
+        // Set event data (placeholders for now)
+        //eventDescriptionTextView.setText("Event Description Here"); // Placeholder for event.getDescription()
+        //eventPosterImageView.setImageBitmap(eventModel.getPosterImage()); // Placeholder for event.getPosterImage()
+        mostRecentNotificationTextView.setText("Most Recent Notification Here"); // Placeholder for getLastNotification()
+
+        // On clicking the most recent notification, navigate to NotificationFragment
+
+        mostRecentNotificationTextView.setOnClickListener(v -> {
+            // Navigate to NotificationFragment
             requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.activity_main_framelayout, new ErrorFragment())
+                    .replace(R.id.activity_main_framelayout, new NotificationFragmentAttendee())
+                    .addToBackStack(null)
                     .commit();
-        }
+        });
 
 
     }
-
-    /**
-     * Converts blob to bitmap
-     * @param blob Blob to be converted
-     * @return The resulting bitmap
-     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);

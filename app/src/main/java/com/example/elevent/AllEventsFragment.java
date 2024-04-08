@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,7 +68,7 @@ public class AllEventsFragment extends Fragment {
      */
     public void onResume() {
         super.onResume();
-        // update the app bar title when navigating back to the AllEventsFragment
+        // Update the app bar title when navigating back to the AllEventsFragment
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).updateAppBarTitle(getString(R.string.all_events_title));
         }
@@ -106,40 +105,63 @@ public class AllEventsFragment extends Fragment {
                     MainActivity mainActivity = (MainActivity) getActivity();
                     FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
 
-
+                    // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", clickedEvent);
+                    args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
                     eventViewAttendeeFragment.setArguments(args);
 
-                    helper.replaceFragment(eventViewAttendeeFragment);
+                    helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
                 }
             }
         });
-        try{
-            filterStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    String selection = (String) parent.getItemAtPosition(position);
-                    if (Objects.equals(selection, "signed-up")){
-                        fetchSignedUpEventsList();
-                        displaySignedUpEvents();
-                    } else if (Objects.equals(selection, "all")) {
-                        fetchEvents();
-                    }
+        filterStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selection = (String) parent.getItemAtPosition(position);
+                if (Objects.equals(selection, "signed-up")) {
+                    fetchSignedUpEventsList();
+                    displaySignedUpEvents();
+                } else if (Objects.equals(selection, "all")){
+                    fetchEvents();
                 }
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+            }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-    private void showErrorFragment() {
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.allevents_error, new ErrorFragment())
-                .commit();
+        //ListView listView = view.findViewById(R.id.list_view);
+        //ArrayList<Event> events = new ArrayList<>();
+
+    /*
+        Event defaultEvent = new Event("default",null,null,3,
+                "yyyy-MM-dd","HH:mm","This is a default event description.","Default location",null, null);
+        events.add(defaultEvent);
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
+        listView.setAdapter(eventAdapter);
+    */
+
+        //EventArrayAdapter eventAdapter = new EventArrayAdapter(getActivity(), events);
+        //listView.setAdapter(eventAdapter);
+
+        /*listView.setOnItemClickListener((parent, view1, position, id) -> {
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+
+                // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
+                Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+                Bundle args = new Bundle();
+                args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
+                eventViewAttendeeFragment.setArguments(args);
+
+                helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
+            }
+        });
+        fetchEvents();*/
     }
 
     /**
@@ -183,8 +205,6 @@ public class AllEventsFragment extends Fragment {
                     }
                 }
             });
-        } else {
-            showErrorFragment();
         }
     }
 
@@ -192,27 +212,23 @@ public class AllEventsFragment extends Fragment {
      * Convert signed up events to event objects and call updateListView to display
      */
     private void displaySignedUpEvents(){
-        if (signedUpEvents == null) {
-            Toast.makeText(requireContext(), "no signed-up events available", Toast.LENGTH_LONG).show();
-            return;
-        }
-            EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
-            FirebaseFirestore db = connector.getDb();
+        EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
+        FirebaseFirestore db = connector.getDb();
 
-            db.collection("events").get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    List<Event> eventsList = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        Event event = document.toObject(Event.class);
-                        if (signedUpEvents.contains(event.getEventID())) {
-                            eventsList.add(event);
-                        }
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> eventsList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    if (signedUpEvents.contains(event.getEventID())) {
+                        eventsList.add(event);
                     }
-                    updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
-                } else {
-                    Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
                 }
-            });
+                updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
+            } else {
+                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+            }
+        });
     }
 
     /**

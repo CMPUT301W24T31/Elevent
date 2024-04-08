@@ -114,7 +114,6 @@ public class AddNotificationDialogFragment extends DialogFragment {
                     .create();
         } catch (Exception e) {
             // If an error occurs, replace the fragment with the error fragment
-            showErrorFragment();
             return new Dialog(requireContext()); // Return an empty dialog to prevent further execution
         }
     }

@@ -16,9 +16,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 /*
     This file implements dialog fragment that shows a disclaimer telling the attendee that they must
     promise to attend if they sign up.
@@ -95,14 +93,10 @@ public class EventSignUpDialogFragment extends DialogFragment {
      */
     private void addAttendeeSignUpToEvent() {
         List<String> newSignUp = event.getSignedUpAttendees();
-        if (newSignUp.size() < event.getMaxAttendance()) {
-            newSignUp.add(userID);
-            event.setSignedUpAttendees(newSignUp);
-            EventDB eventDB = new EventDB(new EventDBConnector());
-            eventDB.updateEvent(event);
-            return true;
-        }
-        return false;
+        newSignUp.add(userID);
+        event.setSignedUpAttendees(newSignUp);
+        EventDB eventDB = new EventDB(new EventDBConnector());
+        eventDB.updateEvent(event);
     }
 
     /**

@@ -18,21 +18,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.zxing.client.android.Intents;
-import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CaptureActivity;
-import com.journeyapps.barcodescanner.CompoundBarcodeView;
-import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
-import org.checkerframework.checker.units.qual.C;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 /*
@@ -131,7 +121,7 @@ public class ScannerFragment extends Fragment {
         ScanOptions options = new ScanOptions();
         options.setOrientationLocked(true);
         options.setPrompt("");
-        options.setCaptureActivity(CaptureAct.class);
+        //options.setCaptureActivity(CaptureAct.class);
         qrScannerLauncher.launch(options);
     }
 
