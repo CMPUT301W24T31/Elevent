@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_USER_ID, userID);
         editor.apply();
-        /**
+
         // TODO: do we make name mandatory to implement this?
         // https://github.com/AmosKorir/AvatarImageGenerator?tab=readme-ov-file
         BitmapDrawable generatedPFP = AvatarGenerator.Companion.avatarImage(
@@ -331,14 +331,18 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         generatedPFPBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
         byte[] generatedPFPBA = outputStream.toByteArray();
-         */
-        Blob pfp = Blob.fromBytes(imageBytes);
+        Blob generatedPFPBlob = Blob.fromBytes(generatedPFPBA);
 
-        User newUser = new User(userID,pfp, true);
+
+        User newUser = new User(userID,generatedPFPBlob, true);
         newUser.setName(name);
         newUser.setContact(contact);
         newUser.setHomePage(homepage);
-        newUser.setProfilePic(pfp);
+
+        if (imageBytes != null){
+            Blob pfp = Blob.fromBytes(imageBytes);
+             newUser.setProfilePic(pfp);
+        }
 
 
         UserDBConnector connector = new UserDBConnector();

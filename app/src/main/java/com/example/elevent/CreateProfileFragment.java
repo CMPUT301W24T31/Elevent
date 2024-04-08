@@ -47,6 +47,8 @@
 
         private Uri selectedImageUri = null;
 
+        private byte[] imageData  = null;
+
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -97,14 +99,14 @@
                     // ...
 
                     if (selectedImageUri != null) {
-                        byte[] imageData = uriToByteArray(selectedImageUri);
+                        imageData = uriToByteArray(selectedImageUri);}
                         // After saving the data, you can navigate to the next Fragment or Activity
                         // For example, navigate back to the MainActivity content
-                        if (getActivity() instanceof MainActivity) {
+                    if (getActivity() instanceof MainActivity) {
                             ((MainActivity) getActivity()).createProfile(name, contact, homepage,imageData);
                             ((MainActivity) getActivity()).navigateToMainContent();
                         }
-                    }
+
                 }
 
             });
