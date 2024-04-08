@@ -47,6 +47,8 @@ public class CreatedEventFragment extends Fragment {
      */
     interface CreatedEventListener {
 
+        void onUserIDLogin();
+
         void updateEvent(Event event);
     }
 
