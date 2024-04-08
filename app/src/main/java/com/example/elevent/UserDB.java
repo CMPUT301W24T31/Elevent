@@ -49,13 +49,6 @@ public class UserDB extends MainActivity {
         CompletableFuture.runAsync(() -> {
             db.collection("users").document(user.getUserID()).set(userMap);
         });
-
-
-        /* before implementing count to create custom user count document name for each user
-        db.collection("User").document(user.getName()).set(user.toMap())
-                .addOnSuccessListener(aVoid -> System.out.println("User added successfully"))
-                .addOnFailureListener(e -> System.out.println("Error adding user: " + e.getMessage()));
-         */
     }
 
     /**
@@ -72,39 +65,6 @@ public class UserDB extends MainActivity {
         // asynchronously update the user document in firestore
         CompletableFuture.runAsync(() -> userRef.update(user.userToMap()));
 
-    }
-
-
-    // the userID used as an argument for this method can be retrieved using the getter
-    // methods getUserID which should work once we have set the UserID when a user is added
-    // in addUser (since we use the setter setUserID once a user is added)
-
-    /**
-     * Read a user's information in the database
-     * @param userID UserID of the user whose information is to be read
-     * @param listener Listener that checks if the user's information has been read
-     */
-    public void readUser(String userID, final OnUserReadListener listener) {
-
-        db.collection("users").document(userID).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        User user = documentSnapshot.toObject(User.class);
-                        listener.onSuccess(user);
-                    } else {
-                        listener.onFailure(new Exception("User cannot be found"));
-                    }
-                })
-                .addOnFailureListener(listener::onFailure);
-    }
-
-    // method used to delete a user from the user database
-    public CompletableFuture<Void> deleteUser(String userID) {
-
-        DocumentReference userRef = db.collection("users").document(userID); // Reference to the event document
-
-        // after getting a reference of the document, delete the document
-        return CompletableFuture.runAsync(userRef::delete);
     }
 
     // interface for callbacks when reading user data

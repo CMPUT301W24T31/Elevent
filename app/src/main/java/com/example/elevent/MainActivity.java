@@ -177,7 +177,9 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         appBarTitle.setText(title);
     }
 
-
+    /**
+     * Creates the notification channel
+     */
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Event Announcements";
@@ -291,6 +293,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         }
     }
 
+    /**
+     * Sets a SnapshotListener to listen for notifications from signed up and checked in events
+     * @param eventID ID of the event that has been checked into or signed up to
+     */
     private void setEventAnnouncementListener(String eventID) {
         FirebaseFirestore userDB = new UserDBConnector().getDb();
         FirebaseFirestore eventDB = new EventDBConnector().getDb();
@@ -349,6 +355,10 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
             }
         });
     }
+
+    /**
+     * Sets a SnapshotListener to listen for when a milestone is reached
+     */
     private void setMilestoneListener(){
         FirebaseFirestore db = new EventDBConnector().getDb();
         db.collection("events").whereEqualTo("organizerID", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -403,16 +413,27 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         });
     }
 
+    /**
+     * Implementation of the CreateEventListener interface
+     */
     @Override
     public void createNewEvent() {
         setMilestoneListener();
     }
 
+    /**
+     * Implementation of the EventSignUpListener interface
+     * @param eventID ID of the event that has been signed up to
+     */
     @Override
     public void onSignUp(String eventID) {
         setEventAnnouncementListener(eventID);
     }
 
+    /**
+     * Implementation of the ScannerListener
+     * @param eventID ID of the event that has been check into
+     */
     @Override
     public void onCheckIn(String eventID) { setEventAnnouncementListener(eventID);}
 }

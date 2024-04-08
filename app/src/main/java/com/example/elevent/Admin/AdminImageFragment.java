@@ -30,6 +30,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+/*
+    This file contains the implementation of the AdminImageFragment, which allows an admin to browse and delete images
+ */
 
 /**
  * A fragment that uses a RecyclerView to display images and names from Firestore.
@@ -41,10 +44,23 @@ public class AdminImageFragment extends Fragment {
     private ImageAdapter imageAdapter;
     private List<Image> imageList;
 
-    public AdminImageFragment() {
-        //empty public constructor
-    }
+    /**
+     * Required empty public constructor
+     */
+    public AdminImageFragment() {}
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or nul
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

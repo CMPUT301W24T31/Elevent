@@ -46,10 +46,17 @@ public class ScannerFragment extends Fragment {
      */
     public ScannerFragment(){}
 
+    /**
+     * Interface for ScannerListener
+     */
     interface ScannerListener{
         void onCheckIn(String eventID);
     }
 
+    /**
+     * Called when a fragment is first attached to its host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -178,16 +185,6 @@ public class ScannerFragment extends Fragment {
                         event.setAttendeesCount(attendeeCount);
                         EventDB eventDB = new EventDB(eventDBConnector);
                         eventDB.updateEvent(event);
-                        /*
-                              eventDB.updateEvent(eventName, updates);
-                              required: Event
-                              found:    String,Map<String,Object>
-                              reason: actual and formal argument lists differ in length
-                              so i tried using gpt's suggestion
-
-                        Event updatedEvent = new Event(eventName, updates);
-                        // Pass the updated Event object to the updateEvent method
-                        eventDB.updateEvent(updatedEvent);*/
                     }
                     Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_LONG).show();
                     if (getActivity() instanceof MainActivity){

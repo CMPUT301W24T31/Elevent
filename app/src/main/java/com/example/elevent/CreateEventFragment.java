@@ -37,16 +37,20 @@ import java.util.Calendar;
 /*
     This file contains the implementation of the CreateEventFragment that is responsible for displaying the UI
     to allow an organizer to input event information and create the event.
-    Outstanding issues: encoding and creating QR code for activities needs work
  */
 /**
  * This fragment displays the UI for allowing a user to input event information
  * Creates an event object
  */
 public class CreateEventFragment extends Fragment {
-
+    /**
+     * Required empty constructor
+     */
     public CreateEventFragment() {}
 
+    /**
+     * Interface for CreateEventListener
+     */
     interface CreateEventListener{
         void createNewEvent();
     }
@@ -68,6 +72,10 @@ public class CreateEventFragment extends Fragment {
 
     byte[] eventPosterByteArray;
 
+    /**
+     * Puts the created event into the database
+     * @param event
+     */
     private void createEvent(Event event) {
         EventDB eventDB = new EventDB(new EventDBConnector());
 
@@ -86,6 +94,9 @@ public class CreateEventFragment extends Fragment {
         });
     }
 
+    /**
+     * Handles navigation to the MyEventsFragment
+     */
     private void navigateToMyEventsFragment() {
         // Ensure this operation is also considered to be executed on the main thread
         if (isAdded() && getActivity() != null && getFragmentManager() != null) {
@@ -97,6 +108,10 @@ public class CreateEventFragment extends Fragment {
         }
     }
 
+    /**
+     * Attaches listener to host activity
+     * @param context Host activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -302,6 +317,11 @@ public class CreateEventFragment extends Fragment {
         getContentLauncher.launch("image/*");
     }
 
+    /**
+     * Generates a QR Code
+     * @param data Data to be encoded into the QR Code
+     * @return QR Code as a byte array
+     */
     private byte[] generateQRCode(String data) {
         try {
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();

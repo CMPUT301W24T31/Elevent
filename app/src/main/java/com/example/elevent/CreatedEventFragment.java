@@ -34,7 +34,6 @@ import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
-    Outstanding issues: Need to display the QR codes,
  */
 /**
  * This fragment displays the organizer's view of an event they created
@@ -47,7 +46,6 @@ public class CreatedEventFragment extends Fragment {
      * Implemented by MainActivity
      */
     interface CreatedEventListener {
-        //void onCreateEvent(Event event);
 
         void updateEvent(Event event);
     }
@@ -61,6 +59,11 @@ public class CreatedEventFragment extends Fragment {
         }
     });
     private ActivityResultLauncher<String> getContentLauncher;
+
+    /**
+     * Required empty public constructor
+     */
+    public CreatedEventFragment(){}
 
     /**
      * Called when a fragment is first attached to its host activity
@@ -303,66 +306,6 @@ public class CreatedEventFragment extends Fragment {
             }
         });
 
-//        private File saveQRCodeToTempFile(Bitmap qrCodeBitmap) {
-//            try {
-//                // Create a temporary file
-//                File tempFile = File.createTempFile("qr_code", ".png", requireContext().getCacheDir());
-//
-//                // Write the bitmap to the temporary file
-//                FileOutputStream outputStream = new FileOutputStream(tempFile);
-//                qrCodeBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//                outputStream.close();
-//
-//                return tempFile;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-
-//        shareEventButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Convert promotional QR Blob to Bitmap
-//                Blob promotionalQRBlob = selectedEvent.getPromotionalQR();
-//                Bitmap promotionalQRBitmap = convertBlobToBitmap(promotionalQRBlob);
-//
-//                // Save the promotional QR code image to a temporary file
-//                File qrCodeFile = saveQRCodeToTempFile(promotionalQRBitmap);
-//
-//                if (qrCodeFile != null) {
-//                    // Create a share intent
-//                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-//                    shareIntent.setType("image/*");
-//
-//                    // Add event details to the share message
-//                    String shareMessage = "Check out this event: " + selectedEvent.getEventName()
-//                            + "\nLocation: " + selectedEvent.getLocation()
-//                            + "\nDate: " + selectedEvent.getDate()
-//                            + "\nTime: " + selectedEvent.getTime()
-//                            + "\nDescription: " + selectedEvent.getDescription();
-//
-//                    // Set the text message
-//                    shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-//
-//                    // Set the promotional QR code image file to be shared
-//                    Uri qrCodeUri = FileProvider.getUriForFile(requireContext(),
-//                            "com.example.elevent.fileprovider",
-//                            qrCodeFile);
-//                    shareIntent.putExtra(Intent.EXTRA_STREAM, qrCodeUri);
-//
-//                    // Grant read permission to the sharing app
-//                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//
-//                    // Start the activity with the share intent
-//                    startActivity(Intent.createChooser(shareIntent, "Share Event"));
-//                } else {
-//                    // Handle error if QR code file cannot be saved
-//                    Toast.makeText(getContext(), "Failed to save QR code image", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
         saveChangesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -431,14 +374,27 @@ public class CreatedEventFragment extends Fragment {
 
     // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()
     // OpenAI, 2024, ChatGPT, Display QR code from byte array
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return Resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
+
+    /**
+     * Gets the event poster uploaded by the organizer
+     */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
     }
 
+    /**
+     * Updates the remaining sign up spots
+     */
     private void updateAttendanceInfo() {
 
         int currentAttendees = selectedEvent.getSignedUpAttendees().size();
