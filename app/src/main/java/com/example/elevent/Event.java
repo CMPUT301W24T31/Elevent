@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of an Event object
-    Outstanding Issues: figure out QR codes, location, notifications
  */
 /**
  * Represents an event
@@ -52,6 +51,8 @@ public class Event implements Parcelable {
 
     /**
      * Class constructor without reused QR
+     * @param eventID ID of the event
+     * @param organizerID ID of the event organizer
      * @param eventName Name of the event
      * @param promotionalQR QR code linked to event poster an description
      * @param checkinQR QR code for checking in to the event
@@ -61,6 +62,7 @@ public class Event implements Parcelable {
      * @param description Description of the event
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
+     * @param maxAttendance Max attendees permitted to sign up
      */
     public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster, int maxAttendance) {
@@ -82,7 +84,22 @@ public class Event implements Parcelable {
         this.maxAttendance = maxAttendance;
     }
 
-
+    /**
+     * Constructor with reused QR
+     * @param eventID ID of the event
+     * @param organizerID ID of the event organizer
+     * @param eventName Name of the event
+     * @param promotionalQR QR code linked to event poster an description
+     * @param checkinQR QR code for checking in to the event
+     * @param attendeesCount Number of attendees checked in
+     * @param date Date of the event
+     * @param time Time of the event
+     * @param description Description of the event
+     * @param location Location of the event
+     * @param eventPoster Uploaded poster of the event
+     * @param maxAttendance Max attendees permitted to sign up
+     * @param sha256ReusedQRContent SHA-256 hash encrypted content of the reused QR
+     */
     public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
                  String date, String time, String description, String location, Blob eventPoster, int maxAttendance, String sha256ReusedQRContent) {
         this.eventID = eventID;
