@@ -80,8 +80,14 @@
     <string name="already_signed_up">Already Signed Up</string>
     <string name="event_full">Event Full</string>
     <string name="sign_up_for_event">Sign Up</string>
+    <string-array name="image_categories">
+        <item>Events</item>
+        <item>Users</item>
+    </string-array>
+
     <string name="map">map</string>
     <string name="max_attendees_set">max attendees set</string>
     <string name="no_max_limit_set">no max limit set</string>
+
 
 </resources>

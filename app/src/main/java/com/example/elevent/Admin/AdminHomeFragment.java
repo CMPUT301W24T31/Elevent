@@ -68,7 +68,7 @@ public class AdminHomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Update the app bar title when navigating back to the AdminHomeFragment
+        // update the app bar title when navigating back to the AdminHomeFragment
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).updateAppBarTitle("Admin Home");
         }
