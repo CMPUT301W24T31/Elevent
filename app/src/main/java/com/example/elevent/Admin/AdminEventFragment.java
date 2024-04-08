@@ -15,6 +15,9 @@ import com.example.elevent.Event;
 import com.example.elevent.EventArrayAdapter;
 import com.example.elevent.EventDB;
 import com.example.elevent.R;
+import com.example.elevent.User;
+import com.example.elevent.UserDB;
+
 import java.util.ArrayList;
 
 /**
@@ -75,7 +78,14 @@ public class AdminEventFragment extends Fragment {
         }
 
         EventDB eventDB = new EventDB();
+        UserDB userDB = new UserDB(); // Assuming initialization is done elsewhere or using a singleton pattern.
+
+        // Delete the event from the EventDB
         eventDB.deleteEvent(eventToDelete.getEventID()).thenRun(() -> {
+            // After deleting the event, remove it from all users' signedUpEvents and checkedInEvents
+            userDB.removeEventFromUsers(eventToDelete.getEventID());
+
+            // UI update and Toast message
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     events.remove(eventToDelete);
@@ -89,6 +99,8 @@ public class AdminEventFragment extends Fragment {
             return null;
         });
     }
+
+
 
     /**
      * Fetches all events from the database and updates the UI.

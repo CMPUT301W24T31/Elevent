@@ -9,6 +9,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.Transaction;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -152,5 +155,35 @@ public class UserDB extends MainActivity {
         // handle the error of user not being parsed
         // System.err.println("Error fetching user: " + e.getMessage()); is what we would implement
     }
+    public void removeEventFromUsers(String eventId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").whereArrayContains("signedUpEvents", eventId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot document : task.getResult()) {
+                    User user = document.toObject(User.class);
+                    if (user != null) {
+                        // Ensure lists are not null
+                        List<String> updatedSignedUpEvents = user.getSignedUpEvents() != null ? user.getSignedUpEvents() : new ArrayList<>();
+                        List<String> updatedCheckedInEvents = user.getCheckedInEvents() != null ? user.getCheckedInEvents() : new ArrayList<>();
+
+                        // Remove eventId if present
+                        boolean updated = updatedSignedUpEvents.remove(eventId) | updatedCheckedInEvents.remove(eventId);
+
+                        if (updated) {
+                            // Update the document only if changes were made
+                            Map<String, Object> updates = new HashMap<>();
+                            updates.put("signedUpEvents", updatedSignedUpEvents);
+                            updates.put("checkedInEvents", updatedCheckedInEvents);
+                            db.collection("users").document(document.getId()).update(updates);
+                        }
+                    }
+                }
+            } else {
+                Log.e("UserDB", "Error querying users by event ID: ", task.getException());
+            }
+        });
+    }
+
+
 
 }

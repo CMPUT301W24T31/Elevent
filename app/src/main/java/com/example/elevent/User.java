@@ -25,6 +25,13 @@ public class User implements Serializable {
     private String userID;
     private List<String> signedUpEvents;
 
+    public List<String> getCheckedInEvents() {
+        return checkedInEvents;
+    }
+
+    private List<String> checkedInEvents;
+
+
     // no argument constructor
     public User() {}
 
@@ -41,6 +48,7 @@ public class User implements Serializable {
         this.homePage = homePage;
         this.userID = userID;
         this.signedUpEvents = new ArrayList<>();
+        this.checkedInEvents = new ArrayList<>();
     }
 
     public Map<String, Object> userToMap() {
@@ -51,6 +59,7 @@ public class User implements Serializable {
         userMap.put("homePage", homePage);
         userMap.put("userID", userID);
         userMap.put("signedUpEvents", signedUpEvents);
+        userMap.put("checkedInEvents", checkedInEvents);
 
         return userMap;
     }
