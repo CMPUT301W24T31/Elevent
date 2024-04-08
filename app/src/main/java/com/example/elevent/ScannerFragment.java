@@ -64,7 +64,7 @@ public class ScannerFragment extends Fragment {
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
     private ActivityResultLauncher<String[]> locationPermissionRequest;
-    private LatLng latLng = null;
+    private LatLng latLng;
 
     private FusedLocationProviderClient fusedLocationClient;
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
@@ -126,7 +126,13 @@ public class ScannerFragment extends Fragment {
 
 
 
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
         scanQR();
+        setLocation();
     }
 
     /**
@@ -187,7 +193,7 @@ public class ScannerFragment extends Fragment {
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore db = eventDBConnector.getDb();
 
-        setLocation();
+//        setLocation();
 
 
         db.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -211,6 +217,7 @@ public class ScannerFragment extends Fragment {
 
 
                         if (latLng != null) {
+                            Log.d("locloc", "s"+latLng.toString());
                             event.addCheckInLocation(userID, latLng);
                         }
 
@@ -273,19 +280,21 @@ public class ScannerFragment extends Fragment {
         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         if (!(ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
 
-        }
-        fusedLocationClient.getCurrentLocation(LocationRequest.QUALITY_BALANCED_POWER_ACCURACY, cancellationTokenSource.getToken())
-                .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-                            latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            // Logic to handle location object
+
+            fusedLocationClient.getCurrentLocation(LocationRequest.QUALITY_BALANCED_POWER_ACCURACY, cancellationTokenSource.getToken())
+                    .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                Log.d("locloc", "inLoop");
+                                latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                // Logic to handle location object
+                            }
                         }
-                    }
-                });
-        Log.d("locloc", "loc1");
+                    });
+            Log.d("locloc", "loc1");
+        }
     }
 
 
