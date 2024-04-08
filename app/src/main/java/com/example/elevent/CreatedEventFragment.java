@@ -34,7 +34,6 @@ import java.io.IOException;
 /*
     This file contains the implementation of the CreatedEventFragment that is responsible for displaying the UI of the organizer's view
     of a created event. The organizer can manage and edit the event in this fragment.
-    Outstanding issues: Need to display the QR codes,
  */
 /**
  * This fragment displays the organizer's view of an event they created
@@ -47,7 +46,6 @@ public class CreatedEventFragment extends Fragment {
      * Implemented by MainActivity
      */
     interface CreatedEventListener {
-        //void onCreateEvent(Event event);
 
         void updateEvent(Event event);
     }
@@ -61,6 +59,11 @@ public class CreatedEventFragment extends Fragment {
         }
     });
     private ActivityResultLauncher<String> getContentLauncher;
+
+    /**
+     * Required empty public constructor
+     */
+    public CreatedEventFragment(){}
 
     /**
      * Called when a fragment is first attached to its host activity
@@ -376,14 +379,27 @@ public class CreatedEventFragment extends Fragment {
 
     // https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/Blob#toBytes()
     // OpenAI, 2024, ChatGPT, Display QR code from byte array
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return Resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
+
+    /**
+     * Gets the event poster uploaded by the organizer
+     */
     private void getEventPosterImage() {
         getContentLauncher.launch("image/*");
     }
 
+    /**
+     * Updates the remaining sign up spots
+     */
     private void updateAttendanceInfo() {
 
         int currentAttendees = selectedEvent.getSignedUpAttendees().size();

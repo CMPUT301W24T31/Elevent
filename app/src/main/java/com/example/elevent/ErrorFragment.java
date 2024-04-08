@@ -9,15 +9,33 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+/*
+    This file is responsible for catching exceptions and redirecting to an error page
+ */
 
+/**
+ * This fragment displays an error page
+ */
 public class ErrorFragment extends Fragment {
 
-    // Constructor for the ErrorFragment class
+    /**
+     * Required empty public constructor
+     */
     public ErrorFragment() {
-        // Required empty public constructor
     }
 
-    // Called to create the view hierarchy associated with the fragment
+    /**
+     * Called to have the fragment instantiate its user interface view.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or nul
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -25,7 +43,13 @@ public class ErrorFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_errorpage, container, false);
     }
 
-    // Called immediately after onCreateView() has returned a View
+    /**
+     *
+     Fragment Called immediately after onCreateView has returned, but before any saved state has been restored in to the view.
+     * @param view The View returned by {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

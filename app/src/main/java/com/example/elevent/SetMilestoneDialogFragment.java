@@ -11,12 +11,21 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-
-
+/*
+    This file contains the implementation of the SetMilestoneDialogFragment, which allows the organizer to input an attendance milestone
+ */
+/**
+ * Displays a dialog fragment that allows the organizer to input an attendance milestone
+ */
 public class SetMilestoneDialogFragment extends DialogFragment {
 
     private Event event;
 
+    /**
+     * Called to do initial creation of a fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +34,13 @@ public class SetMilestoneDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Builds a dialog fragment that allows the organizer to set am attendance milestone
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Return a new Dialog instance to be displayed by the Fragment
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {

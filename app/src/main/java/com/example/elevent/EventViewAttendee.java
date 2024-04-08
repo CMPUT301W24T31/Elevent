@@ -21,7 +21,6 @@ import com.google.firebase.firestore.Blob;
 import java.util.List;
 /*
     This file is responsible for displaying the UI for an attendee's view of an event
-    Outstanding issues: figure out attributes of event, such as QR code and notifications
  */
 /**
  * This fragment displays the UI for the attendee's view of an event
@@ -31,9 +30,10 @@ public class EventViewAttendee extends Fragment {
     // Placeholder for event data model
     // private EventModel eventModel;
 
-    public EventViewAttendee() {
-        // Required empty public constructor
-    }
+    /**
+     * Required empty public constructor
+     */
+    public EventViewAttendee(){}
 
 
     /**
@@ -183,6 +183,12 @@ public class EventViewAttendee extends Fragment {
 
 
     }
+
+    /**
+     * Converts blob to bitmap
+     * @param blob Blob to be converted
+     * @return Resulting bitmap
+     */
     private Bitmap convertBlobToBitmap(Blob blob){
         byte[] byteArray = blob.toBytes();
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);

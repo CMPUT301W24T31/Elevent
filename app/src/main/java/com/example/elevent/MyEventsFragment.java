@@ -23,7 +23,6 @@ import java.util.Objects;
 /*
     This file implements the MyEventsFragment that is responsible for displaying the list of events that the organizer
     has created. As well, is responsible for displaying the UI to allow a user to create an event.
-    Outstanding issues: n/a
  */
 /**
  * This fragment displays the events that an organizer has created
@@ -34,6 +33,11 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
     private ArrayList<Event> myEvents;
     private ListView myEventList;
     private EventArrayAdapter myEventsArrayAdapter;
+
+    /**
+     * Required empty public constructor
+     */
+    public MyEventsFragment(){}
 
     /**
      * Called upon initial creation of the fragment
@@ -198,6 +202,10 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
 
     // MyEventsFragment.java
 
+    /**
+     * Implementation of CreatedEventListener interface
+     * @param updatedEvent Event to be updated
+     */
     public void updateEvent(Event updatedEvent) {
         if (updatedEvent == null || updatedEvent.getEventID() == null) {
             return; // Ensure updatedEvent or its ID is not null
