@@ -32,9 +32,13 @@ public class User implements Parcelable {
     private List<String> checkedInEvents;
     private List<String> receivedNotifications;
 
-    /**
-     * No argument constructor
-     */
+
+    public List<String> getCheckedInEvents() {
+        return checkedInEvents;
+    }
+
+    private List<String> checkedInEvents;
+
     public User() {}
 
     /**
@@ -70,6 +74,7 @@ public class User implements Parcelable {
         this.hasGeneratedPFP = hasGeneratedPFP;
         this.checkedInEvents = new ArrayList<>();
         this.receivedNotifications = new ArrayList<>();
+
     }
 
     protected User(Parcel in) {
@@ -111,6 +116,7 @@ public class User implements Parcelable {
         userMap.put("hasGeneratedPFP", hasGeneratedPFP);
         userMap.put("checkedInEvents", checkedInEvents);
         userMap.put("receivedNotifications", receivedNotifications);
+
 
         return userMap;
     }

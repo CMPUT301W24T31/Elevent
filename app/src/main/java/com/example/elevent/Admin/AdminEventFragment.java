@@ -15,6 +15,9 @@ import com.example.elevent.Event;
 import com.example.elevent.EventArrayAdapter;
 import com.example.elevent.EventDB;
 import com.example.elevent.R;
+import com.example.elevent.User;
+import com.example.elevent.UserDB;
+
 import java.util.ArrayList;
 /*
     This file contains the implementation of the Admin UI for browsing and deleting events
@@ -91,14 +94,21 @@ public class AdminEventFragment extends Fragment {
      *
      * @param eventToDelete The event to be deleted.
      */
-    private void deleteEvent(Event eventToDelete) {
+    public void deleteEvent(Event eventToDelete) {
         if (eventToDelete.getEventID() == null) {
             Toast.makeText(getContext(), "Error: Event ID is null.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         EventDB eventDB = new EventDB();
+        UserDB userDB = new UserDB(); // Assuming initialization is done elsewhere or using a singleton pattern.
+
+        // Delete the event from the EventDB
         eventDB.deleteEvent(eventToDelete.getEventID()).thenRun(() -> {
+            // After deleting the event, remove it from all users' signedUpEvents and checkedInEvents
+            userDB.removeEventFromUsers(eventToDelete.getEventID());
+
+            // UI update and Toast message
             if (getActivity() != null) {
                 getActivity().runOnUiThread(() -> {
                     events.remove(eventToDelete);
@@ -112,6 +122,8 @@ public class AdminEventFragment extends Fragment {
             return null;
         });
     }
+
+
 
     /**
      * Fetches all events from the database and updates the UI.
