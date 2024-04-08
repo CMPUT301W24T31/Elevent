@@ -92,6 +92,11 @@ dependencies {
     //Maps SDK
     implementation("com.google.android.gms:play-services-maps:18.2.0")
 
+    //Location Permission
+    implementation("androidx.activity:activity:1.8.2")
+    implementation("androidx.fragment:fragment:1.6.2")
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+
 }
 
 secrets {
