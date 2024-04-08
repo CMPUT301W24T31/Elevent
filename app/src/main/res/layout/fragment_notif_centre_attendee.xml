@@ -30,7 +30,7 @@
         android:id="@+id/list_of_notifs"
         android:layout_width="370dp"
         android:layout_height="630dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/rounded_corner"
         android:backgroundTint="@color/item_grey"
         android:fontFamily="monospace"

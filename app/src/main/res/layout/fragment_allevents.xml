@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AllEventsFragment"
-    android:background="@color/background_blue">
+    android:background="@color/item_grey">
 
     <!-- TODO: Update blank fragment layout -->
 <!--  <TextView-->
@@ -29,9 +29,10 @@
             android:id="@+id/event_filter_spinner"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/rounded_corner"
-            android:backgroundTint="@color/item_blue"
-            android:padding="30dp"/>
+            android:spinnerMode="dropdown"
+            android:entries="@array/event_filter_spinner_array"
+            android:padding="30dp"
+            />
 
 
         <ListView
@@ -40,26 +41,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_marginTop="15dp"
-            android:cacheColorHint="@color/background_blue"
-            android:divider="@color/background_blue"
+            android:divider="@color/item_grey"
             android:dividerHeight="5dp"
             />
-        <!--
-   <ExpandableListView
-       android:layout_width="match_parent"
-       android:layout_height="0dp"
-       android:layout_weight="1"
-
-       android:cacheColorHint="#B59D9D"
-       android:background="@drawable/rounded_corner"
-       android:divider="@android:color/transparent"
-       android:dividerHeight="10dp"/>
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" />
             -->
     </LinearLayout>
 <!--    TEMPORARY BUTTON TO TEST FRAGMENT NAVIGATION
