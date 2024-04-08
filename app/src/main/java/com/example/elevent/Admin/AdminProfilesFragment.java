@@ -19,7 +19,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+    This file contains the implementation of the AdminProfilesFragment, which allows admin to browse and delete profiles
+ */
 /**
  * AdminProfilesFragment displays a list of user profiles, allowing an admin to view and delete them.
  * It fetches user profile information from Firestore and uses a RecyclerView to display it.
@@ -38,6 +40,18 @@ public class AdminProfilesFragment extends Fragment {
         // empty public constructor
     }
 
+    /**
+     * Called to have the fragment instantiate its user interface view
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return Return the View for the fragment's UI, or nul
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.admin_profiles_view, container, false);

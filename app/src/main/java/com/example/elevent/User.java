@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 /*
     This file contains the implementation of a User object
-    Outstanding issues: n/a
  */
 /**
  * This class represents a user of the app
