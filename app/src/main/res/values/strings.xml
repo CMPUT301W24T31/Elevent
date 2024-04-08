@@ -25,12 +25,14 @@
 
     <!-- options for event filter spinner -->
     <string-array name="event_filter_spinner_array">
+        <item>sort</item>
         <item>all</item>
         <item>signed-up</item>
     </string-array>
 
     <!-- options for attendee filter spinner -->
     <string-array name="attendee_filter_spinner_array">
+        <item>sort</item>
         <item>checked-in</item>
         <item>signed-up</item>
     </string-array>
@@ -42,7 +44,7 @@
     <string name="attendees">attendees</string>
     <string name="notification_centree">\nnotification centre</string>
     <string name="post_new_notification">post new notification</string>
-    <string name="event_location">Event description</string>
+    <string name="event_location">event description</string>
     <string name="most_recent_notification_attendee_eventview">who is ready for skruntskrunt</string>
     <string name="input_event_name">input event name</string>
     <string name="select_date">select date</string>
@@ -54,7 +56,7 @@
     <string name="event_name">event name</string>
     <string name="location">location</string>
     <string name="date">date</string>
-    <string name="name">Name</string>
+    <string name="name">name</string>
     <string name="time">time</string>
     <string name="description">description</string>
     <string name="share">share</string>
@@ -64,9 +66,21 @@
     <string name="check_in_nqr_code">check-in \nQR code</string>
     <string name="promotional_nqr_code">promotional \nQR code</string>
     <string name="check_in_and_promotional_qr_codes_will_be_generated_upon_event_creation">  clicking create without reusing QR codes will generate new check-in and promotional QR codes </string>
-    <string name="home_page">Home Page\n</string>
-    <string name="contact">Contact Info</string>
-    <string name="save">Save</string>
-    <string name="edit_profile">Edit Profile\n</string>
+    <string name="home_page">home page</string>
+    <string name="contact">contact info</string>
+    <string name="save">save</string>
+    <string name="edit_profile">edit profile</string>
+    <string name="max_attendees">max attendees</string>
+    <string name="namee">name</string>
+    <string name="oops">Oops, \npage not found :(</string>
+    <string name="spots_open">0 spots open</string>
+    <string name="sign_up">sign up</string>
+    <string name="spots_remaining">Spots remaining: %1$d</string>
+    <string name="already_signed_up">Already Signed Up</string>
+    <string name="event_full">Event Full</string>
+    <string name="sign_up_for_event">Sign Up</string>
+    <string name="map">map</string>
+    <string name="max_attendees_set">max attendees set</string>
+    <string name="no_max_limit_set">no max limit set</string>
 
 </resources>

@@ -10,35 +10,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="20dp" >
+
                 <Button
                     android:id="@+id/notif_centre_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
+                    android:layout_width="361dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginLeft="30dp"
                     android:backgroundTint="@color/item_grey"
-                    android:textColor="@color/text_white"
                     android:text="@string/notification_centre"
+                    android:textColor="@color/background_blue"
+                    android:textSize="20dp"
                     android:theme="@style/FontTheme"
 
                     />
 
                 <Button
                     android:id="@+id/map_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
+                    android:layout_width="361dp"
+                    android:layout_height="wrap_content"
                     android:layout_below="@+id/notif_centre_button"
                     android:layout_alignParentStart="false"
                     android:layout_alignParentEnd="false"
                     android:layout_centerHorizontal="true"
                     android:layout_marginLeft="30dp"
-
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="30dp"
                     android:backgroundTint="@color/item_grey"
-                    android:text="Map"
-                    android:textColor="@color/text_white"
+                    android:text="@string/map"
+                    android:textColor="@color/background_blue"
                     android:theme="@style/FontTheme" />
 
                 <TextView
@@ -57,11 +58,11 @@
 
                 <Spinner
                     android:id="@+id/attendee_spinner"
-                    android:layout_width="339dp"
+                    android:layout_width="310dp"
                     android:layout_height="35dp"
                     android:layout_below="@id/attendee_list_textview"
-                    android:layout_marginTop="15dp"
                     android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
                     android:background="@drawable/rounded_corner"
                     android:backgroundTint="@color/item_blue"
                     android:padding="30dp" />
@@ -79,31 +80,37 @@
                     android:fontFamily="monospace"
                     android:text="@string/attendees"
                     android:textSize="25sp" />
+
                 <TextView
                     android:id="@+id/attendees_count_text"
                     android:layout_width="wrap_content"
                     android:layout_height="35dp"
                     android:layout_below="@+id/list_of_attendees"
-                    android:layout_marginTop="10dp"
                     android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/rounded_corner"
                     android:backgroundTint="@color/primary_blue"
-                    android:textColor="@color/text_white"
-                    android:theme="@style/FontTheme"
-                    android:textSize="20sp"
                     android:paddingLeft="15dp"
-                    android:paddingRight="15dp"/>
+                    android:paddingRight="15dp"
+                    android:textColor="@color/text_white"
+                    android:textSize="20sp"
+                    android:theme="@style/FontTheme" />
+
                 <Button
                     android:id="@+id/set_milestone_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/attendees_count_text"
+
+                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="30dp"
                     android:layout_centerInParent="true"
+                    android:layout_marginTop="10dp"
                     android:backgroundTint="@color/item_grey"
-                    android:theme="@style/FontTheme"
-                    android:text="Set milestones"
+                    android:text="set milestones"
+                    android:textColor="@color/background_blue"
                     android:textSize="20sp"
-                    android:layout_marginTop="10dp"/>
+                    android:theme="@style/FontTheme" />
 
             </RelativeLayout>
         </ScrollView>

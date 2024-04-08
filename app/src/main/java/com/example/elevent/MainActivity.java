@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +28,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.preference.PreferenceManager;
 
 import com.avatarfirst.avatargenlib.AvatarConstants;
 import com.avatarfirst.avatargenlib.AvatarGenerator;
@@ -40,26 +38,18 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.Blob;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 /*
     This file is responsible for being the host activity of all fragments in the app
  */
@@ -319,41 +309,41 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                                 Event event = value.toObject(Event.class);
                                 if (event != null) {
                                     ArrayList<String> notifications = (ArrayList<String>) event.getNotifications();
-                                    if (user != null && !notifications.isEmpty()){
+                                    if (user != null && !notifications.isEmpty()) {
                                         String recentNotification = notifications.get(notifications.size() - 1);
                                         List<String> receivedNotifications = user.getReceivedNotifications();
-                                            if (!receivedNotifications.contains(recentNotification)) {
-                                                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                                                TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
-                                                stackBuilder.addNextIntentWithParentStack(intent);
-                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                intent.putExtra("eventIDToOpen", event.getEventID());
-                                                intent.putExtra("FragmentToOpen", "NotificationFragmentAttendee");
-                                                PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                                        if (!receivedNotifications.contains(recentNotification)) {
+                                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                            TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
+                                            stackBuilder.addNextIntentWithParentStack(intent);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            intent.putExtra("eventIDToOpen", event.getEventID());
+                                            intent.putExtra("FragmentToOpen", "NotificationFragmentAttendee");
+                                            PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-                                                NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "EleventChannel")
-                                                        .setSmallIcon(R.drawable.default_profile_pic)
-                                                        .setContentTitle(event.getEventName())
-                                                        .setContentText(recentNotification)
-                                                        .setStyle(new NotificationCompat.BigTextStyle().bigText(recentNotification))
-                                                        .setAutoCancel(true)
-                                                        .setContentIntent(pendingIntent);
+                                            NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "EleventChannel")
+                                                    .setSmallIcon(R.drawable.img_1)
+                                                    .setContentTitle(event.getEventName())
+                                                    .setContentText(recentNotification)
+                                                    .setStyle(new NotificationCompat.BigTextStyle().bigText(recentNotification))
+                                                    .setAutoCancel(true)
+                                                    .setContentIntent(pendingIntent);
 
-                                                NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
-                                                if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                                                    requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
-                                                    return;
-                                                }
-                                                notificationManagerCompat.notify(1, builder.build());
-                                                receivedNotifications.add(recentNotification);
-                                                user.setReceivedNotifications(receivedNotifications);
-                                                UserDB db = new UserDB();
-                                                db.updateUser(user);
+                                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
+                                            if (ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                                requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS);
+                                                return;
                                             }
+                                            notificationManagerCompat.notify(1, builder.build());
+                                            receivedNotifications.add(recentNotification);
+                                            user.setReceivedNotifications(receivedNotifications);
+                                            UserDB db = new UserDB();
+                                            db.updateUser(user);
                                         }
                                     }
                                 }
                             }
+                        }
                     });
                 }
             }
@@ -363,9 +353,9 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         FirebaseFirestore db = new EventDBConnector().getDb();
         db.collection("events").whereEqualTo("organizerID", userID).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                db.collection("events").document(documentSnapshot.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                    db.collection("events").document(documentSnapshot.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                             if (error != null){
@@ -386,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                                             PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
                                             NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, "EleventChannel")
-                                                    .setSmallIcon(R.drawable.default_profile_pic)
+                                                    .setSmallIcon(R.drawable.img_1)
                                                     .setContentTitle((String) value.get("eventName"))
                                                     .setContentText(String.format("Your event has %d checked in attendees!", event.getAttendeesCount()))
                                                     .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format("Your event has %d checked in attendees!", event.getAttendeesCount())))

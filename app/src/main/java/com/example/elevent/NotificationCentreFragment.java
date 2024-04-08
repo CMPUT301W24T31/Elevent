@@ -1,11 +1,9 @@
 package com.example.elevent;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -14,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * This fragment contains UI for the organizer to handle and push notifications
@@ -54,6 +53,7 @@ public class NotificationCentreFragment extends Fragment {
             });
         }
         updateListView((ArrayList<String>) event.getNotifications());
+        Collections.reverse(notificationsList);
     }
 
     private void showAddNotificationDialog() {
@@ -66,8 +66,18 @@ public class NotificationCentreFragment extends Fragment {
             dialogFragment.show(getChildFragmentManager(), "AddNotificationDialogFragment");
         }
     }
-    private void updateListView(ArrayList<String> notifications){
-        notificationAdapter = new NotificationArrayAdapter(requireContext(), notifications);
-        listOfNotifications.setAdapter(notificationAdapter);
+    private void updateListView(ArrayList<String> notifications) {
+        // If notificationAdapter is already initialized, update the data set
+        if (notificationAdapter != null) {
+            notificationAdapter.addAll(notifications);
+            notificationAdapter.notifyDataSetChanged();
+        } else {
+            // If notificationAdapter is not initialized, create a new one
+            notificationAdapter = new NotificationArrayAdapter(requireContext(), notifications);
+            listOfNotifications.setAdapter(notificationAdapter);
+        }
     }
+
+
+
 }

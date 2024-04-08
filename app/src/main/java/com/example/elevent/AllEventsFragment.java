@@ -1,37 +1,29 @@
 package com.example.elevent;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
  */
@@ -97,7 +89,6 @@ public class AllEventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Spinner filterStatus = view.findViewById(R.id.event_filter_spinner);
-
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.event_filter_spinner_array,
@@ -105,6 +96,7 @@ public class AllEventsFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
         EventArrayAdapter eventArrayAdapter = new EventArrayAdapter(requireActivity(), events);
@@ -118,6 +110,12 @@ public class AllEventsFragment extends Fragment {
 
                     // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                    if (clickedEvent != null) {
+                        // Proceed with further actions
+                    } else {
+                        Log.e("AllEventsFragment", "Clicked event is null");
+                    }
+
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
                     args.putParcelable("event", clickedEvent); // Ensure Event implements Serializable

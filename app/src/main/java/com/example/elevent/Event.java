@@ -44,6 +44,8 @@ public class Event implements Parcelable {
     private int milestone;
     private int previousAttendeesCount;
 
+    private int maxAttendance;
+
     // No-argument constructor
     public Event() {
     }
@@ -61,7 +63,7 @@ public class Event implements Parcelable {
      * @param eventPoster Uploaded poster of the event
      */
     public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, Blob eventPoster) {
+                 String date, String time, String description, String location, Blob eventPoster, int maxAttendance) {
         this.eventID = eventID;
         this.organizerID = organizerID;
         this.eventName = eventName;
@@ -77,40 +79,7 @@ public class Event implements Parcelable {
         this.signedUpAttendees = new ArrayList<>();
         this.checkInLocations = new HashMap<>();
         this.checkedInAttendees = new HashMap<>();
-        this.previousAttendeesCount = 0;
-    }
-    /**
-     * Class constructor with reused QR
-     * @param eventName Name of the event
-     * @param promotionalQR QR code linked to event poster an description
-     * @param checkinQR QR code for checking in to the event
-     * @param attendeesCount Number of attendees checked in
-     * @param date Date of the event
-     * @param time Time of the event
-     * @param description Description of the event
-     * @param location Location of the event
-     * @param eventPoster Uploaded poster of the event
-     * @param sha256ReusedQRContent Content of the reused QR code converted into SHA-256 encryption
-     */
-    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, Blob eventPoster, String sha256ReusedQRContent) {
-        this.eventID = eventID;
-        this.organizerID = organizerID;
-        this.eventName = eventName;
-        this.promotionalQR = promotionalQR;
-        this.checkinQR = checkinQR;
-        this.attendeesCount = attendeesCount;
-        this.date = date;
-        this.time = time;
-        this.description = description;
-        this.eventPoster = eventPoster;
-        this.location = location;
-        this.sha256ReusedQRContent = sha256ReusedQRContent;
-        this.notifications = new ArrayList<>();
-        this.signedUpAttendees = new ArrayList<>();
-        this.checkInLocations = new HashMap<>();
-        this.checkedInAttendees = new HashMap<>();
-        this.previousAttendeesCount = 0;
+        this.maxAttendance = maxAttendance;
     }
 
     protected Event(Parcel in) {
@@ -164,7 +133,7 @@ public class Event implements Parcelable {
         eventMap.put("checkInLocations", checkInLocations);
         eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
         eventMap.put("milestone", milestone);
-        eventMap.put("previousAttendeesCount", previousAttendeesCount);
+        eventMap.put("maxAttendance", maxAttendance);
 
         return eventMap;
     }
@@ -275,6 +244,8 @@ public class Event implements Parcelable {
         this.organizerID = organizerID;
     }
 
+    public int getMaxAttendance() {return maxAttendance;}
+
     /**
      * Setter for the event name
      * @param eventName Name of the event
@@ -376,6 +347,12 @@ public class Event implements Parcelable {
      * @param checkedInAttendees Attendees that have checked in
      */
     public void setCheckedInAttendees(Map<String, Integer> checkedInAttendees){this.checkedInAttendees = checkedInAttendees;}
+
+    public void setMaxAttendance(int maxAttendance) {this.maxAttendance = maxAttendance;}
+
+    public void addNotification(String newNotificationMessage) {
+
+    }
 
     /**
      * Getter for the event ID
