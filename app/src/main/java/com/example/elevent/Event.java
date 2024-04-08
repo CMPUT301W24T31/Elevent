@@ -1,6 +1,14 @@
 package com.example.elevent;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.Blob;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,11 +22,11 @@ import java.util.Map;
 /**
  * Represents an event
  */
-public class Event implements Serializable {
+public class Event implements Parcelable {
 
     // attributes for the information of an event
-    private String eventID;
     private String organizerID;
+    private String eventID;
     private String eventName;
     private Blob promotionalQR; //byte array
     private Blob checkinQR; // byte array
@@ -30,14 +38,20 @@ public class Event implements Serializable {
     private String location;
     private List<String> notifications;
     private List<String> signedUpAttendees;
+    private Map<String, GeoPoint> checkInLocations;
     private Map<String, Integer> checkedInAttendees;
+    private String sha256ReusedQRContent;
+    private int milestone;
+    private int previousAttendeesCount;
+
+    private int maxAttendance;
 
     // No-argument constructor
     public Event() {
     }
 
     /**
-     * Class constructor
+     * Class constructor without reused QR
      * @param eventName Name of the event
      * @param promotionalQR QR code linked to event poster an description
      * @param checkinQR QR code for checking in to the event
@@ -48,8 +62,9 @@ public class Event implements Serializable {
      * @param location Location of the event
      * @param eventPoster Uploaded poster of the event
      */
-    public Event(String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
-                 String date, String time, String description, String location, Blob eventPoster) {
+    public Event(String eventID, String organizerID, String eventName, Blob promotionalQR, Blob checkinQR, int attendeesCount,
+                 String date, String time, String description, String location, Blob eventPoster, int maxAttendance) {
+        this.eventID = eventID;
         this.organizerID = organizerID;
         this.eventName = eventName;
         this.promotionalQR = promotionalQR;
@@ -60,15 +75,40 @@ public class Event implements Serializable {
         this.description = description;
         this.eventPoster = eventPoster;
         this.location = location;
+        this.notifications = new ArrayList<>();
         this.signedUpAttendees = new ArrayList<>();
+        this.checkInLocations = new HashMap<>();
         this.checkedInAttendees = new HashMap<>();
-        this.notifications = notifications;
-        eventID = String.valueOf(System.currentTimeMillis());
+        this.maxAttendance = maxAttendance;
     }
 
-    //change suggested by gpt with respect to the change made in scannerFragment
-    public Event(String eventName, Map<String, Object> updates) {
+    protected Event(Parcel in) {
+        organizerID = in.readString();
+        eventID = in.readString();
+        eventName = in.readString();
+        attendeesCount = in.readInt();
+        date = in.readString();
+        time = in.readString();
+        description = in.readString();
+        location = in.readString();
+        notifications = in.createStringArrayList();
+        signedUpAttendees = in.createStringArrayList();
+        sha256ReusedQRContent = in.readString();
+        milestone = in.readInt();
+        previousAttendeesCount = in.readInt();
     }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel in) {
+            return new Event(in);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 
     /**
      * Create the map to be put into the event database
@@ -76,6 +116,7 @@ public class Event implements Serializable {
      */
     public Map<String, Object> toMap() {
         Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("eventID", eventID);
         eventMap.put("organizerID", organizerID);
         eventMap.put("eventName", eventName);
         eventMap.put("location", location);
@@ -89,10 +130,18 @@ public class Event implements Serializable {
         eventMap.put("notifications", notifications);
         eventMap.put("signedUpAttendees", signedUpAttendees);
         eventMap.put("checkedInAttendees", checkedInAttendees);
+        eventMap.put("checkInLocations", checkInLocations);
+        eventMap.put("sha256ReusedQRContent", sha256ReusedQRContent);
+        eventMap.put("milestone", milestone);
+        eventMap.put("maxAttendance", maxAttendance);
 
         return eventMap;
     }
 
+    /**
+     * Getter for ID of the organizer
+     * @return ID of the organizer
+     */
     public String getOrganizerID() {
         return organizerID;
     }
@@ -171,17 +220,31 @@ public class Event implements Serializable {
         return eventPoster;
     }
 
+    /**
+     * Getter for the checked in attendees
+     * @return Attendees that have checked in
+     */
     public Map<String, Integer> getCheckedInAttendees() {
         return checkedInAttendees;
     }
 
+    /**
+     * Getter for the signed up attendees
+     * @return Attendees that have signed up
+     */
     public List<String> getSignedUpAttendees() {
         return signedUpAttendees;
     }
 
+    /**
+     * Setter for the organizer ID
+     * @param organizerID ID of the organizer
+     */
     public void setOrganizerID(String organizerID) {
         this.organizerID = organizerID;
     }
+
+    public int getMaxAttendance() {return maxAttendance;}
 
     /**
      * Setter for the event name
@@ -271,16 +334,124 @@ public class Event implements Serializable {
         this.notifications = notifications;
     }
 
+    /**
+     * Setter for the signed up attendees
+     * @param signedUpAttendees Attendees that have signed up
+     */
     public void setSignedUpAttendees(List<String> signedUpAttendees) {
         this.signedUpAttendees = signedUpAttendees;
     }
+
+    /**
+     * Setter for the checked in attendees
+     * @param checkedInAttendees Attendees that have checked in
+     */
     public void setCheckedInAttendees(Map<String, Integer> checkedInAttendees){this.checkedInAttendees = checkedInAttendees;}
+
+    public void setMaxAttendance(int maxAttendance) {this.maxAttendance = maxAttendance;}
 
     public void addNotification(String newNotificationMessage) {
 
     }
 
+    /**
+     * Getter for the event ID
+     * @return ID of the event
+     */
     public String getEventID() {
         return eventID;
+    }
+
+    /**
+     * Getter for the locations of attendee check ins
+     * @return
+     */
+    public Map<String, GeoPoint> getCheckInLocations() {
+        return checkInLocations;
+    }
+
+    /**
+     * For reused QR codes, getter for the encrypted SHA-256 content
+     * @return SHA-256 encrypted content
+     */
+    public String getSha256ReusedQRContent() {
+        return sha256ReusedQRContent;
+    }
+
+    /**
+     * For reused QR codes, setter for the encrypted SHA-256 content
+     * @param sha256ReusedQRContent SHA-256 encrypted content
+     */
+    public void setSha256ReusedQRContent(String sha256ReusedQRContent) {
+        this.sha256ReusedQRContent = sha256ReusedQRContent;
+    }
+
+    public int getMilestone() {
+        return milestone;
+    }
+
+    public void setMilestone(int milestone) {
+        this.milestone = milestone;
+    }
+
+    public int getPreviousAttendeesCount() {
+        return previousAttendeesCount;
+    }
+
+    public void setPreviousAttendeesCount(int previousAttendeesCount) {
+        this.previousAttendeesCount = previousAttendeesCount;
+    }
+
+    /**
+     * Used when user scans the QR code to update their scanned location.
+     * Locations are Latlngs which are converted to Geopoints.
+     * Locations are stored in a HashMap that maps Geopoints to the UserID key.
+     * @param userID Pass in userID when user scans the QR code
+     * @param location Get location as LatLng when user scans the QR code. Cannot be null.
+     */
+    public void addCheckInLocation(String userID, LatLng location) {
+        GeoPoint geoPointLoc = new GeoPoint(location.latitude, location.longitude);
+        checkInLocations.put(userID, geoPointLoc);
+    }
+
+    /**
+     * Admin only function. Call when admin deletes a user.
+     * @param userID The userID of the user to be removed.
+     */
+
+    // TODO: 2024-04-02 Make Sure Admin Uses This
+    public void removeCheckInLocation(String userID) {
+        if (checkInLocations.containsKey(userID)) {
+            checkInLocations.remove(userID);
+        }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeString(organizerID);
+        dest.writeString(eventID);
+        dest.writeString(eventName);
+        dest.writeByteArray(promotionalQR.toBytes());
+        dest.writeByteArray(checkinQR.toBytes());
+        dest.writeInt(attendeesCount);
+        if (eventPoster != null) {
+            dest.writeByteArray(eventPoster.toBytes());
+        }
+        dest.writeString(date);
+        dest.writeString(time);
+        dest.writeString(description);
+        dest.writeString(location);
+        dest.writeStringList(notifications);
+        dest.writeStringList(signedUpAttendees);
+        dest.writeMap(checkInLocations);
+        dest.writeMap(checkedInAttendees);
+        dest.writeString(sha256ReusedQRContent);
+        dest.writeInt(milestone);
+        dest.writeInt(previousAttendeesCount);
     }
 }

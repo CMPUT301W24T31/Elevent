@@ -1,27 +1,23 @@
 package com.example.elevent;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -30,25 +26,15 @@ import java.util.List;
 import java.util.Objects;
 /*
     This file is responsible for providing the UI to display the list o all events that have been created in the app.
-    Outstanding issues: n/a
  */
 /**
  * This fragment displays all events posted to the app
  */
 public class AllEventsFragment extends Fragment {
 
-    ArrayList<Event> AllEvents;
-    //defaultEvent.add("Sample Event"); // Add your default event details here
-
-    /**
-     * Listener for when user clicks on an event on their screen
-     */
-    public interface OnEventClickListener {
-        void onEventClicked(Event event);
-    }
-
-    // Define a listener member variable
-    private OnEventClickListener eventClickListener;
+    private ArrayList<Event> AllEvents;
+    private List<String> signedUpEvents;
+    private ListView listView;
 
     /**
      * Required empty constructor
@@ -74,35 +60,9 @@ public class AllEventsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_allevents, container, false);
-    }
-
-    /**
-     * Called when a fragment is first attached to its host activity
-     * @param context Host activity of the fragment
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        // Attach your listener interface
-        if (context instanceof OnEventClickListener) {
-            eventClickListener = (OnEventClickListener) context;
-        } else {
-            // If you want to enforce the implementation of the interface, you can throw an exception
-            // However, make sure your MainActivity implements OnEventClickListener interface
-            // Otherwise, just log a warning
-            Log.w("AllEventsFragment", "Parent context does not implement OnEventClickListener");
-        }
-    }
-
-    /**
-     * Called when the fragment is no longer attached to its activity.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        // Detach the listener to avoid memory leaks
-        eventClickListener = null;
+        View view = inflater.inflate(R.layout.fragment_allevents, container, false);
+        listView = view.findViewById(R.id.list_view);
+        return view;
     }
 
     /**
@@ -129,7 +89,6 @@ public class AllEventsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Spinner filterStatus = view.findViewById(R.id.event_filter_spinner);
-
         ArrayAdapter<CharSequence> filterAdapter = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.event_filter_spinner_array,
@@ -137,6 +96,7 @@ public class AllEventsFragment extends Fragment {
         );
         filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatus.setAdapter(filterAdapter);
+
         ListView listView = view.findViewById(R.id.list_view);
         ArrayList<Event> events = new ArrayList<>();
         EventArrayAdapter eventArrayAdapter = new EventArrayAdapter(requireActivity(), events);
@@ -150,9 +110,15 @@ public class AllEventsFragment extends Fragment {
 
                     // Assuming you will modify EventViewAttendee to accept an Event object as an argument.
                     Event clickedEvent = (Event) parent.getItemAtPosition(position);
+                    if (clickedEvent != null) {
+                        // Proceed with further actions
+                    } else {
+                        Log.e("AllEventsFragment", "Clicked event is null");
+                    }
+
                     EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
                     Bundle args = new Bundle();
-                    args.putSerializable("event", clickedEvent); // Ensure Event implements Serializable
+                    args.putParcelable("event", clickedEvent); // Ensure Event implements Serializable
                     eventViewAttendeeFragment.setArguments(args);
 
                     helper.replaceFragment(eventViewAttendeeFragment); // Navigate to EventViewAttendee with event details
@@ -163,19 +129,16 @@ public class AllEventsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selection = (String) parent.getItemAtPosition(position);
-                if (Objects.equals(selection, "signed up")) {
-                    SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-                    String userID = sharedPreferences.getString("userID", null);
-                    //fetchSignedUpEvents(userID);
+                if (Objects.equals(selection, "signed-up")) {
+                    fetchSignedUpEventsList();
+                    displaySignedUpEvents();
                 } else if (Objects.equals(selection, "all")){
                     fetchEvents();
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                fetchEvents();
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         //ListView listView = view.findViewById(R.id.list_view);
@@ -213,7 +176,7 @@ public class AllEventsFragment extends Fragment {
     /**
      * Get the event from the database
      */
-    public void fetchEvents() {
+    private void fetchEvents() {
         EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
         FirebaseFirestore db = connector.getDb();
 
@@ -232,12 +195,57 @@ public class AllEventsFragment extends Fragment {
     }
 
     /**
+     * Fetch signed up events from db
+     */
+    private void fetchSignedUpEventsList(){
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String userID = sharedPreferences.getString("userID", null);
+        UserDBConnector userDBConnector = new UserDBConnector();
+        FirebaseFirestore userDB = userDBConnector.getDb();
+        if(userID != null) {
+            userDB.collection("users").document(userID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            signedUpEvents = user.getSignedUpEvents();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Convert signed up events to event objects and call updateListView to display
+     */
+    private void displaySignedUpEvents(){
+        EventDBConnector connector = new EventDBConnector(); // Assuming this is correctly set up
+        FirebaseFirestore db = connector.getDb();
+
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<Event> eventsList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Event event = document.toObject(Event.class);
+                    if (signedUpEvents.contains(event.getEventID())) {
+                        eventsList.add(event);
+                    }
+                }
+                updateListView(new ArrayList<>(eventsList)); // Convert to ArrayList before updating the view
+            } else {
+                Log.d("AllEventsFragment", "Error getting documents: ", task.getException());
+            }
+        });
+    }
+
+    /**
      * Update the display of the events
      * @param events List of events
      */
-    public void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
-        EventArrayAdapter eventAdapter = new EventArrayAdapter(requireActivity(), events); // Use requireActivity() to ensure non-null Context
-        ListView listView = getView().findViewById(R.id.list_view);
+    private void updateListView(ArrayList<Event> events) { // Ensure parameter is ArrayList<Event>
+        EventArrayAdapter eventAdapter = new EventArrayAdapter(requireContext(), events); // Use requireActivity() to ensure non-null Context
         listView.setAdapter(eventAdapter);
     }
 }

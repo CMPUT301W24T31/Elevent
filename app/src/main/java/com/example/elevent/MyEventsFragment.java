@@ -131,7 +131,7 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
                 Event selectedEvent = myEvents.get(position);
 
                 // Add a notification to the selected event
-                selectedEvent.addNotification("New notification message");
+                //selectedEvent.addNotification("New notification message");
 
                 // Update the UI to reflect the added notification
                 myEventsArrayAdapter.notifyDataSetChanged();
@@ -147,7 +147,7 @@ public class MyEventsFragment extends Fragment implements CreatedEventFragment.C
                 // Pass the selected event to CreatedEventFragment should still parse the data on here
                 CreatedEventFragment createdEventFragment = new CreatedEventFragment();
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("selected_event", selectedEvent);
+                bundle.putParcelable("selected_event", selectedEvent);
                 createdEventFragment.setArguments(bundle);
 
                 //switch fragments

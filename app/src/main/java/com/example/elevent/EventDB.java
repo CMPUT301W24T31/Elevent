@@ -1,23 +1,21 @@
 package com.example.elevent;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-//import com.google.firebase.storage.FirebaseStorage;
-//import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.util.Consumer;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 /*
     This file contains the implementation for the Event Database, which stores event objects in a firebase
-    Outstanding issues: n/a
  */
 
 /**
@@ -36,6 +34,9 @@ public class EventDB {
         this.db = connector.getDb();
     }
 
+    /**
+     * Class constructor without arguments
+     */
     public EventDB() {
         EventDBConnector connector = new EventDBConnector();
         this.db = connector.getDb();
@@ -67,15 +68,17 @@ public class EventDB {
 
     /**
      * Updates the information of an event in the database
+     *
      * @param newEvent An event to be passed in. Can either be the old event with changes or a copy of the old event with changes.
-     * @return Result of the operation
+     * @return The result of the task
      */
-    public CompletableFuture<Void> updateEvent(Event newEvent) {
+    public Task<Void> updateEvent(Event newEvent) {
         DocumentReference eventRef = db.collection("events").document(newEvent.getEventID());
 
-        // asynchronously update the event document in firestore
-        return CompletableFuture.runAsync(() -> eventRef.update(newEvent.toMap()));
+        // Asynchronously update the event document in Firestore and return the Task
+        return eventRef.update(newEvent.toMap());
     }
+
 
 
     // delete an event by taking in the eventName, and thus its
@@ -89,12 +92,15 @@ public class EventDB {
      * @return Result of the operation
      */
     public CompletableFuture<Void> deleteEvent(String eventID) {
-        DocumentReference eventRef = db.collection("events").document(eventID); // Reference to the event document
-
-        // after getting a reference of the document, delete the document
-        return CompletableFuture.runAsync(eventRef::delete);
+        DocumentReference eventRef = db.collection("events").document(eventID);
+        return CompletableFuture.runAsync(() -> {
+            try {
+                Tasks.await(eventRef.delete());
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
-
     /**
      * Queries the Firebase for a list of all events
      * @return Event ArrayList of all events in the Firebase
@@ -115,6 +121,21 @@ public class EventDB {
         });
 
         return allEvents;
+    }
+
+    public void getAllEvents(final Consumer<List<Event>> callback) {
+                        db.collection("events").get().addOnCompleteListener(task -> {
+                            ArrayList<Event> allEvents = new ArrayList<>();
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Event event = document.toObject(Event.class);
+                    allEvents.add(event);
+                }
+                callback.accept(allEvents); // Use the callback to return the list of events
+            } else {
+                Log.d("EventDB", "Error getting documents: ", task.getException());
+            }
+        });
     }
 
     /**

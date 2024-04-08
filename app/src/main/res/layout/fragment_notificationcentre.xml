@@ -27,7 +27,6 @@
         android:layout_marginTop="100dp"
         android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
-
         android:backgroundTint="@color/primary_blue"
         android:text="@string/post_new_notification"
         android:fontFamily="monospace"
@@ -44,9 +43,11 @@
         android:layout_marginLeft="30dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/rounded_corner"
-        android:backgroundTint="@color/item_blue"
+        android:backgroundTint="@color/item_grey"
         android:fontFamily="monospace"
         android:text="@string/attendees"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:divider="@color/item_grey"
+        android:dividerHeight="5dp"/>
 
 </RelativeLayout>

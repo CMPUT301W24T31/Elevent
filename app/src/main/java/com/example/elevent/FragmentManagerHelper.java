@@ -34,11 +34,4 @@ public class FragmentManagerHelper {
         transaction.commit();
     }
 
-    public void addFragment(Fragment fragment) {
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(containerId, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
 }

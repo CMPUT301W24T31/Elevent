@@ -19,27 +19,28 @@
 
             <ImageView
                 android:id="@+id/profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/default_profile_pic" />
+                android:layout_marginTop="24dp" />
 
             <TextView
                 android:id="@+id/profile_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="30dp"
                 android:hint="@string/name"
-                android:textColorHint="#1E88E5" />
+                android:theme="@style/FontTheme"
+                android:textColorHint="@color/text_white"/>
 
             <TextView
                 android:id="@+id/profile_homepage"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_marginTop="8dp"
                 android:hint="@string/home_page"
-                android:textColorHint="#1E88E5" />
+                android:textColorHint="@color/text_white"
+                android:theme="@style/FontTheme" />
 
             <TextView
                 android:id="@+id/profile_contact"
@@ -47,15 +48,38 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:hint="@string/contact"
-                android:textColorHint="#1E88E5" />
+                android:theme="@style/FontTheme"
+                android:textColorHint="@color/text_white" />
+
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/geolocation_switch"
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:text="location"
+                android:textColor="@color/text_white"
+                android:theme="@style/FontTheme" />
 
             <Button
                 android:id="@+id/edit_profile_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/edit_profile"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/item_blue"
+                android:fontFamily="monospace"
+                android:text="@string/edit_profile"
+                android:textColor="@color/background_blue"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/admin_navigation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="are you an admin?"
+                android:fontFamily="monospace"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white" />
 
         </LinearLayout>
     </ScrollView>
