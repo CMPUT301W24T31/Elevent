@@ -54,14 +54,25 @@ import java.util.Objects;
 public class ScannerFragment extends Fragment {
 
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
-    private ActivityResultLauncher<ScanOptions> qrScannerLauncher;
+    private final ActivityResultLauncher<ScanOptions> qrScannerLauncher= registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null){
+            Log.d("ScanQRCodeActivity", "Scanned");
+            String resultContents = result.getContents();
+            String[] data = resultContents.split(",");
+            if (Objects.equals(data[0], "Check In")){
+                onAttendeeCheckIn(data[1]);
+            } else if (Objects.equals(data[0], "Promotion")){
+                onPromotionScan(data[1]);
+            }
+        }
+    });;
     // OpenAI, 2024, ChatGPT, How to create a QR Code Scanner Fragment
 
     /**
      * Required empty public constructor
      */
     public ScannerFragment(){
-
+        Log.d("locloc", "constructor");
     }
 
     /**
@@ -73,19 +84,20 @@ public class ScannerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
-            if (result.getContents() != null){
-                Log.d("ScanQRCodeActivity", "Scanned");
-                String resultContents = result.getContents();
-                String[] data = resultContents.split(",");
-                if (Objects.equals(data[0], "Check In")){
-                    onAttendeeCheckIn(data[1]);
-                } else if (Objects.equals(data[0], "Promotion")){
-                    onPromotionScan(data[1]);
-                }
-            }
-        });
-        scanQR();
+        Log.d("locloc", "onCreate: ");
+//        qrScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+//            if (result.getContents() != null){
+//                Log.d("ScanQRCodeActivity", "Scanned");
+//                String resultContents = result.getContents();
+//                String[] data = resultContents.split(",");
+//                if (Objects.equals(data[0], "Check In")){
+//                    onAttendeeCheckIn(data[1]);
+//                } else if (Objects.equals(data[0], "Promotion")){
+//                    onPromotionScan(data[1]);
+//                }
+//            }
+//        });
+//        scanQR();
     }
 
     /**
@@ -104,8 +116,12 @@ public class ScannerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+//        super.onCreateView(inflater, container, savedInstanceState);
+        View v = inflater.inflate(R.layout.fragment_scanner, container, false);
+        Log.d("locloc", "onCreateView: ");
+        scanQR();
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_scanner, container, false);
+        return v;
     }
 
     /**
@@ -118,6 +134,33 @@ public class ScannerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.d("locloc", "onViewCreated: ");
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.d("locloc", "onViewStateRestored: ");
+//        scanQR();
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("locloc", "onStart: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("locloc", "onStop");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("locloc", "onDestroyView: ");
     }
 
     /**
@@ -126,9 +169,10 @@ public class ScannerFragment extends Fragment {
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private void scanQR(){
         ScanOptions options = new ScanOptions();
-        options.setOrientationLocked(true);
-        options.setPrompt("");
-        options.setCaptureActivity(CaptureAct.class);
+//        options.setOrientationLocked(true);
+//
+//        options.setPrompt("");
+//        options.setCaptureActivity(CaptureAct.class);
         qrScannerLauncher.launch(options);
     }
 
@@ -171,13 +215,14 @@ public class ScannerFragment extends Fragment {
                     }
                     Toast.makeText(getContext(), "You have successfully checked in!", Toast.LENGTH_LONG).show();
                     if (getActivity() instanceof MainActivity){
-                        MainActivity mainActivity = (MainActivity) getActivity();
-                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
-                        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
-                        Bundle args = new Bundle();
-                        args.putSerializable("event", event);
-                        eventViewAttendeeFragment.setArguments(args);
-                        helper.replaceFragment(eventViewAttendeeFragment);
+                        Log.d("locloc", "Activity");
+//                        MainActivity mainActivity = (MainActivity) getActivity();
+//                        FragmentManagerHelper helper = mainActivity.getFragmentManagerHelper();
+//                        EventViewAttendee eventViewAttendeeFragment = new EventViewAttendee();
+//                        Bundle args = new Bundle();
+//                        args.putSerializable("event", event);
+//                        eventViewAttendeeFragment.setArguments(args);
+//                        helper.replaceFragment(eventViewAttendeeFragment);
 
                     }
                 } else{
