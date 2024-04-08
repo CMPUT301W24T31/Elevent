@@ -83,5 +83,6 @@
     <string name="map">map</string>
     <string name="max_attendees_set">max attendees set</string>
     <string name="no_max_limit_set">no max limit set</string>
+    <string name="notify_per_check_ins">notify per check-ins</string>
 
 </resources>

@@ -6,7 +6,7 @@
         android:id="@+id/set_milestone_text_input_layout"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:hint="Number of check ins">
+        android:hint="@string/notify_per_check_ins">
     <EditText
         android:id="@+id/set_milestone_edit_text"
         android:layout_width="match_parent"
