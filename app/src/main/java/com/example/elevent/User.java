@@ -32,13 +32,6 @@ public class User implements Parcelable {
     private List<String> checkedInEvents;
     private List<String> receivedNotifications;
 
-
-    public List<String> getCheckedInEvents() {
-        return checkedInEvents;
-    }
-
-    private List<String> checkedInEvents;
-
     public User() {}
 
     /**
