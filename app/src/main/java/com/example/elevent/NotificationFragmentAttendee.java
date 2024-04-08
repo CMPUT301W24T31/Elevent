@@ -15,7 +15,6 @@ import java.util.Collections;
 /*
     This file contains the implementation for the NotificationFragmentAttendee that displays the UI for the attendee's view
     of notifications
-    Outstanding issues: needs to be implemented
  */
 /**
  * This class displays the UI for an attendee's view of notifications
@@ -31,6 +30,11 @@ public class NotificationFragmentAttendee extends Fragment {
      */
     public NotificationFragmentAttendee() {}
 
+    /**
+     * Called to do initial creation of a fragment
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +81,11 @@ public class NotificationFragmentAttendee extends Fragment {
         updateListView(notifications);
         Collections.reverse(notificationsList);
     }
+
+    /**
+     * Updates the display of notifications of the event
+     * @param notifications List of notifications to be displayed
+     */
     private void updateListView(ArrayList<String> notifications) {
         // If notificationAdapter is already initialized, update the data set
         if (notificationArrayAdapter != null) {

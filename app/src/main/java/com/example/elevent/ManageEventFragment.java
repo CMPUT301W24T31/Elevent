@@ -30,7 +30,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /*
     This file is responsible for implementing the ManageEventFragment that displays the UI that allows the organizer to view the list of attendees
     and handle notifications
-    Outstanding issues: notifications are buggy
  */
 /**
  * This fragment provides the organizer to manage their event
@@ -42,6 +41,11 @@ public class ManageEventFragment extends Fragment {
     private Event event;
     private TextView attendeeListTextView;
     private ListView listOfAttendees;
+
+    /**
+     * Required empty public constructor
+     */
+    public ManageEventFragment(){}
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +111,7 @@ public class ManageEventFragment extends Fragment {
                             fetchSignedUpAttendees();
                         }
                     });
-                } else {
+                } else if (Objects.equals(selection, "checked-in")) {
                     db.collection("events").document(event.getEventID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
                         @Override
                         public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {

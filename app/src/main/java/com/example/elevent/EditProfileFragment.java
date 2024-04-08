@@ -49,6 +49,11 @@ public class EditProfileFragment extends Fragment {
     private ActivityResultLauncher<String> getContentLauncher;
 
     /**
+     * Required empty public constructor
+     */
+    public EditProfileFragment(){}
+
+    /**
      * Called to do initial creation of a fragment
      * Gets the user object to be edited
      * @param savedInstanceState If the fragment is being re-created from

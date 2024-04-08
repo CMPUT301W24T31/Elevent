@@ -39,9 +39,7 @@ public class AllEventsFragment extends Fragment {
     /**
      * Required empty constructor
      */
-    public AllEventsFragment() {
-        // Required empty public constructor
-    }
+    public AllEventsFragment() {}
 
 
     /**
@@ -134,11 +132,15 @@ public class AllEventsFragment extends Fragment {
                     displaySignedUpEvents();
                 } else if (Objects.equals(selection, "all")){
                     fetchEvents();
+                } else if (Objects.equals(selection, "sort")){
+                    fetchEvents();
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+            public void onNothingSelected(AdapterView<?> parent) {
+                fetchEvents();
+            }
         });
 
         //ListView listView = view.findViewById(R.id.list_view);
