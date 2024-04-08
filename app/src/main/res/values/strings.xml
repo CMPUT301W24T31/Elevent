@@ -77,5 +77,10 @@
     <string name="already_signed_up">Already Signed Up</string>
     <string name="event_full">Event Full</string>
     <string name="sign_up_for_event">Sign Up</string>
+    <string-array name="image_categories">
+        <item>Events</item>
+        <item>Users</item>
+    </string-array>
+
 
 </resources>

@@ -2,6 +2,8 @@ package com.example.elevent.Admin;
 
 import android.graphics.Bitmap;
 
+import org.checkerframework.checker.units.qual.A;
+
 /**
  * Represents an image associated with an event or a user profile.
  * This class holds the image data, the name associated with the image,
@@ -41,13 +43,16 @@ public class Image {
     public Image(Bitmap image, String name, String contactInfo, String homepage, String documentId) {
         this.image = image;
         this.name = name;
-        this.isEvent = false; // This constructor is used for users, hence isEvent is false
+        this.isEvent = false; // this constructor is used for users, hence isEvent is false
         this.contactInfo = contactInfo;
         this.homepage = homepage;
         this.documentId = documentId;
     }
     public Bitmap getImage() {
         return image;
+    }
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     public String getName() {

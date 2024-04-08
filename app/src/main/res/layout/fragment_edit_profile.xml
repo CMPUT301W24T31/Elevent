@@ -36,14 +36,14 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:text="Edit profile photo"
-                android:textColor="@color/item_grey" />
+                android:textColor="@color/black" />
             <TextView
                 android:id="@+id/delete_profile_photo_text"
                 android:layout_width="wrap_content"
                 android:layout_height="31dp"
                 android:text="Delete profile photo"
                 android:layout_below="@id/edit_profile_image"
-                android:textColor="@color/item_grey"
+                android:textColor="@color/black"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="30dp"
@@ -97,9 +97,9 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginStart="147dp"
+                android:layout_marginStart="146dp"
                 android:layout_marginTop="84dp"
-                android:layout_marginEnd="145dp"
+                android:layout_marginEnd="146dp"
                 android:backgroundTint="@color/primary_blue"
                 android:fontFamily="monospace"
                 android:text="@string/save" />

@@ -71,7 +71,7 @@ public class AdminEventFragment extends Fragment {
      *
      * @param eventToDelete The event to be deleted.
      */
-    private void deleteEvent(Event eventToDelete) {
+    public void deleteEvent(Event eventToDelete) {
         if (eventToDelete.getEventID() == null) {
             Toast.makeText(getContext(), "Error: Event ID is null.", Toast.LENGTH_SHORT).show();
             return;
