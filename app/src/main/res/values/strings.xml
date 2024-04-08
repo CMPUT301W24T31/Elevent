@@ -73,10 +73,12 @@
     <string name="oops">Oops, \npage not found :(</string>
     <string name="spots_open">0 spots open</string>
     <string name="sign_up">sign up</string>
-    <string name="spots_remaining">%d spots remaining</string>
+    <string name="spots_remaining">Spots remaining: %1$d</string>
     <string name="already_signed_up">Already Signed Up</string>
     <string name="event_full">Event Full</string>
     <string name="sign_up_for_event">Sign Up</string>
     <string name="map">map</string>
+    <string name="max_attendees_set">max attendees set</string>
+    <string name="no_max_limit_set">no max limit set</string>
 
 </resources>
