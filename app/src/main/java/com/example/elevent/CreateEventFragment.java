@@ -215,12 +215,21 @@ public class CreateEventFragment extends Fragment {
                     return; // Add return to exit early if validation fails
                 }
 
-                int maxAttendees = 0; // required minimum
-                try {
-                    maxAttendees = Integer.parseInt(eventMaxAttendees.getText().toString());
-                } catch (NumberFormatException e) {
-                    Toast.makeText(getActivity(), "Please enter a valid number for maximum attendees", Toast.LENGTH_SHORT).show();
-                    return;
+                String maxAttendeesInput = eventMaxAttendees.getText().toString().trim();
+                int maxAttendees = -1; // required minimum
+
+                if (!maxAttendeesInput.isEmpty()) {
+                    try {
+                        maxAttendees = Integer.parseInt(maxAttendeesInput);
+                        //maxAttendees = Integer.parseInt(eventMaxAttendees.getText().toString());
+                        if (maxAttendees < 0) {
+                            Toast.makeText(getActivity(), "Please enter a non-negative number for maximum attendees", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(getActivity(), "Please enter a valid number for maximum attendees", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                 }
 
                 String eventID = String.valueOf(System.currentTimeMillis());
