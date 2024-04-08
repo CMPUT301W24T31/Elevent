@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                                 Event event = value.toObject(Event.class);
                                 if (event != null) {
                                     ArrayList<String> notifications = (ArrayList<String>) event.getNotifications();
-                                    if (user != null && !notifications.isEmpty()){
+                                    if (user != null && !notifications.isEmpty()) {
                                         String recentNotification = notifications.get(notifications.size() - 1);
                                         List<String> receivedNotifications = user.getReceivedNotifications();
                                         if (!receivedNotifications.contains(recentNotification)) {
@@ -343,6 +343,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                                     }
                                 }
                             }
+                        }
                     });
                 }
             }
