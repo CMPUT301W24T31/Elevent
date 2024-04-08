@@ -1,5 +1,6 @@
 package com.example.elevent;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,10 +18,9 @@ import androidx.fragment.app.Fragment;
 public class CreateProfileFragment extends Fragment {
 
     // UI Components
-    private EditText firstNameEditText;
-    private EditText lastNameEditText;
-    private EditText emailEditText;
-    private EditText phoneEditText;
+    private EditText nameEditText;
+    private EditText contactEditText;
+    private EditText homepageEditText;
     private Switch locationSwitch;
     private ImageButton sendButton;
     private ImageButton profileImageButton; // Add this line for the image button
@@ -51,15 +51,16 @@ public class CreateProfileFragment extends Fragment {
         });
     }
 
+    //@SuppressLint("MissingInflatedId")
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_proflie_page, container, false);
 
         // Initialize your UI components here
-        firstNameEditText = view.findViewById(R.id.first_name);
-        lastNameEditText = view.findViewById(R.id.last_name);
-        emailEditText = view.findViewById(R.id.email);
-        phoneEditText = view.findViewById(R.id.phone);
+        nameEditText = view.findViewById(R.id.name);
+        contactEditText = view.findViewById(R.id.contact);
+        homepageEditText = view.findViewById(R.id.homepage);
         locationSwitch = view.findViewById(R.id.location_switch);
         sendButton = view.findViewById(R.id.imageButton2);
         profileImageButton = view.findViewById(R.id.imageButton); // This should be the ID of your image button
@@ -70,10 +71,9 @@ public class CreateProfileFragment extends Fragment {
             public void onClick(View v) {
                 // existing send button logic...
                 // Here you would collect the data from the fields
-                String firstName = firstNameEditText.getText().toString();
-                String lastName = lastNameEditText.getText().toString();
-                String email = emailEditText.getText().toString();
-                String phone = phoneEditText.getText().toString();
+                String name = nameEditText.getText().toString();
+                String contact = contactEditText.getText().toString();
+                String homepage = homepageEditText.getText().toString();
                 boolean isLocationEnabled = locationSwitch.isChecked();
 
                 // You can then use this data to create a profile, save it or send it to your server, etc.

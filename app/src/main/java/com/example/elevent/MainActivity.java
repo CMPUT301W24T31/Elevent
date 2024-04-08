@@ -58,7 +58,7 @@ import java.util.UUID;
  * This is the main activity that all fragments and listeners attach to
  * Contains the navigation bar
  */
-public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, CreateEventFragment.CreateEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener {
+public class MainActivity extends AppCompatActivity implements CreatedEventFragment.CreatedEventListener, CreateEventFragment.CreateEventListener, EventSignUpDialogFragment.EventSignUpListener, ScannerFragment.ScannerListener, WelcomePageFragment.OnCreateProfileListener {
 
 
     private FragmentManagerHelper fragmentManagerHelper;
@@ -81,6 +81,19 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     );
 
     @Override
+    public void onCreateProfile() {
+        // Replace WelcomeFragment with CreateProfileFragment
+        fragmentManagerHelper.replaceFragment(new CreateProfileFragment());
+    }
+
+    @Override
+    public void onSkipStart() {
+        // This is the existing functionality that skips profile creation
+        showNavigationAndToolbar();
+        fragmentManagerHelper.replaceFragment(new AllEventsFragment());
+    }
+
+    @Override
     public void onUserIDLogin() {
 
         fragmentManagerHelper.replaceFragment(new UserIDLoginFragment());
@@ -100,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
         super.onCreate(savedInstanceState);
         checkUserExists();
 
+        /**
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -112,20 +126,7 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
             }
         });
 
-        // Check if the user ID belongs to an admin
-        if (adminUserIds.contains(userID)) {
-            // Admin user logic
-            navigationView.setVisibility(View.GONE);
-            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
-        } else {
-            // Regular user logic
-            navigationView.setVisibility(View.VISIBLE);
-            initNavView();
-        }
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
-        }
-        handleIntent(getIntent());
+        */
     }
 
     /**
@@ -136,6 +137,22 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     public FragmentManagerHelper getFragmentManagerHelper() {
         return fragmentManagerHelper;
     }
+
+    /**
+     * Makes the Navigation and Toolbar visible
+     */
+
+    public void showNavigationAndToolbar() {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        BottomNavigationView navigationView = findViewById(R.id.activity_main_navigation_bar);
+        if (toolbar != null) {
+            toolbar.setVisibility(View.VISIBLE);
+        }
+        if (navigationView != null) {
+            navigationView.setVisibility(View.VISIBLE);
+        }
+    }
+
 
     /**
      * Initializes the navigation bar
@@ -203,6 +220,8 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
     private void checkUserExists() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);  // SharedPreferences stores a small collection of key-value pairs; maybe we can put this into the firebase???
         userID = sharedPreferences.getString(KEY_USER_ID, null);
+        boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
+
         if (userID == null) {
             createUser();
         } else {
@@ -219,6 +238,55 @@ public class MainActivity extends AppCompatActivity implements CreatedEventFragm
                 }
             });
         }
+        if (isFirstRun) {
+            setContentView(R.layout.activity_main);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+            navigationView = findViewById(R.id.activity_main_navigation_bar);
+
+            toolbar.setVisibility(View.GONE);
+            navigationView.setVisibility(View.GONE);
+            fragmentManagerHelper.replaceFragment(new WelcomePageFragment());
+
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("isFirstRun", false);
+            editor.apply();
+        } else {
+            // Your existing code that sets up the Activity for non-first-time users
+            onCreateSetupForReturningUser();
+        }
+    }
+
+
+    private void onCreateSetupForReturningUser() {
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        fragmentManagerHelper = new FragmentManagerHelper(getSupportFragmentManager(), R.id.activity_main_framelayout);
+        navigationView = findViewById(R.id.activity_main_navigation_bar);
+        createNotificationChannel();
+        requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+            if (!isGranted){
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        // Check if the user ID belongs to an admin
+        if (adminUserIds.contains(userID)) {
+            // Admin user logic
+            navigationView.setVisibility(View.GONE);
+            fragmentManagerHelper.replaceFragment(new AdminHomeFragment());
+        } else {
+            // Regular user logic
+            navigationView.setVisibility(View.VISIBLE);
+            initNavView();
+        }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+        }
+        handleIntent(getIntent());
+
     }
 
     /**
