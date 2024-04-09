@@ -110,11 +110,9 @@ public class ScannerFragment extends Fragment {
                             Boolean coarseLocationGranted = result.getOrDefault(
                                     Manifest.permission.ACCESS_COARSE_LOCATION,false);
                             if (fineLocationGranted != null && fineLocationGranted) {
-                                Log.d("locloc", "onCreate: fine");
                                 // Precise location access granted.
                             } else if (coarseLocationGranted != null && coarseLocationGranted) {
                                 // Only approximate location access granted.
-                                Log.d("locloc", "onCreate: coarse");
                             } else {
                                 // No location access granted.
                             }
@@ -141,12 +139,6 @@ public class ScannerFragment extends Fragment {
 
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        scanQR();
-        setLocation();
-    }
 
     /**
      * Called to have the fragment instantiate its user interface view
@@ -163,11 +155,8 @@ public class ScannerFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-//        super.onCreateView(inflater, container, savedInstanceState);
+                             Bundle savedInstanceState) {;
         View v = inflater.inflate(R.layout.fragment_scanner, container, false);
-        Log.d("locloc", "onCreateView: ");
-        scanQR();
         // Inflate the layout for this fragment
         return v;
     }
@@ -183,6 +172,7 @@ public class ScannerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         scanQR();
+        setLocation();
     }
 
     /**
@@ -191,10 +181,10 @@ public class ScannerFragment extends Fragment {
     // https://github.com/journeyapps/zxing-android-embedded/blob/master/sample/src/main/java/example/zxing/MainActivity.java
     private void scanQR(){
         ScanOptions options = new ScanOptions();
-//        options.setOrientationLocked(true);
-//
-//        options.setPrompt("");
-//        options.setCaptureActivity(CaptureAct.class);
+        options.setOrientationLocked(true);
+
+        options.setPrompt("");
+        options.setCaptureActivity(CaptureAct.class);
         qrScannerLauncher.launch(options);
 
         locationPermissionRequest.launch(new String[] {
@@ -235,7 +225,7 @@ public class ScannerFragment extends Fragment {
         EventDBConnector eventDBConnector = new EventDBConnector();
         FirebaseFirestore eventDB = eventDBConnector.getDb();
 
-//        setLocation();
+
 
 
         eventDB.collection("events").document(eventID).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -258,11 +248,10 @@ public class ScannerFragment extends Fragment {
                         event.setCheckedInAttendees(checkedInAttendees);
                         event.setAttendeesCount(attendeeCount);
 
-
                         if (latLng != null) {
-                            Log.d("locloc", "s"+latLng.toString());
                             event.addCheckInLocation(userID, latLng);
                         }
+
 
                         EventDB eventDB = new EventDB(eventDBConnector);
                         eventDB.updateEvent(event);
@@ -370,13 +359,11 @@ public class ScannerFragment extends Fragment {
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                Log.d("locloc", "inLoop");
                                 latLng = new LatLng(location.getLatitude(), location.getLongitude());
                                 // Logic to handle location object
                             }
                         }
                     });
-            Log.d("locloc", "loc1");
         }
     }
 
