@@ -1,6 +1,7 @@
 package com.example.elevent;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -112,28 +113,34 @@ public class MapFragment extends Fragment {
      */
     public void createMarkers(GoogleMap googleMap) {
         UserDB db = new UserDB();
-        for (Map.Entry<String, GeoPoint> e : event.getCheckInLocations().entrySet()) {
-            LatLng l = new LatLng(e.getValue().getLatitude(), e.getValue().getLongitude());
-            String userID = e.getKey();
-//            AtomicReference<String> t = new AtomicReference<>();
-//            db.readUser(userID, new UserDB.OnUserReadListener() {
-//                @Override
-//                public void onSuccess(User user) {
-//                    // update with user data in the UI
-//                    if (getActivity() == null) return;
-//                    getActivity().runOnUiThread(() -> {
-//                        t.set(new String(user.getName()));
-//
-//                    });
-//                }
-//
-//                @Override
-//                public void onFailure(Exception e) {
-//                    Log.e("ProfileFragment", "Error fetching user data", e);
-//                }
-//            });
+        if (event.getCheckInLocations().size() > 0) {
+            for (Map.Entry<String, GeoPoint> e : event.getCheckInLocations().entrySet()) {
+                LatLng l = new LatLng(e.getValue().getLatitude(), e.getValue().getLongitude());
+                String userID = e.getKey();
+                db.readUser(userID, new UserDB.OnUserReadListener() {
+                    @Override
+                    public void onSuccess(User user) {
+                        // update with user data in the UI
+                        if (getActivity() == null) return;
+                        getActivity().runOnUiThread(() -> {
+                            String t = user.getName();
+                            if (!t.isEmpty()) {
+                                googleMap.addMarker(new MarkerOptions().position(l).title(t));
+                            } else {
+                                googleMap.addMarker(new MarkerOptions().position(l));
+                            }
+
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        Log.e("ProfileFragment", "Error fetching user data", e);
+                    }
+                });
 //            googleMap.addMarker(new MarkerOptions().position(l).title(t.get()));
-            googleMap.addMarker(new MarkerOptions().position(l).title("test"));
+//            googleMap.addMarker(new MarkerOptions().position(l).title("test"));
+            }
         }
     }
 }
