@@ -1,5 +1,5 @@
 # Elevent
-Hello, and elcome to Elevent! 
+Hello, and welcome to Elevent! 
 
 Elevent is a Java-based event creation and joining platform. Users can create events, join existing ones, manage event details, share events via QR codes, and update their profiles. The app is designed to make event management simple and accessible for everyone.
 
